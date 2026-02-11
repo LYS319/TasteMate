@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>상세보기</title>
+        <style>
+            body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: #fff; }
+            .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1); }
+            .header-logo { font-size: 1.5rem; font-weight: bold; color: #dc2626; text-decoration: none; }
+            .login-btn { padding: 8px 20px; background: #dc2626; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+            .container { max-width: 600px; margin: 40px auto; padding: 32px 24px; border-radius: 12px; background: #fff8f8; box-shadow: 0 2px 16px rgba(220, 38, 38, 0.08); }
+            .post-title { font-size: 2rem; font-weight: 900; color: #dc2626; margin-bottom: 12px; }
+            .post-content { color: #222; margin-bottom: 18px; white-space: pre-line; line-height: 1.6; }
+            .comment-section { margin-top: 32px; }
+            .comment-title { font-size: 1.1rem; font-weight: 700; color: #b91c1c; margin-bottom: 8px; }
+            .comment-list { list-style: none; padding: 0; margin-bottom: 16px; }
+            .comment-list li { background: #fff; border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid #ffe5e5; }
+            .comment-form textarea { width: 100%; min-height: 60px; border-radius: 6px; border: 1.5px solid #ffe5e5; padding: 8px; margin-bottom: 8px; box-sizing: border-box; }
+            .comment-form button { background: #dc2626; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; font-weight: 700; cursor: pointer; }
+        </style>
+    </head>
+    <body>
+        <header class="header">
+            <div class="header-left">
+                <a href="/main" class="header-logo">TasteMate</a>
+            </div>
+            <div class="header-right">
+                <button id="headerLoginBtn" class="login-btn" onclick="location.href = '/login'">로그인</button>
+            </div>
+        </header>
+
+        <div class="container">
+            <div id="post-title" class="post-title">게시글 불러오는 중...</div>
+            <div style="font-size:0.95rem; color:#666; margin-bottom:20px; font-weight: bold;" id="post-date"></div>
+            <div id="post-content" class="post-content"></div>
+
+            <div class="comment-section">
+                <div class="comment-title">💬 댓글</div>
+                <ul id="comment-list" class="comment-list"></ul>
+                <form id="commentForm" class="comment-form">
+                    <textarea name="content" placeholder="댓글을 입력하세요" required></textarea>
+                    <button type="submit">댓글 등록</button>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            // 🚨 1. 로그인 상태에 따라 상단 버튼 변경
+            document.addEventListener("DOMContentLoaded", () => {
+                const nickname = localStorage.getItem('nickname');
+                const loginBtn = document.getElementById('headerLoginBtn');
+                if (nickname && loginBtn) {
+                    loginBtn.textContent = `${nickname}님 (로그아웃)`;
+                    loginBtn.style.background = '#2c3e50'; // 로그아웃 느낌으로 색상 변경
+                    loginBtn.onclick = () => {
+                        localStorage.removeItem('user_id');
+                        localStorage.removeItem('nickname');
+                        location.reload(); // 로그아웃 시 새로고침
+                    };
+                }
+            });
+
+            // 2. 게시글 상세 및 댓글 불러오기
+            const pathParts = window.location.pathname.split('/');
+            const postId = pathParts[pathParts.length - 1];
+
+            async function loadPostDetail() {
+                try {
+                    const res = await fetch(`/api/posts/detail/${postId}`);
+                    if (!res.ok) throw new Error("게시글이 없습니다.");
+                    const data = await res.json();
+                    
+                    document.getElementById('post-title').innerText = data.title;
+                    document.getElementById('post-content').innerText = data.content;
+                    // 🚨 작성자 이름(data.author) 렌더링 추가
+                    document.getElementById('post-date').innerText = `작성자: ${data.author} | 카테고리: ${data.category} | 작성일: ${data.date}`;
+                    
+                    const commentsHtml = data.comments.map(c => `
+                        <li>
+                            <div style="font-size: 0.85rem; color: #dc2626; font-weight: bold; margin-bottom: 4px;">👤 ${c.author} <span style="color:#aaa; font-weight:normal;">| ${c.date}</span></div>
+                            <div>${c.content}</div>
+                        </li>
+                    `).join('');
+                    document.getElementById('comment-list').innerHTML = commentsHtml || '<li style="text-align:center; color:#888;">첫 댓글을 남겨보세요!</li>';
+                } catch (err) {
+                    document.getElementById('post-title').innerText = "데이터를 불러올 수 없습니다.";
+                }
+            }
+
+            // 3. 댓글 등록 로직
+            document.getElementById('commentForm').onsubmit = async (e) => {
+                e.preventDefault();
+                const userId = localStorage.getItem('user_id');
+                if (!userId) {
+                    alert("로그인이 필요합니다.");
+                    sessionStorage.setItem('return_url', window.location.pathname);
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const formData = new FormData(e.target);
+                formData.append('post_id', postId);
+                formData.append('user_id', userId);
+
+                const res = await fetch('/api/comments', { method: 'POST', body: formData });
+                if(res.ok) {
+                    document.querySelector('textarea[name="content"]').value = ''; 
+                    loadPostDetail(); 
+                } else {
+                    alert("댓글 등록에 실패했습니다.");
+                }
+            };
+
+            loadPostDetail();
+        </script>
+    </body>
+</html>
