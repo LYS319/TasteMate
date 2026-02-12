@@ -55,7 +55,7 @@ def get_db():
     try: yield db
     finally: db.close()
 
-# --- 1. 화면 라우팅 (🚨 모두 templates 폴더 경로로 깔끔하게 수정 완료!) ---
+# --- 1. 화면 라우팅 ---
 @app.get("/", response_class=HTMLResponse)
 def home(): return FileResponse("templates/테이스트메이트.html")
 @app.get("/login", response_class=HTMLResponse)
@@ -99,10 +99,15 @@ def login(email: str = Form(...), password: str = Form(...), db: Session = Depen
 def get_my_info(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user: raise HTTPException(status_code=404)
+    
+    sorted_posts = sorted(user.posts, key=lambda x: x.created_at, reverse=True)
+    sorted_comments = sorted(user.comments, key=lambda x: x.created_at, reverse=True)
+    
     return {
         "email": user.email, "nickname": user.nickname, "post_count": len(user.posts), "comment_count": len(user.comments),
-        "posts": [{"id": p.id, "category": p.category, "title": p.title, "date": p.created_at.strftime("%Y-%m-%d")} for p in user.posts],
-        "comments": [{"id": c.id, "post_id": c.post_id, "content": c.content, "date": c.created_at.strftime("%Y-%m-%d")} for c in user.comments]
+        "posts": [{"id": p.id, "category": p.category, "title": p.title, "date": p.created_at.strftime("%Y-%m-%d")} for p in sorted_posts],
+        # 🚨 댓글 정보도 함께 보냅니다 (댓글 내용, 달린 게시글 ID, 날짜)
+        "comments": [{"id": c.id, "post_id": c.post_id, "content": c.content, "date": c.created_at.strftime("%Y-%m-%d")} for c in sorted_comments]
     }
 
 
@@ -138,7 +143,6 @@ def get_user_activity(user_id: int, db: Session = Depends(get_db)):
         "comments": [{"id": c.id, "post_id": c.post_id, "content": c.content, "date": c.created_at.strftime("%Y-%m-%d %H:%M")} for c in user.comments]
     }
 
-# 🚨 해결 완료: 빠져있던 관리자 게시글 조회 및 삭제 API 🚨
 @app.get("/api/admin/posts")
 def admin_list_posts(db: Session = Depends(get_db)):
     posts = db.query(Post).order_by(Post.created_at.desc()).all()
@@ -151,7 +155,7 @@ def admin_delete_post(post_id: int, db: Session = Depends(get_db)):
     raise HTTPException(status_code=404)
 
 
-# --- 4. 커뮤니티 데이터 API ---
+# --- 4. 커뮤니티 및 게시글 기능 ---
 @app.get("/api/posts/{category}")
 def get_posts_by_category(category: str, db: Session = Depends(get_db)):
     posts = db.query(Post).filter(Post.category == category.upper()).order_by(Post.created_at.desc()).all()
@@ -180,6 +184,26 @@ def create_comment(post_id: int = Form(...), user_id: int = Form(...), content: 
     db.add(new_comment); db.commit()
     return {"message": "Success"}
 
+# [사용자용 게시글 삭제]
+@app.delete("/api/posts/{post_id}")
+def delete_own_post(post_id: int, user_id: int = Form(...), db: Session = Depends(get_db)):
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post: raise HTTPException(status_code=404)
+    if str(post.user_id) != str(user_id): 
+        raise HTTPException(status_code=403, detail="본인의 글만 삭제할 수 있습니다.")
+    db.delete(post); db.commit()
+    return {"message": "Deleted successfully"}
+
+# 🚨 [사용자용 댓글 삭제] API 추가 🚨
+@app.delete("/api/comments/{comment_id}")
+def delete_own_comment(comment_id: int, user_id: int = Form(...), db: Session = Depends(get_db)):
+    comment = db.query(Comment).filter(Comment.id == comment_id).first()
+    if not comment: raise HTTPException(status_code=404)
+    if str(comment.user_id) != str(user_id): 
+        raise HTTPException(status_code=403, detail="본인의 댓글만 삭제할 수 있습니다.")
+    db.delete(comment); db.commit()
+    return {"message": "Deleted successfully"}
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="192.168.0.239", port=8000)
