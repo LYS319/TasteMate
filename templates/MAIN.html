@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Taste Mate - 메인</title>
+        <style>
+            body {
+                font-family: 'Malgun Gothic', sans-serif;
+                margin: 0;
+                background: #f9f9f9;
+            }
+            header {
+                background: #3498db;
+                color: white;
+                padding: 20px;
+                text-align: center;
+                font-size: 24px;
+                font-weight: bold;
+                position: relative;
+            }
+            .container {
+                max-width: 1000px;
+                margin: 30px auto;
+                padding: 20px;
+                text-align: center;
+            }
+            .card {
+                background: white;
+                border-radius: 12px;
+                padding: 40px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            }
+            .user-nickname {
+                position: absolute;
+                right: 30px;
+                top: 20px;
+                font-size: 18px;
+                font-weight: 600;
+                color: #fffbe7;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            Taste Mate
+            <span class="user-nickname" id="userNickname"></span>
+        </header>
+        <div class="container">
+            <div class="card">
+                <h1>환영합니다! 맛메이트님 🍻</h1>
+                <p>오늘도 즐거운 맛집 탐방을 시작해보세요.</p>
+            </div>
+        </div>
+        <script>
+            // localStorage에서 닉네임과 관리자 여부를 읽어와 오른쪽에 표시
+            const nickname = localStorage.getItem('nickname');
+            const isAdmin = localStorage.getItem('is_admin');
+            if (nickname) {
+                let adminText = '';
+                if (isAdmin === '1' || isAdmin === 1) {
+                    adminText = ' <span style="color:#ffd700; font-size:15px;">(관리자)</span>';
+                }
+                document.getElementById('userNickname').innerHTML = `👤 ${nickname}님${adminText}`;
+            }
+        </script>
+    </body>
+</html>

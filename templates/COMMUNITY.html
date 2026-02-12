@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>테이스트메이트 커뮤니티</title>
+        <style>
+            .category-btn-group { display: flex; gap: 18px; margin-bottom: 32px; }
+            .category-btn { flex: 1; padding: 18px 0; font-size: 1.18rem; font-weight: 800; border: none; border-radius: 10px; background: #fff5f5; color: #dc2626; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.07); border: 1.5px solid #ffe5e5; cursor: pointer; transition: background 0.18s, color 0.18s; }
+            .category-btn:hover, .category-btn.active { background: #dc2626; color: #fff; }
+            .menu-toggle-btn { background: none; border: none; font-size: 2.1rem; margin-left: 8px; cursor: pointer; border-radius: 8px; padding: 4px 12px; transition: background 0.18s; }
+            .menu-toggle-btn:hover { background: #ffe5e5; }
+            #mainNavMenu { min-width: 140px; animation: fadeInMenu 0.18s; position: absolute; top: 60px; left: 32px; background: #fff; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13); border-radius: 12px; padding: 18px 24px 14px 24px; z-index: 1000; display: none; }
+            @keyframes fadeInMenu { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+            .nav-emoji-btn { background: none; border: none; font-size: 1.7rem; margin: 0 2px; cursor: pointer; border-radius: 8px; padding: 4px 10px; transition: background 0.18s; }
+            .nav-emoji-btn:hover, .nav-emoji-btn.active { background: #ffe5e5; }
+            body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: #fff; }
+            .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1); backdrop-filter: blur(12px); }
+            .header-left { display: flex; align-items: center; gap: 24px; }
+            .header-logo { display: flex; align-items: center; gap: 18px; font-size: 1.5rem; font-weight: bold; color: #dc2626; text-decoration: none; }
+            
+            /* 🚨 헤더 우측 스타일 (메인페이지와 동일하게 맞춤) */
+            .header-right { display: flex; align-items: center; gap: 10px; }
+            .login-btn { padding: 8px 16px; color: #fff; border: none; border-radius: 6px; font-size: 0.95rem; font-weight:bold; cursor: pointer; transition: background 0.2s; background: #dc2626; }
+            .current-location { font-size: 0.95rem; color: #dc2626; background: #fff5f5; border: 1px solid #ffe5e5; border-radius: 6px; padding: 8px 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+            .current-location:hover { background: #ffe5e5; }
+            
+            .community-main { max-width: 800px; margin: 60px auto 0 auto; padding: 0 16px; }
+            .community-title { font-size: 2.2rem; font-weight: 900; color: #dc2626; margin-bottom: 18px; text-align: left; letter-spacing: 1px; }
+            .community-desc { font-size: 1.1rem; color: #b91c1c; margin-bottom: 32px; text-align: left; }
+            .post-list { display: flex; flex-direction: column; gap: 22px; }
+            .post-card { background: #fff; border: 1.5px solid #ffe5e5; border-radius: 14px; box-shadow: 0 2px 10px rgba(220, 38, 38, 0.06); padding: 22px 28px 18px 28px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; transition: transform 0.2s; }
+            .post-card:hover { transform: translateY(-2px); border-color: #dc2626; }
+            .post-title { font-size: 1.18rem; font-weight: 700; color: #dc2626; margin-bottom: 2px; }
+            .post-meta { font-size: 0.98rem; color: #666; margin-bottom: 2px; }
+            .post-tag { font-size: 0.93rem; background: #fff5f5; color: #dc2626; border-radius: 12px; padding: 2px 14px; font-weight: 700; border: 1px solid #ffe5e5; display: inline-block; }
+            .write-btn { margin: 32px 0 32px 0; padding: 12px 32px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+            .write-btn:hover { background: #b91c1c; }
+        </style>
+        <script>
+            function toggleMenu() {
+                const menu = document.getElementById('mainNavMenu');
+                menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
+            }
+        </script>
+    </head>
+    <body>
+        <header class="header">
+            <div class="header-left">
+                <button class="menu-toggle-btn" aria-label="메뉴 열기" onclick="toggleMenu()">☰</button>
+                <a href="/main" class="header-logo">TasteMate</a>
+                <nav class="main-nav" id="mainNavMenu">
+                    <button class="nav-emoji-btn" onclick="location.href = '/main'" title="홈">🏠 홈</button><br />
+                    <button class="nav-emoji-btn" onclick="location.href = '/aichat'" title="AI추천">🤖 AI추천</button><br />
+                    <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">🧑‍🤝‍🧑 커뮤니티</button>
+                </nav>
+            </div>
+            
+            <div class="header-right" id="headerRightArea">
+                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                <button class="login-btn" style="background:#fff; color:#dc2626; border:1px solid #dc2626;" onclick="location.href = '/signup'">회원가입</button>
+            </div>
+        </header>
+        <main class="community-main">
+            <div class="community-title">🧑‍🤝‍🧑 커뮤니티</div>
+            <div class="community-desc">다양한 맛집, 모임, 질문을 자유롭게 공유하고 소통해보세요!</div>
+            
+            <div class="category-btn-group">
+                <button class="category-btn" type="button" onclick="location.href = '/category/solo'">혼밥</button>
+                <button class="category-btn" type="button" onclick="location.href = '/category/date'">데이트</button>
+                <button class="category-btn" type="button" onclick="location.href = '/category/work'">회식</button>
+                <button class="category-btn" type="button" onclick="location.href = '/category/etc'">기타</button>
+            </div>
+            
+            <div class="post-list">
+                <div class="post-card" onclick="location.href = '/category/solo'">
+                    <div class="post-title">🍱 혼밥</div>
+                    <div class="post-meta">혼자서도 즐거운 식사, 혼밥 맛집과 경험을 공유해보세요!</div>
+                    <div><span class="post-tag">#SOLO</span></div>
+                </div>
+                <div class="post-card" onclick="location.href = '/category/date'">
+                    <div class="post-title">💑 데이트</div>
+                    <div class="post-meta">연인과의 특별한 식사, 데이트 맛집과 추억을 공유해보세요!</div>
+                    <div><span class="post-tag">#DATE</span></div>
+                </div>
+                <div class="post-card" onclick="location.href = '/category/work'">
+                    <div class="post-title">🍻 회식</div>
+                    <div class="post-meta">동료들과의 회식, 회식 맛집과 에피소드를 공유해보세요!</div>
+                    <div><span class="post-tag">#WORK</span></div>
+                </div>
+                <div class="post-card" onclick="location.href = '/category/etc'">
+                    <div class="post-title">✨ 기타</div>
+                    <div class="post-meta">기타 다양한 모임, 자유로운 맛집과 이야기를 공유해보세요!</div>
+                    <div><span class="post-tag">#ETC</span></div>
+                </div>
+            </div>
+            <button class="write-btn" onclick="location.href = '/write'">글쓰기</button>
+        </main>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin'); 
+                const headerRightArea = document.getElementById('headerRightArea');
+                
+                if (nickname && headerRightArea) {
+                    let adminButton = '';
+                    if (isAdmin === '1') {
+                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자 기능</button>`;
+                    }
+
+                    headerRightArea.innerHTML = `
+                        <span style="font-weight: 700; color: #dc2626; font-size: 1.05rem; margin-right: 5px;">👤 ${nickname}님</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="location.href='/mypage'" style="background: #f39c12;">회원정보</button>
+                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()" title="클릭하여 내 위치 찾기">📍 위치 탐색 (클릭)</span>
+                    `;
+                    getGPSLocation();
+                }
+            });
+
+            function getGPSLocation() {
+                const locSpan = document.getElementById('gps-location');
+                if (!locSpan) return;
+                
+                if (navigator.geolocation) {
+                    locSpan.innerText = "📍 위치 찾는 중...";
+                    navigator.geolocation.getCurrentPosition(async (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        try {
+                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                            const data = await res.json();
+                            let city = data.address.city || data.address.province || data.address.region || "";
+                            let borough = data.address.borough || data.address.suburb || data.address.town || "";
+                            let shortAddr = `${city} ${borough}`.trim();
+                            locSpan.innerText = `📍 ${shortAddr || '위치 확인됨'}`;
+                        } catch (e) {
+                            locSpan.innerText = "📍 위치 확인됨"; 
+                        }
+                    }, (error) => {
+                        locSpan.innerText = "📍 위치 권한 거부됨";
+                    });
+                } else {
+                    locSpan.innerText = "📍 GPS 지원 안됨";
+                }
+            }
+
+            function logout() {
+                localStorage.clear();
+                alert("안전하게 로그아웃 되었습니다.");
+                window.location.href = "/main";
+            }
+        </script>
+    </body>
+</html>

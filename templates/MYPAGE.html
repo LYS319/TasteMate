@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>내 회원정보</title>
+    <style>
+        body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: #fff5f5; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1); }
+        .header-logo { font-size: 1.5rem; font-weight: bold; color: #dc2626; text-decoration: none; }
+        .container { max-width: 500px; margin: 60px auto; padding: 40px; border-radius: 16px; background: #fff; box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08); }
+        .title { font-size: 2rem; font-weight: 900; color: #dc2626; margin-bottom: 30px; text-align: center; }
+        .info-box { background: #fff8f8; border: 1.5px solid #ffe5e5; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .info-label { font-weight: bold; color: #b91c1c; font-size: 1.1rem; margin-bottom: 5px; }
+        .info-value { font-size: 1.3rem; color: #333; margin-bottom: 20px; }
+        .stats-box { display: flex; gap: 15px; }
+        .stat { flex: 1; text-align: center; background: #fff; border: 1px solid #ffe5e5; border-radius: 10px; padding: 15px; }
+        .stat-num { font-size: 1.8rem; font-weight: 900; color: #dc2626; }
+        .back-btn { display: block; width: 100%; text-align: center; padding: 15px 0; background: #dc2626; color: #fff; font-weight: bold; font-size: 1.2rem; border: none; border-radius: 8px; margin-top: 30px; cursor: pointer; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/main" class="header-logo">TasteMate</a>
+    </header>
+    <div class="container">
+        <div class="title">👤 내 회원정보</div>
+        <div class="info-box">
+            <div class="info-label">닉네임</div>
+            <div class="info-value" id="my-nickname">로딩중...</div>
+            <div class="info-label">이메일 (아이디)</div>
+            <div class="info-value" id="my-email">로딩중...</div>
+        </div>
+        <div class="stats-box">
+            <div class="stat">
+                <div style="font-size:1rem; color:#888;">내가 쓴 게시글</div>
+                <div class="stat-num" id="my-posts">0</div>
+            </div>
+            <div class="stat">
+                <div style="font-size:1rem; color:#888;">내가 쓴 댓글</div>
+                <div class="stat-num" id="my-comments">0</div>
+            </div>
+        </div>
+        <button class="back-btn" onclick="location.href='/main'">메인으로 돌아가기</button>
+    </div>
+
+    <script>
+        async function loadMyInfo() {
+            const userId = localStorage.getItem('user_id');
+            if (!userId) {
+                alert("로그인이 만료되었습니다.");
+                window.location.href = '/login';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/users/${userId}/me`);
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('my-nickname').innerText = data.nickname;
+                    document.getElementById('my-email').innerText = data.email;
+                    document.getElementById('my-posts').innerText = data.post_count + "개";
+                    document.getElementById('my-comments').innerText = data.comment_count + "개";
+                }
+            } catch (e) {
+                alert("데이터를 불러올 수 없습니다.");
+            }
+        }
+        loadMyInfo();
+    </script>
+</body>
+</html>
