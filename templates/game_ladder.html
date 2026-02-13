@@ -2,20 +2,135 @@
 <html lang="ko">
     <head>
         <meta charset="UTF-8" />
-        <title>애니메이션 사다리타기</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>테이스트메이트 - 사다리타기</title>
         <style>
+            /* --- TasteMate 메인 스타일 이식 --- */
             body {
-                font-family: 'Apple SD Gothic Neo', sans-serif;
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: #fff;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 32px;
+                background: rgba(255, 255, 255, 0.85);
+                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
+                backdrop-filter: blur(12px);
+                position: sticky;
+                top: 0;
+                z-index: 2000;
+            }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 24px;
+            }
+            .header-logo {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: #dc2626;
+                text-decoration: none;
+            }
+            .game-btn {
+                margin-left: 8px;
+                padding: 6px 18px;
+                background: #fff5f5;
+                color: #dc2626;
+                border: 1.5px solid #dc2626;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: background 0.18s;
+            }
+            .game-btn:hover {
+                background: #ffe5e5;
+            }
+            .menu-toggle-btn {
+                background: none;
+                border: none;
+                font-size: 2.1rem;
+                margin-left: 8px;
+                cursor: pointer;
+                border-radius: 8px;
+                padding: 4px 12px;
+                transition: background 0.18s;
+            }
+            .menu-toggle-btn:hover {
+                background: #ffe5e5;
+            }
+            #mainNavMenu {
+                min-width: 140px;
+                animation: fadeInMenu 0.18s;
+                position: absolute;
+                top: 60px;
+                left: 32px;
+                background: #fff;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+                border-radius: 12px;
+                padding: 18px 24px 14px 24px;
+                z-index: 1000;
+                display: none;
+            }
+            @keyframes fadeInMenu {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .nav-emoji-btn {
+                background: none;
+                border: none;
+                font-size: 1.7rem;
+                margin: 0 2px;
+                cursor: pointer;
+                border-radius: 8px;
+                padding: 4px 10px;
+                transition: background 0.18s;
+            }
+            .nav-emoji-btn:hover {
+                background: #ffe5e5;
+            }
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .login-btn {
+                padding: 8px 16px;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.95rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: background 0.2s;
+                background: #dc2626;
+            }
+
+            /* --- 기존 사다리타기 스타일 유지 및 최적화 --- */
+            .game-container {
                 text-align: center;
                 background: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
-                margin: 0;
+                padding-top: 40px;
+                padding-bottom: 80px;
+                min-height: calc(100vh - 80px);
             }
             .setup-box {
                 background: linear-gradient(135deg, #fff 60%, #ffe5e5 100%);
                 padding: 56px 48px;
                 border-radius: 32px;
                 display: inline-block;
-                margin: 56px;
                 box-shadow: 0 16px 64px rgba(220, 38, 38, 0.22);
                 max-width: 700px;
                 min-width: 420px;
@@ -35,18 +150,10 @@
                 border-radius: 24px;
                 cursor: pointer;
                 box-shadow: 0 12px 48px rgba(220, 38, 38, 0.18);
-                margin-top: 32px;
-                margin-bottom: 32px;
-                width: 540px !important;
-                height: 700px !important;
+                margin: 32px auto;
                 border: 4px solid #dc2626;
                 display: block;
-                margin-left: auto;
-                margin-right: auto;
                 transition: box-shadow 0.2s;
-            }
-            canvas:hover {
-                box-shadow: 0 24px 64px rgba(220, 38, 38, 0.18);
             }
             input {
                 padding: 12px 20px;
@@ -55,18 +162,15 @@
                 border-radius: 12px;
                 font-size: 1.1rem;
                 margin: 6px;
-                transition:
-                    border-color 0.18s,
-                    box-shadow 0.18s;
-                box-shadow: 0 2px 8px rgba(220, 38, 38, 0.07);
                 text-align: center;
             }
-            input:focus {
-                outline: none;
-                border-color: #dc2626;
-                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+            .member-row {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin-bottom: 5px;
             }
-            button {
+            .action-btn {
                 background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
                 color: #dc2626;
                 border: 2.5px solid #dc2626;
@@ -77,37 +181,70 @@
                 cursor: pointer;
                 margin: 16px;
                 box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
-                transition:
-                    background 0.18s,
-                    box-shadow 0.18s,
-                    transform 0.18s;
+                transition: all 0.18s;
             }
-            button:hover {
+            .action-btn:hover {
                 background: #ffe5e5;
-                box-shadow: 0 12px 32px rgba(220, 38, 38, 0.18);
                 transform: translateY(-2px);
             }
-            .member-row {
-                display: flex;
-                justify-content: center;
-                gap: 10px;
-                margin-bottom: 5px;
-            }
         </style>
+        <script>
+            function toggleMenu() {
+                const menu = document.getElementById('mainNavMenu');
+                menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+            }
+        </script>
     </head>
     <body>
-        <div class="setup-box">
-            <h2>🍻 술게임 사다리타기</h2>
-            인원수: <input type="number" id="count" value="3" min="2" max="10" />
-            <button onclick="initInputs()">입력창 생성</button>
-            <div id="inputs"></div>
-            <button id="startBtn" style="display: none" onclick="createLadder()">사다리 만들기</button>
-        </div>
+        <header class="header">
+            <div class="header-left">
+                <button class="menu-toggle-btn" aria-label="메뉴 열기" onclick="toggleMenu()">☰</button>
+                <a href="/main" class="header-logo">TasteMate</a>
+                <div style="display: flex; gap: 8px; align-items: center">
+                    <button class="game-btn" onclick="location.href = '/game/ideal'">메뉴 월드컵</button>
+                    <button class="game-btn" onclick="location.href = '/game/pinball'">핀볼</button>
+                    <button class="game-btn" onclick="location.href = '/game/ladder'">사다리타기</button>
+                    <button class="game-btn" onclick="location.href = '/game/random-amount'">룰렛 게임</button>
+                </div>
+                <nav class="main-nav" id="mainNavMenu">
+                    <button class="nav-emoji-btn" onclick="location.href = '/main'" title="홈">🏠 홈</button><br />
+                    <button class="nav-emoji-btn" onclick="location.href = '/aichat'" title="AI추천">🤖 AI추천</button
+                    ><br />
+                    <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">
+                        🧑‍🤝‍🧑 커뮤니티
+                    </button>
+                </nav>
+            </div>
+            <div class="header-right">
+                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                <button
+                    class="login-btn"
+                    style="background: #fff; color: #dc2626; border: 1px solid #dc2626"
+                    onclick="location.href = '/signup'"
+                >
+                    회원가입
+                </button>
+            </div>
+        </header>
 
-        <div id="game-area" style="display: none">
-            <p style="color: #666">이름을 클릭하면 사다리를 타고 내려갑니다!</p>
-            <canvas id="canvas"></canvas>
-        </div>
+        <main class="game-container">
+            <div class="setup-box">
+                <h2>🍻 술게임 사다리타기</h2>
+                인원수: <input type="number" id="count" value="3" min="2" max="10" />
+                <button class="action-btn" onclick="initInputs()" style="padding: 10px 20px; font-size: 1rem">
+                    입력창 생성
+                </button>
+                <div id="inputs"></div>
+                <button id="startBtn" class="action-btn" style="display: none" onclick="createLadder()">
+                    사다리 만들기
+                </button>
+            </div>
+
+            <div id="game-area" style="display: none">
+                <p style="color: #666; margin-top: 20px">이름을 클릭하면 사다리를 타고 내려갑니다!</p>
+                <canvas id="canvas"></canvas>
+            </div>
+        </main>
 
         <script>
             const canvas = document.getElementById('canvas');
@@ -126,9 +263,9 @@
                 container.innerHTML = '';
                 for (let i = 0; i < n; i++) {
                     container.innerHTML += `<div class="member-row">
-                <input type="text" class="name-in" placeholder="이름 ${i + 1}">
-                <input type="text" class="val-in" placeholder="벌칙 ${i + 1}">
-            </div>`;
+                        <input type="text" class="name-in" placeholder="이름 ${i + 1}">
+                        <input type="text" class="val-in" placeholder="벌칙 ${i + 1}">
+                    </div>`;
                 }
                 document.getElementById('startBtn').style.display = 'inline-block';
             }
@@ -136,12 +273,9 @@
             function createLadder() {
                 members = Array.from(document.querySelectorAll('.name-in')).map((i) => i.value || '미정');
                 results = Array.from(document.querySelectorAll('.val-in')).map((i) => i.value || '꽝');
-
                 canvas.width = (members.length - 1) * colWidth + padding * 2;
                 canvas.height = rowHeight + 120;
                 document.getElementById('game-area').style.display = 'block';
-
-                // 가로 다리 랜덤 생성 (겹치지 않게)
                 bridges = [];
                 for (let i = 0; i < members.length - 1; i++) {
                     for (let j = 0; j < 4; j++) {
@@ -157,20 +291,17 @@
                 ctx.strokeStyle = '#ccc';
                 ctx.lineWidth = 5;
                 ctx.lineCap = 'round';
-
                 members.forEach((name, i) => {
                     const x = padding + i * colWidth;
                     ctx.beginPath();
                     ctx.moveTo(x, 60);
                     ctx.lineTo(x, rowHeight + 60);
                     ctx.stroke();
-
                     ctx.fillStyle = '#333';
                     ctx.font = 'bold 16px sans-serif';
                     ctx.fillText(name, x - 20, 40);
                     ctx.fillText(results[i], x - 20, rowHeight + 90);
                 });
-
                 bridges.forEach((b) => {
                     const x = padding + b.col * colWidth;
                     ctx.beginPath();
@@ -183,7 +314,7 @@
             canvas.onclick = function (e) {
                 if (isDrawing) return;
                 const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
+                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
                 for (let i = 0; i < members.length; i++) {
                     if (Math.abs(x - (padding + i * colWidth)) < 30) {
                         startAnimation(i);
@@ -194,21 +325,14 @@
 
             async function startAnimation(startCol) {
                 isDrawing = true;
-                drawBase(); // 이전 선 지우기
-
+                drawBase();
                 let currentCol = startCol;
                 let currentY = 60;
-                ctx.strokeStyle = '#ff4d4d';
+                ctx.strokeStyle = '#dc2626';
                 ctx.lineWidth = 6;
-
-                // 길 찾기 로직 + 애니메이션
-                const pathBridges = bridges.filter((b) => b.col === currentCol || b.col === currentCol - 1);
-
                 while (currentY < rowHeight + 60) {
                     let nextY = rowHeight + 60;
                     let targetBridge = null;
-
-                    // 현재 기둥에서 가장 가까운 아래쪽 다리 찾기
                     for (let b of bridges) {
                         if (b.y > currentY && (b.col === currentCol || b.col === currentCol - 1)) {
                             nextY = b.y;
@@ -216,8 +340,6 @@
                             break;
                         }
                     }
-
-                    // 아래로 이동 애니메이션
                     await animateLine(
                         padding + currentCol * colWidth,
                         currentY,
@@ -225,18 +347,15 @@
                         nextY,
                     );
                     currentY = nextY;
-
                     if (targetBridge) {
                         let nextX =
                             targetBridge.col === currentCol
                                 ? padding + (currentCol + 1) * colWidth
                                 : padding + (currentCol - 1) * colWidth;
-                        // 옆으로 이동 애니메이션
                         await animateLine(padding + currentCol * colWidth, currentY, nextX, currentY);
                         currentCol = targetBridge.col === currentCol ? currentCol + 1 : currentCol - 1;
                     }
                 }
-
                 setTimeout(() => {
                     alert(`결과: ${members[startCol]}님은 [ ${results[currentCol]} ] 당첨!`);
                     isDrawing = false;
@@ -246,22 +365,16 @@
             function animateLine(x1, y1, x2, y2) {
                 return new Promise((resolve) => {
                     let startTime = null;
-                    const duration = 200; // 이동 속도 (밀리초)
-
+                    const duration = 150;
                     function step(timestamp) {
                         if (!startTime) startTime = timestamp;
                         const progress = Math.min((timestamp - startTime) / duration, 1);
-
                         ctx.beginPath();
                         ctx.moveTo(x1, y1);
                         ctx.lineTo(x1 + (x2 - x1) * progress, y1 + (y2 - y1) * progress);
                         ctx.stroke();
-
-                        if (progress < 1) {
-                            requestAnimationFrame(step);
-                        } else {
-                            resolve();
-                        }
+                        if (progress < 1) requestAnimationFrame(step);
+                        else resolve();
                     }
                     requestAnimationFrame(step);
                 });

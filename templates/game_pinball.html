@@ -2,20 +2,135 @@
 <html lang="ko">
     <head>
         <meta charset="UTF-8" />
-        <title>AI 술게임 핀볼</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>테이스트메이트 - 핀볼 술게임</title>
         <style>
+            /* --- TasteMate 메인 스타일 이식 --- */
             body {
-                font-family: 'Apple SD Gothic Neo', sans-serif;
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: #fff;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 32px;
+                background: rgba(255, 255, 255, 0.85);
+                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
+                backdrop-filter: blur(12px);
+                position: sticky;
+                top: 0;
+                z-index: 2000;
+            }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 24px;
+            }
+            .header-logo {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: #dc2626;
+                text-decoration: none;
+            }
+            .game-btn {
+                margin-left: 8px;
+                padding: 6px 18px;
+                background: #fff5f5;
+                color: #dc2626;
+                border: 1.5px solid #dc2626;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: background 0.18s;
+            }
+            .game-btn:hover {
+                background: #ffe5e5;
+            }
+            .menu-toggle-btn {
+                background: none;
+                border: none;
+                font-size: 2.1rem;
+                margin-left: 8px;
+                cursor: pointer;
+                border-radius: 8px;
+                padding: 4px 12px;
+                transition: background 0.18s;
+            }
+            .menu-toggle-btn:hover {
+                background: #ffe5e5;
+            }
+            #mainNavMenu {
+                min-width: 140px;
+                animation: fadeInMenu 0.18s;
+                position: absolute;
+                top: 60px;
+                left: 32px;
+                background: #fff;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+                border-radius: 12px;
+                padding: 18px 24px 14px 24px;
+                z-index: 1000;
+                display: none;
+            }
+            @keyframes fadeInMenu {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .nav-emoji-btn {
+                background: none;
+                border: none;
+                font-size: 1.7rem;
+                margin: 0 2px;
+                cursor: pointer;
+                border-radius: 8px;
+                padding: 4px 10px;
+                transition: background 0.18s;
+            }
+            .nav-emoji-btn:hover {
+                background: #ffe5e5;
+            }
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .login-btn {
+                padding: 8px 16px;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.95rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: background 0.2s;
+                background: #dc2626;
+            }
+
+            /* --- 기존 핀볼 스타일 유지 및 최적화 --- */
+            .game-main {
                 text-align: center;
                 background: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
-                margin: 0;
+                padding-top: 40px;
+                padding-bottom: 80px;
+                min-height: calc(100vh - 80px);
             }
             .setup {
                 background: linear-gradient(135deg, #fff 60%, #ffe5e5 100%);
                 padding: 56px 48px;
                 border-radius: 32px;
                 display: inline-block;
-                margin: 56px;
                 box-shadow: 0 16px 64px rgba(220, 38, 38, 0.22);
                 max-width: 700px;
                 min-width: 420px;
@@ -35,65 +150,90 @@
                 border-radius: 24px;
                 cursor: crosshair;
                 box-shadow: 0 12px 48px rgba(220, 38, 38, 0.18);
-                margin-top: 32px;
-                margin-bottom: 32px;
-                width: 540px !important;
-                height: 700px !important;
+                margin: 32px auto;
                 border: 4px solid #dc2626;
                 display: block;
-                margin-left: auto;
-                margin-right: auto;
                 transition: box-shadow 0.2s;
-            }
-            canvas:hover {
-                box-shadow: 0 24px 64px rgba(220,38,38,0.18);
             }
             input {
                 padding: 12px 20px;
-                width: 120px;
+                width: 140px;
                 border: 2px solid #dc2626;
                 border-radius: 12px;
                 font-size: 1.1rem;
                 margin: 6px;
-                transition: border-color 0.18s, box-shadow 0.18s;
-                box-shadow: 0 2px 8px rgba(220,38,38,0.07);
+                text-align: center;
             }
-            input:focus {
-                outline: none;
-                border-color: #dc2626;
-                box-shadow: 0 4px 16px rgba(220,38,38,0.13);
-            }
-            button {
+            .action-btn {
                 background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
                 color: #dc2626;
                 border: 2.5px solid #dc2626;
-                padding: 18px 40px;
-                border-radius: 16px;
-                font-size: 1.25rem;
-                font-weight: 900;
+                padding: 10px 25px;
+                border-radius: 12px;
+                font-size: 1.1rem;
+                font-weight: 800;
                 cursor: pointer;
-                margin: 16px;
-                box-shadow: 0 4px 16px rgba(220,38,38,0.13);
-                transition: background 0.18s, box-shadow 0.18s, transform 0.18s;
+                transition: all 0.18s;
             }
-            button:hover {
+            .action-btn:hover {
                 background: #ffe5e5;
-                box-shadow: 0 12px 32px rgba(220,38,38,0.18);
                 transform: translateY(-2px);
             }
         </style>
+        <script>
+            function toggleMenu() {
+                const menu = document.getElementById('mainNavMenu');
+                menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+            }
+        </script>
+    </head>
+    <body>
+        <header class="header">
+            <div class="header-left">
+                <button class="menu-toggle-btn" aria-label="메뉴 열기" onclick="toggleMenu()">☰</button>
+                <a href="/main" class="header-logo">TasteMate</a>
+                <div style="display: flex; gap: 8px; align-items: center">
+                    <button class="game-btn" onclick="location.href = '/game/ideal'">메뉴 월드컵</button>
+                    <button class="game-btn" onclick="location.href = '/game/pinball'">핀볼</button>
+                    <button class="game-btn" onclick="location.href = '/game/ladder'">사다리타기</button>
+                    <button class="game-btn" onclick="location.href = '/game/random-amount'">룰렛 게임</button>
+                </div>
+                <nav class="main-nav" id="mainNavMenu">
+                    <button class="nav-emoji-btn" onclick="location.href = '/main'" title="홈">🏠 홈</button><br />
+                    <button class="nav-emoji-btn" onclick="location.href = '/aichat'" title="AI추천">🤖 AI추천</button
+                    ><br />
+                    <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">
+                        🧑‍🤝‍🧑 커뮤니티
+                    </button>
+                </nav>
+            </div>
+            <div class="header-right">
+                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                <button
+                    class="login-btn"
+                    style="background: #fff; color: #dc2626; border: 1px solid #dc2626"
+                    onclick="location.href = '/signup'"
+                >
+                    회원가입
+                </button>
+            </div>
+        </header>
 
-        <div class="setup">
-            <h2>⚽ 핀볼 술게임</h2>
-            항목 수: <input type="number" id="itemCount" value="4" min="2" max="8" />
-            <button onclick="initGame()">게임 생성</button>
-            <div id="item-inputs" style="margin-top: 10px"></div>
-        </div>
+        <main class="game-main">
+            <div class="setup">
+                <h2>⚽ 핀볼 술게임</h2>
+                항목 수: <input type="number" id="itemCount" value="4" min="2" max="8" />
+                <button class="action-btn" onclick="initGame()">게임 생성</button>
+                <div id="item-inputs" style="margin-top: 15px"></div>
+            </div>
 
-        <div id="game-container" style="display: none">
-            <p>상단의 원하는 위치를 <strong>클릭</strong>해서 공을 떨어뜨리세요!</p>
-            <canvas id="pinballCanvas"></canvas>
-        </div>
+            <div id="game-container" style="display: none">
+                <p style="margin-top: 20px; color: #666">
+                    상단의 원하는 위치를 <strong>클릭</strong>해서 공을 떨어뜨리세요!
+                </p>
+                <canvas id="pinballCanvas"></canvas>
+            </div>
+        </main>
 
         <script>
             const canvas = document.getElementById('pinballCanvas');
@@ -101,8 +241,7 @@
             let pegs = [];
             let slots = [];
             let ball = { x: 0, y: 0, vx: 0, vy: 0, active: false };
-            const gravity = 0.2;
-            const friction = 0.6; // 튕길 때 속도 감소율
+            const gravity = 0.25;
 
             function initGame() {
                 const n = document.getElementById('itemCount').value;
@@ -111,18 +250,15 @@
                 for (let i = 0; i < n; i++) {
                     inputDiv.innerHTML += `<input type="text" class="slot-val" placeholder="벌칙 ${i + 1}" value="벌칙${i + 1}"> `;
                 }
-                inputDiv.innerHTML += `<br><button onclick="setupCanvas()">시작하기</button>`;
+                inputDiv.innerHTML += `<br><button class="action-btn" style="margin-top:15px; background:#dc2626; color:white;" onclick="setupCanvas()">시작하기</button>`;
             }
 
             function setupCanvas() {
                 const slotInputs = document.querySelectorAll('.slot-val');
                 slots = Array.from(slotInputs).map((i) => i.value);
-
                 canvas.width = 400;
                 canvas.height = 500;
                 document.getElementById('game-container').style.display = 'block';
-
-                // 장애물(못) 생성 - 지그재그 배치
                 pegs = [];
                 const rows = 6;
                 for (let r = 0; r < rows; r++) {
@@ -130,7 +266,7 @@
                     for (let c = 0; c < cols; c++) {
                         pegs.push({
                             x: (canvas.width / (cols + 1)) * (c + 1),
-                            y: 100 + r * 50,
+                            y: 100 + r * 55,
                             r: 5,
                         });
                     }
@@ -140,37 +276,30 @@
 
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // 못 그리기
                 ctx.fillStyle = '#fff';
                 pegs.forEach((peg) => {
                     ctx.beginPath();
                     ctx.arc(peg.x, peg.y, peg.r, 0, Math.PI * 2);
                     ctx.fill();
                 });
-
-                // 하단 슬롯 구획선 및 텍스트
                 const slotWidth = canvas.width / slots.length;
-                ctx.strokeStyle = '#555';
+                ctx.strokeStyle = '#666';
                 ctx.fillStyle = '#fffa65';
-                ctx.font = '12px sans-serif';
+                ctx.font = 'bold 13px sans-serif';
                 ctx.textAlign = 'center';
-
                 slots.forEach((text, i) => {
                     const x = i * slotWidth;
-                    ctx.strokeRect(x, canvas.height - 50, slotWidth, 50);
-                    ctx.fillText(text, x + slotWidth / 2, canvas.height - 20);
+                    ctx.strokeRect(x, canvas.height - 60, slotWidth, 60);
+                    ctx.fillText(text, x + slotWidth / 2, canvas.height - 25);
                 });
-
-                // 공 그리기
                 if (ball.active) {
-                    ctx.fillStyle = '#ff4757';
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = '#ff4757';
+                    ctx.fillStyle = '#dc2626';
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = '#dc2626';
                     ctx.beginPath();
                     ctx.arc(ball.x, ball.y, 8, 0, Math.PI * 2);
                     ctx.fill();
-                    ctx.shadowBlur = 0; // 초기화
+                    ctx.shadowBlur = 0;
                     updateBall();
                 }
                 requestAnimationFrame(draw);
@@ -180,43 +309,38 @@
                 ball.vy += gravity;
                 ball.x += ball.vx;
                 ball.y += ball.vy;
-
-                // 벽 충돌
                 if (ball.x < 8 || ball.x > canvas.width - 8) {
-                    ball.vx *= -1;
+                    ball.vx *= -0.7;
                     ball.x = ball.x < 8 ? 8 : canvas.width - 8;
                 }
-
-                // 못 충돌 로직
                 pegs.forEach((peg) => {
                     const dx = ball.x - peg.x;
                     const dy = ball.y - peg.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < 13) {
-                        // 공 반지름 8 + 못 반지름 5
                         const angle = Math.atan2(dy, dx);
-                        ball.vx = Math.cos(angle) * 4; // 튕겨나가는 속도
-                        ball.vy = Math.sin(angle) * 4;
-                        // 겹침 방지
+                        const speed = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
+                        ball.vx = Math.cos(angle) * (speed * 0.8 + 1);
+                        ball.vy = Math.sin(angle) * (speed * 0.8 + 1);
                         ball.x = peg.x + Math.cos(angle) * 14;
                         ball.y = peg.y + Math.sin(angle) * 14;
                     }
                 });
-
-                // 바닥 도착
-                if (ball.y > canvas.height - 30) {
+                if (ball.y > canvas.height - 40) {
                     ball.active = false;
                     const finalSlot = Math.floor(ball.x / (canvas.width / slots.length));
-                    setTimeout(() => alert('결과: ' + slots[finalSlot]), 50);
+                    setTimeout(() => alert('결과: ' + slots[finalSlot]), 100);
                 }
             }
 
             canvas.onclick = function (e) {
                 if (ball.active) return;
                 const rect = canvas.getBoundingClientRect();
-                ball.x = e.clientX - rect.left;
-                ball.y = 20;
-                ball.vx = (Math.random() - 0.5) * 2; // 초기 미세한 난수 속도
+                const scaleX = canvas.width / rect.width;
+                let x = (e.clientX - rect.left) * scaleX;
+                ball.x = x;
+                ball.y = 30;
+                ball.vx = (Math.random() - 0.5) * 3;
                 ball.vy = 2;
                 ball.active = true;
             };

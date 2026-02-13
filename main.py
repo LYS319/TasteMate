@@ -1,10 +1,3 @@
-# 랜덤 금액 분배 게임 라우터
-# 게임 라우터 (app 인스턴스 생성 이후)
-# ...existing code...
-# ...existing code...
-
-# ...existing code...
-# ====== IMPORTS (최상단에 위치) ======
 from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
@@ -16,8 +9,8 @@ from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
 from dotenv import load_dotenv
 import os
 from Database import Like, User, Post, Comment, get_db
+from game_ideal_router import router as ideal_router
 
-# --- 7. 서버 실행 ---
 app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
@@ -25,6 +18,12 @@ templates = Jinja2Templates(directory="templates")
 
 # 정적 파일(이미지) 서빙
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/food", StaticFiles(directory="food"), name="food")
+
+# 계산기 페이지 라우터 추가
+@app.get("/game/calculator", response_class=HTMLResponse)
+def game_calculator(request: Request):
+    return templates.TemplateResponse("game_calculator.html", {"request": request})
 
 @app.get("/", response_class=HTMLResponse)
 def root(request: Request):
@@ -93,7 +92,7 @@ def edit_post(
     post.category = category.upper()
     post.is_notice = is_notice
     db.commit()
-    return {"message": "게시글이 성공적으로 수정되었습니다!", "redirect": f"/post/{post_id}"}
+    return {"message": "게시글이 성공적으로 수정되었습니다!", "redirect": f"/post_detail/{post_id}"}
 
 
 # 닉네임 변경 API
@@ -280,11 +279,15 @@ def create_post(
     new_post = Post(category=category.upper(), title=title, content=content, owner=user, is_notice=is_notice, image_url=image_url)
     db.add(new_post)
     db.commit()
-    return {"message": "게시글이 성공적으로 등록되었습니다!", "redirect": "/community"}
+    db.refresh(new_post)
+    return {"message": "게시글이 성공적으로 등록되었습니다!", "redirect": f"/post_detail/{new_post.id}", "post_id": new_post.id}
 
 @app.get("/community", response_class=HTMLResponse)
 def community_page(request: Request):
-    return templates.TemplateResponse("COMMUNITY.html", {"request": request})
+    db = next(get_db())
+    valid_categories = ["혼밥", "커플", "회식", "기타"]
+    posts = db.query(Post).filter(Post.category.in_(valid_categories)).order_by(Post.created_at.desc()).all()
+    return templates.TemplateResponse("COMMUNITY.html", {"request": request, "posts": posts})
 
 @app.get("/category/solo", response_class=HTMLResponse)
 def category_solo_page(request: Request):
@@ -336,10 +339,7 @@ def main_page(request: Request):
 
 @app.get("/post_detail/{post_id}", response_class=HTMLResponse)
 def post_detail_page(request: Request, post_id: int, db: Session = Depends(get_db)):
-    post = db.query(Post).filter(Post.id == post_id).first()
-    if not post:
-        return templates.TemplateResponse("post_detail.html", {"request": request, "error": "게시글을 찾을 수 없습니다."}, status_code=404)
-    return templates.TemplateResponse("post_detail.html", {"request": request, "post": post})
+    return templates.TemplateResponse("post_detail.html", {"request": request})
 
 @app.get("/api/posts/detail/{post_id}")
 def api_post_detail(post_id: int, db: Session = Depends(get_db)):
@@ -395,8 +395,13 @@ def game_ladder(request: Request):
     return {"message": "댓글이 등록되었습니다."}
 
 @app.get("/game/random-amount", response_class=HTMLResponse)
-def game_random_amount(request: Request):
-     return templates.TemplateResponse("game_random_amount.html", {"request": request})
+def game_random_amount_dash(request: Request):
+    return templates.TemplateResponse("game_random_amount.html", {"request": request})
+
+# 점심 메뉴 월드컵 게임 라우트
+@app.get("/game/worldcup", response_class=HTMLResponse)
+def game_worldcup(request: Request):
+    return templates.TemplateResponse("game_worldcup.html", {"request": request})
 @app.post("/api/posts/{post_id}/like")
 def toggle_like(post_id: int, user_id: int = Form(...), db: Session = Depends(get_db)):
     post = db.query(Post).filter(Post.id == post_id).first()
@@ -589,3 +594,5 @@ def admin_user_activity(user_id: int, db: Session = Depends(get_db)):
             } for c in comments
         ]
     }
+# --- 메뉴 월드컵(ideal) 라우터 등록 ---
+app.include_router(ideal_router)

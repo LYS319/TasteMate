@@ -1,506 +1,290 @@
 <!doctype html>
 <html lang="ko">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>룰렛 게임 - 회식 금액 분배</title>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>테이스트메이트 - 룰렛 게임</title>
 
-            body {
-                font-family: 'Apple SD Gothic Neo', sans-serif;
-                background: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
-                min-height: 100vh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 20px;
-            }
+<style>
+/* ================= 공통 ================= */
+body {
+    margin: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    background: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
+    text-align: center;
+}
 
-            .container {
-                background: linear-gradient(135deg, #fff 60%, #ffe5e5 100%);
-                border-radius: 32px;
-                padding: 56px 48px;
-                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.22);
-                max-width: 700px;
-                min-width: 420px;
-                border: 2px solid #dc2626;
-                position: relative;
-            }
+/* ================= 헤더 (사다리타기와 동일) ================= */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+}
 
-            h1 {
-                text-align: center;
-                color: #333;
-                margin-bottom: 30px;
-                font-size: 2.5em;
-            }
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
 
-            .input-section {
-                display: flex;
-                gap: 15px;
-                margin-bottom: 30px;
-                flex-wrap: wrap;
-            }
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #dc2626;
+    text-decoration: none;
+}
 
-            .input-group {
-                flex: 1;
-                min-width: 200px;
-            }
+.menu-toggle-btn {
+    background: none;
+    border: none;
+    font-size: 2.1rem;
+    margin-left: 8px;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 4px 12px;
+    transition: background 0.18s;
+}
 
-            label {
-                display: block;
-                margin-bottom: 8px;
-                color: #555;
-                font-weight: 600;
-            }
+.menu-toggle-btn:hover {
+    background: #ffe5e5;
+}
 
-            input {
-                width: 100%;
-                padding: 12px;
-                border: 2px solid #ddd;
-                border-radius: 8px;
-                font-size: 16px;
-                transition: border-color 0.3s;
-            }
+/* 게임 버튼 그룹 (간격 8px → 사다리타기 동일) */
+.game-menu-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
 
-            input:focus {
-                outline: none;
-                border-color: #4facfe;
-            }
+.game-btn {
+    padding: 6px 18px;
+    background: #fff5f5;
+    color: #dc2626;
+    border: 1.5px solid #dc2626;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s;
+}
 
-            button {
-                padding: 12px 30px;
-                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-                color: white;
-                border: none;
-                border-radius: 8px;
-                font-size: 16px;
-                font-weight: 600;
-                cursor: pointer;
-                transition:
-                    transform 0.2s,
-                    box-shadow 0.2s;
-                margin-top: 25px;
-            }
+.game-btn:hover {
+    background: #ffe5e5;
+}
 
-            button:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
-            }
+#mainNavMenu {
+    min-width: 140px;
+    animation: fadeInMenu 0.18s;
+    position: absolute;
+    top: 60px;
+    left: 32px;
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+    border-radius: 12px;
+    padding: 18px 24px 14px 24px;
+    z-index: 1000;
+    display: none;
+}
 
-            button:active {
-                transform: translateY(0);
-            }
+@keyframes fadeInMenu {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-            .wheel-container {
-                margin: 40px auto;
-                position: relative;
-                width: 400px;
-                height: 400px;
-                max-width: 100%;
-            }
+.nav-emoji-btn {
+    background: none;
+    border: none;
+    font-size: 1.7rem;
+    margin: 0 2px;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 4px 10px;
+    transition: background 0.18s;
+    text-align: left;
+    width: 100%;
+}
 
-            .wheel {
-                width: 100%;
-                height: 100%;
-                border-radius: 50%;
-                border: 10px solid #333;
-                position: relative;
-                overflow: hidden;
-                transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            }
+.nav-emoji-btn:hover {
+    background: #ffe5e5;
+}
 
-            .wheel-section {
-                position: absolute;
-                width: 50%;
-                height: 50%;
-                transform-origin: 100% 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: 700;
-                font-size: 18px;
-                color: white;
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-                overflow: hidden;
-            }
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-            .pointer {
-                position: absolute;
-                top: -20px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 0;
-                height: 0;
-                border-left: 20px solid transparent;
-                border-right: 20px solid transparent;
-                border-top: 40px solid #ff6b6b;
-                z-index: 10;
-                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-            }
+.login-btn {
+    padding: 8px 16px;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    background: #dc2626;
+}
 
-            .results {
-                margin-top: 40px;
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                gap: 15px;
-            }
+.signup-btn {
+    background: #fff;
+    color: #dc2626;
+    border: 1px solid #dc2626;
+}
 
-            .result-card {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                padding: 20px;
-                border-radius: 15px;
-                text-align: center;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-                transition:
-                    transform 0.3s,
-                    box-shadow 0.3s;
-            }
+/* ================= 룰렛 ================= */
+.container {
+    background: linear-gradient(135deg, #fff 60%, #ffe5e5 100%);
+    border-radius: 32px;
+    padding: 50px;
+    margin: 40px auto;
+    max-width: 750px;
+    border: 2px solid #dc2626;
+    box-shadow: 0 16px 60px rgba(220, 38, 38, 0.2);
+}
 
-            .result-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-            }
+input {
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin: 5px;
+}
 
-            .result-card.selected {
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                transform: scale(1.1);
-                box-shadow: 0 8px 25px rgba(245, 87, 108, 0.5);
-                animation: pulse 0.5s ease-out;
-            }
+.start-btn {
+    padding: 12px 30px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-            .result-name {
-                font-size: 18px;
-                font-weight: 600;
-            }
+.wheel-container {
+    margin: 20px auto;
+    position: relative;
+    width: 420px;
+    height: 420px;
+}
 
-            .winner-message {
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                color: white;
-                padding: 40px 60px;
-                border-radius: 20px;
-                font-size: 2.5em;
-                font-weight: 700;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-                z-index: 1000;
-                display: none;
-                animation: winnerPop 0.5s ease-out;
-                text-align: center;
-            }
+.wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 12px solid #333;
+    transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+}
 
-            .winner-message.show {
-                display: block;
-            }
+.pointer {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-top: 45px solid #dc2626;
+}
 
-            @keyframes winnerPop {
-                0% {
-                    opacity: 0;
-                    transform: translate(-50%, -50%) scale(0.5);
-                }
-                50% {
-                    transform: translate(-50%, -50%) scale(1.1);
-                }
-                100% {
-                    opacity: 1;
-                    transform: translate(-50%, -50%) scale(1);
-                }
-            }
+.winner-banner {
+    margin-top: 20px;
+    font-size: 26px;
+    font-weight: 800;
+    color: #dc2626;
+}
+</style>
+</head>
 
-            .overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.7);
-                z-index: 999;
-                display: none;
-            }
+<body>
 
-            .overlay.show {
-                display: block;
-            }
+<header class="header">
+    <div class="header-left">
+        <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>
+        <a href="/main" class="header-logo">TasteMate</a>
 
-            @keyframes pulse {
-                0%,
-                100% {
-                    transform: scale(1.1);
-                }
-                50% {
-                    transform: scale(1.15);
-                }
-            }
-
-            .spinning {
-                animation: spin 0.1s linear infinite;
-            }
-
-            @keyframes spin {
-                from {
-                    transform: rotate(0deg);
-                }
-                to {
-                    transform: rotate(360deg);
-                }
-            }
-
-            .names-section {
-                margin-top: 20px;
-                display: none;
-            }
-
-            .names-section.show {
-                display: block;
-            }
-
-            .names-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 15px;
-                margin-bottom: 20px;
-            }
-
-            .name-input-group {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .name-input-group label {
-                font-size: 14px;
-                margin-bottom: 5px;
-            }
-
-            .name-input-group input {
-                padding: 10px;
-                font-size: 14px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>🎯 룰렛 게임</h1>
-
-            <div class="input-section">
-                <div class="input-group">
-                    <label for="totalAmount">총 금액 (원)</label>
-                    <input type="number" id="totalAmount" placeholder="예: 100000" min="1" />
-                </div>
-                <div class="input-group">
-                    <label for="people">인원 수</label>
-                    <input
-                        type="number"
-                        id="people"
-                        placeholder="예: 3"
-                        min="2"
-                        max="12"
-                        onchange="updateNameInputs()"
-                    />
-                </div>
-            </div>
-
-            <div class="names-section" id="namesSection">
-                <label style="margin-bottom: 15px; display: block; font-weight: 600; color: #555">이름 입력</label>
-                <div class="names-grid" id="namesGrid"></div>
-            </div>
-
-            <div style="text-align: center">
-                <button onclick="startRandom()">뽑기 시작!</button>
-            </div>
-
-            <div class="wheel-container">
-                <div class="pointer"></div>
-                <div class="wheel" id="wheel"></div>
-            </div>
-
-            <div class="results" id="results"></div>
-
-            <div class="overlay" id="overlay"></div>
-            <div class="winner-message" id="winnerMessage"></div>
+        <div class="game-menu-group">
+            <button class="game-btn" onclick="location.href='/game/ideal'">메뉴 월드컵</button>
+            <button class="game-btn" onclick="location.href='/game/pinball'">핀볼</button>
+            <button class="game-btn" onclick="location.href='/game/ladder'">사다리타기</button>
+            <button class="game-btn" onclick="location.href='/game/random_amount'">룰렛게임</button>
         </div>
 
-        <script>
-            const colors = [
-                '#FF6B6B',
-                '#4ECDC4',
-                '#45B7D1',
-                '#FFA07A',
-                '#98D8C8',
-                '#F7DC6F',
-                '#BB8FCE',
-                '#85C1E2',
-                '#F8B739',
-                '#6C5CE7',
-                '#A29BFE',
-                '#FD79A8',
-            ];
+        <nav id="mainNavMenu">
+            <button class="nav-emoji-btn" onclick="location.href='/main'">🏠 홈</button>
+        </nav>
+    </div>
 
-            function updateNameInputs() {
-                const peopleCount = parseInt(document.getElementById('people').value);
-                const namesSection = document.getElementById('namesSection');
-                const namesGrid = document.getElementById('namesGrid');
+    <div class="header-right">
+        <button class="login-btn" onclick="location.href='/login'">로그인</button>
+        <button class="login-btn signup-btn" onclick="location.href='/signup'">회원가입</button>
+    </div>
+</header>
 
-                if (peopleCount >= 2 && peopleCount <= 12) {
-                    namesSection.classList.add('show');
-                    namesGrid.innerHTML = '';
+<div class="container">
+    <h1>🎯 룰렛 게임</h1>
+    <input type="number" id="totalAmount" placeholder="총 금액" />
+    <input type="number" id="people" placeholder="인원 수 (2~12)" />
+    <button class="start-btn" onclick="start()">시작</button>
 
-                    for (let i = 0; i < peopleCount; i++) {
-                        const nameGroup = document.createElement('div');
-                        nameGroup.className = 'name-input-group';
+    <div class="wheel-container">
+        <div class="pointer"></div>
+        <div class="wheel" id="wheel"></div>
+    </div>
 
-                        const label = document.createElement('label');
-                        label.textContent = `이름 ${i + 1}`;
+    <div class="winner-banner" id="winnerBanner"></div>
+</div>
 
-                        const input = document.createElement('input');
-                        input.type = 'text';
-                        input.id = `name-${i}`;
-                        input.placeholder = `이름 ${i + 1}`;
-                        input.required = true;
+<script>
+function toggleMenu() {
+    const menu = document.getElementById('mainNavMenu');
+    menu.style.display =
+        menu.style.display === 'none' || menu.style.display === ''
+            ? 'block'
+            : 'none';
+}
 
-                        nameGroup.appendChild(label);
-                        nameGroup.appendChild(input);
-                        namesGrid.appendChild(nameGroup);
-                    }
-                } else {
-                    namesSection.classList.remove('show');
-                }
-            }
+const colors = ['#FF6B6B','#4ECDC4','#45B7D1','#FFA07A','#98D8C8','#F7DC6F'];
 
-            function startRandom() {
-                const totalAmount = parseInt(document.getElementById('totalAmount').value);
-                const peopleCount = parseInt(document.getElementById('people').value);
+function start() {
+    const total = parseInt(document.getElementById('totalAmount').value);
+    const people = parseInt(document.getElementById('people').value);
+    if (!total || !people) return alert('입력하세요');
 
-                if (!totalAmount || totalAmount <= 0) {
-                    alert('총 금액을 올바르게 입력해주세요!');
-                    return;
-                }
+    const names = [];
+    for (let i = 0; i < people; i++) {
+        names.push(prompt(`${i + 1}번 이름`));
+    }
 
-                if (!peopleCount || peopleCount < 2 || peopleCount > 12) {
-                    alert('인원 수를 올바르게 입력해주세요! (인원: 2-12명)');
-                    return;
-                }
+    const wheel = document.getElementById('wheel');
+    const banner = document.getElementById('winnerBanner');
+    banner.innerHTML = '';
 
-                // 이름 가져오기 및 빈칸 검증
-                const names = [];
-                const emptyFields = [];
+    const angle = 360 / people;
+    let gradient = '';
+    for (let i = 0; i < people; i++) {
+        gradient += `${colors[i % colors.length]} ${i * angle}deg ${(i + 1) * angle}deg,`;
+    }
+    wheel.style.background = `conic-gradient(${gradient.slice(0, -1)})`;
 
-                for (let i = 0; i < peopleCount; i++) {
-                    const nameInput = document.getElementById(`name-${i}`);
-                    const name = nameInput ? nameInput.value.trim() : '';
+    const winner = Math.floor(Math.random() * people);
+    const spins = 6;
+    const target = 360 - winner * angle - angle / 2;
+    wheel.style.transform = `rotate(${spins * 360 + target}deg)`;
 
-                    if (!name) {
-                        emptyFields.push(i + 1);
-                    } else {
-                        names.push(name);
-                    }
-                }
+    setTimeout(() => {
+        banner.innerHTML = `🏆 ${names[winner]} 님 1등!`;
+    }, 3000);
+}
+</script>
 
-                // 빈칸이 있으면 경고
-                if (emptyFields.length > 0) {
-                    alert(`이름을 모두 입력해주세요!\n빈칸: ${emptyFields.join(', ')}번`);
-                    return;
-                }
-
-                const wheel = document.getElementById('wheel');
-                const results = document.getElementById('results');
-
-                wheel.innerHTML = '';
-                results.innerHTML = '';
-
-                // 금액 분배: 1등이 가장 적게, 등수가 내려갈수록 더 많이 내도록 가중치 부여
-                const weights = [];
-                let weightSum = 0;
-                for (let rank = 0; rank < peopleCount; rank++) {
-                    const w = rank + 1; // 1,2,3,... (숫자가 클수록 더 많이 냄)
-                    weights.push(w);
-                    weightSum += w;
-                }
-                const amountsByRank = [];
-                let distributed = 0;
-                for (let rank = 0; rank < peopleCount; rank++) {
-                    const value = Math.floor((totalAmount * weights[rank]) / weightSum);
-                    amountsByRank.push(value);
-                    distributed += value;
-                }
-                // 반올림 오차 보정 (총합이 정확히 totalAmount가 되도록)
-                let remainder = totalAmount - distributed;
-                let r = peopleCount - 1;
-                while (remainder !== 0) {
-                    const step = remainder > 0 ? 1 : -1;
-                    amountsByRank[r] += step;
-                    remainder -= step;
-                    r = (r - 1 + peopleCount) % peopleCount;
-                }
-                // 룰렛 생성 (간단한 섹션)
-                const anglePerSection = 360 / peopleCount;
-                names.forEach((name, index) => {
-                    const section = document.createElement('div');
-                    section.className = 'wheel-section';
-                    section.style.background = colors[index % colors.length];
-                    const startAngle = index * anglePerSection;
-                    section.style.transform = `rotate(${startAngle}deg)`;
-                    section.textContent = name;
-                    wheel.appendChild(section);
-                });
-                // 룰렛 돌리기: 완전 랜덤 각도
-                const spins = 5 + Math.random() * 3;
-                const randomAngle = Math.random() * 360;
-                const totalRotation = spins * 360 + randomAngle;
-                wheel.style.transform = `rotate(${totalRotation}deg)`;
-                // 결과 표시
-                setTimeout(() => {
-                    // 룰렛이 멈춘 후 포인터가 가리키는 index 계산
-                    const finalRotation = totalRotation % 360;
-                    const pointerAngle = (360 - finalRotation + anglePerSection / 2) % 360;
-                    let firstIndex = Math.floor(pointerAngle / anglePerSection);
-                    // 등수/금액 분배: firstIndex가 1등, 그 다음이 2등 ...
-                    const playerRanks = new Array(peopleCount);
-                    const playerAmounts = new Array(peopleCount);
-                    for (let i = 0; i < peopleCount; i++) {
-                        const idx = (firstIndex + i) % peopleCount;
-                        playerRanks[idx] = i + 1;
-                        playerAmounts[idx] = amountsByRank[i];
-                    }
-                    // 결과 카드 생성 (이름, 등수, 금액)
-                    results.innerHTML = '';
-                    names.forEach((name, index) => {
-                        const card = document.createElement('div');
-                        card.className = 'result-card';
-                        card.id = `card-${index}`;
-                        const rank = playerRanks[index];
-                        const amount = playerAmounts[index];
-                        card.innerHTML = `
-                        <div class="result-name">${name} (${rank}등)</div>
-                        <div class="result-amount">${amount.toLocaleString()}원</div>
-                    `;
-                        results.appendChild(card);
-                    });
-                    // 1등 카드 강조
-                    const selectedCard = document.getElementById(`card-${firstIndex}`);
-                    selectedCard.classList.add('selected');
-                    selectedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // 당첨 메시지 표시 (1등: 가장 적게 부담)
-                    const overlay = document.getElementById('overlay');
-                    const winnerMessage = document.getElementById('winnerMessage');
-                    winnerMessage.textContent = `${names[firstIndex]}님 1등! (가장 적게 부담)`;
-                    overlay.classList.add('show');
-                    winnerMessage.classList.add('show');
-                    // 클릭하면 닫기
-                    overlay.onclick = function () {
-                        overlay.classList.remove('show');
-                        winnerMessage.classList.remove('show');
-                    };
-                }, 3000);
-            }
-        </script>
-    </body>
+</body>
 </html>
