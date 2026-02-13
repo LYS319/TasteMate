@@ -21,6 +21,7 @@ class User(Base):
     nickname = Column(String(100))
     is_admin = Column(Integer, default=0)
     status = Column(String(50), default="정상")
+    created_at = Column(DateTime, default=datetime.utcnow)  # 회원가입 일시
     posts = relationship("Post", back_populates="owner", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="owner", cascade="all, delete-orphan")
     chat_history = relationship("ChatHistory", back_populates="user")

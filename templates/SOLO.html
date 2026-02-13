@@ -367,18 +367,36 @@
             // 게시글 데이터 불러오기 로직
 
             let currentSort = 'latest';
-            document.getElementById('latestBtn').onclick = () => {
+            const latestBtn = document.getElementById('latestBtn');
+            const popularBtn = document.getElementById('popularBtn');
+            const commentBtn = document.getElementById('commentBtn');
+
+            function updateSortButtons() {
+                latestBtn.style.background = currentSort === 'latest' ? '#dc2626' : '#fff5f5';
+                latestBtn.style.color = currentSort === 'latest' ? '#fff' : '#dc2626';
+                popularBtn.style.background = currentSort === 'popular' ? '#dc2626' : '#fff5f5';
+                popularBtn.style.color = currentSort === 'popular' ? '#fff' : '#dc2626';
+                commentBtn.style.background = currentSort === 'comment' ? '#dc2626' : '#fff5f5';
+                commentBtn.style.color = currentSort === 'comment' ? '#fff' : '#dc2626';
+            }
+
+            latestBtn.onclick = () => {
                 currentSort = 'latest';
+                updateSortButtons();
                 loadPosts();
             };
-            document.getElementById('popularBtn').onclick = () => {
+            popularBtn.onclick = () => {
                 currentSort = 'popular';
+                updateSortButtons();
                 loadPosts();
             };
-            document.getElementById('commentBtn').onclick = () => {
+            commentBtn.onclick = () => {
                 currentSort = 'comment';
+                updateSortButtons();
                 loadPosts();
             };
+
+            updateSortButtons();
 
             async function loadPosts() {
                 try {

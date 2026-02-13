@@ -1,4 +1,7 @@
+# ...existing code...
+# ...existing code...
 
+# ...existing code...
 # ====== IMPORTS (최상단에 위치) ======
 from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile
 from fastapi.templating import Jinja2Templates
@@ -20,6 +23,49 @@ templates = Jinja2Templates(directory="templates")
 
 # 정적 파일(이미지) 서빙
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# 회원정보 페이지 라우터
+@app.get("/mypage", response_class=HTMLResponse)
+def mypage(request: Request):
+    return templates.TemplateResponse("MYPAGE.html", {"request": request})
+
+# 내 회원정보 조회 API
+@app.get("/api/users/{user_id}/me")
+def get_my_info(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return JSONResponse(status_code=404, content={"detail": "사용자를 찾을 수 없습니다."})
+    post_count = db.query(Post).filter(Post.user_id == user_id).count()
+    comment_count = db.query(Comment).filter(Comment.user_id == user_id).count()
+    return {
+        "nickname": user.nickname,
+        "email": user.email,
+        "post_count": post_count,
+        "comment_count": comment_count
+    }
+
+# 관리자 회원 추방 API
+@app.delete("/api/admin/users/{user_id}")
+def admin_delete_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return JSONResponse(status_code=404, content={"detail": "사용자를 찾을 수 없습니다."})
+    # 관련 게시글/댓글 삭제
+    db.query(Post).filter(Post.user_id == user_id).delete()
+    db.query(Comment).filter(Comment.user_id == user_id).delete()
+    db.delete(user)
+    db.commit()
+    return {"message": "회원이 추방되었습니다."}
+
+# 관리자 권한 변경 API
+@app.patch("/api/admin/users/{user_id}/role")
+def update_user_role(user_id: int, is_admin: int = Form(...), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return JSONResponse(status_code=404, content={"detail": "사용자를 찾을 수 없습니다."})
+    user.is_admin = is_admin
+    db.commit()
+    return {"message": "권한이 변경되었습니다."}
 
 # --- 글 수정 API (app 인스턴스 생성 이후, 게시글 관련 라우터 아래에 위치) ---
 @app.post("/api/posts/{post_id}/edit")
@@ -45,6 +91,41 @@ def edit_post(
     return {"message": "게시글이 성공적으로 수정되었습니다!", "redirect": f"/post/{post_id}"}
 
 
+# 닉네임 변경 API
+@app.patch("/api/users/{user_id}/nickname")
+def update_nickname(user_id: int, nickname: str = Form(...), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return JSONResponse(status_code=404, content={"detail": "사용자를 찾을 수 없습니다."})
+    user.nickname = nickname
+    db.commit()
+    return {"message": "닉네임이 변경되었습니다.", "nickname": user.nickname}
+
+
+# 비밀번호 변경 API
+@app.patch("/api/users/{user_id}/password")
+def update_password(user_id: int, old_password: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return JSONResponse(status_code=404, content={"detail": "사용자를 찾을 수 없습니다."})
+    if user.hashed_password != old_password:
+        return JSONResponse(status_code=400, content={"detail": "기존 비밀번호가 일치하지 않습니다."})
+    user.hashed_password = password  # 실제 서비스라면 반드시 해싱 필요
+    db.commit()
+    return {"message": "비밀번호가 변경되었습니다."}
+
+
+# 이메일 변경 API
+@app.patch("/api/users/{user_id}/email")
+def update_email(user_id: int, email: str = Form(...), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return JSONResponse(status_code=404, content={"detail": "사용자를 찾을 수 없습니다."})
+    user.email = email
+    db.commit()
+    return {"message": "이메일이 변경되었습니다.", "email": user.email}
+
+
 @app.post("/api/upload-image")
 def upload_image(image: UploadFile = File(...)):
     upload_dir = "static/uploads"
@@ -54,6 +135,20 @@ def upload_image(image: UploadFile = File(...)):
         f.write(image.file.read())
     image_url = f"/static/uploads/{image.filename}"
     return {"image_url": image_url}
+
+
+# 회원 탈퇴(자기 계정 삭제) API
+@app.delete("/api/users/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return JSONResponse(status_code=404, content={"detail": "사용자를 찾을 수 없습니다."})
+    # 관련 게시글/댓글 삭제
+    db.query(Post).filter(Post.user_id == user_id).delete()
+    db.query(Comment).filter(Comment.user_id == user_id).delete()
+    db.delete(user)
+    db.commit()
+    return {"message": "회원 탈퇴가 완료되었습니다."}
 
 # 최신순 게시글 리스트
 @app.get("/api/posts/{category}/latest")
@@ -166,6 +261,8 @@ def create_post(
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         return JSONResponse(status_code=400, content={"detail": "유효하지 않은 사용자입니다."})
+    if getattr(user, 'status', None) == '차단':
+        return JSONResponse(status_code=403, content={"detail": "차단되어 게시글을 쓸 수 없습니다."})
     new_post = Post(category=category.upper(), title=title, content=content, owner=user, is_notice=is_notice)
     db.add(new_post)
     db.commit()
@@ -350,3 +447,124 @@ async def delete_post(post_id: int, request: Request, db: Session = Depends(get_
     db.delete(post)
     db.commit()
     return {"message": "삭제 완료"}
+
+# 관리자 페이지 라우터 (app 인스턴스 이후)
+@app.get("/admin", response_class=HTMLResponse)
+def admin_page(request: Request):
+    return templates.TemplateResponse("admin.html", {"request": request})
+
+# 관리자 통계 API
+@app.get("/api/admin/stats")
+def admin_stats(db: Session = Depends(get_db)):
+    user_count = db.query(User).count()
+    post_count = db.query(Post).count()
+    comment_count = db.query(Comment).count()
+
+    from datetime import datetime
+    today = datetime.now().date()
+
+    today_signup = db.query(User).filter(func.date(User.created_at) == today).count() if hasattr(User, 'created_at') else 0
+    today_post = db.query(Post).filter(func.date(Post.created_at) == today).count() if hasattr(Post, 'created_at') else 0
+    today_comment = db.query(Comment).filter(func.date(Comment.created_at) == today).count() if hasattr(Comment, 'created_at') else 0
+
+    return {
+        "user_count": user_count,
+        "post_count": post_count,
+        "comment_count": comment_count,
+        "today_signup": today_signup,
+        "today_post": today_post,
+        "today_comment": today_comment
+    }
+
+# 관리자 회원 목록 API (검색/필터 지원)
+@app.get("/api/admin/users")
+def admin_users(db: Session = Depends(get_db), status: Optional[str] = None, q: Optional[str] = None):
+    query = db.query(User)
+    if status is not None and status != "":
+        query = query.filter(User.status == status)
+    if q:
+        query = query.filter((User.nickname.contains(q)) | (User.email.contains(q)))
+    users = query.all()
+    return [
+        {
+            "id": u.id,
+            "email": u.email,
+            "nickname": u.nickname,
+            "is_admin": u.is_admin,
+            "status": getattr(u, 'status', None)
+        } for u in users
+    ]
+
+# 관리자 게시글 목록 API (검색/필터 지원)
+@app.get("/api/admin/posts")
+def admin_posts(db: Session = Depends(get_db), category: Optional[str] = None, q: Optional[str] = None):
+    query = db.query(Post)
+    if category is not None and category != "":
+        query = query.filter(Post.category == category)
+    if q:
+        query = query.filter((Post.title.contains(q)) | (Post.content.contains(q)) | (Post.owner.has(User.nickname.contains(q))))
+    posts = query.all()
+    return [
+        {
+            "id": p.id,
+            "title": p.title,
+            "content": p.content,
+            "category": p.category,
+            "user_id": p.user_id,
+            "nickname": p.owner.nickname if p.owner else None,
+            "author": p.owner.nickname if p.owner else None,
+            "created_at": p.created_at,
+            "date": p.created_at.strftime("%Y-%m-%d %H:%M") if p.created_at else None,
+            "is_notice": getattr(p, 'is_notice', 0)
+        } for p in posts
+    ]
+
+# 관리자 게시글 삭제 API
+@app.delete("/api/admin/posts/{post_id}")
+def admin_delete_post(post_id: int, db: Session = Depends(get_db)):
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        return JSONResponse(status_code=404, content={"detail": "게시글이 없습니다."})
+    db.delete(post)
+    db.commit()
+    return {"message": "게시글이 삭제되었습니다."}
+
+# 관리자 회원 상태 변경 API
+@app.patch("/api/admin/users/{user_id}/status")
+def update_user_status(user_id: int, status: str = Form(...), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return JSONResponse(status_code=404, content={"detail": "사용자를 찾을 수 없습니다."})
+    user.status = status
+    db.commit()
+    return {"message": f"사용자 상태가 '{status}'로 변경되었습니다."}
+
+# 관리자 회원 활동 내역 조회 API
+@app.get("/api/admin/users/{user_id}/activity")
+def admin_user_activity(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return JSONResponse(status_code=404, content={"detail": "사용자를 찾을 수 없습니다."})
+    posts = db.query(Post).filter(Post.user_id == user_id).order_by(Post.created_at.desc()).all()
+    comments = db.query(Comment).filter(Comment.user_id == user_id).order_by(Comment.created_at.desc()).all()
+    return {
+        "nickname": user.nickname,
+        "post_count": len(posts),
+        "comment_count": len(comments),
+        "posts": [
+            {
+                "id": p.id,
+                "title": p.title,
+                "category": p.category,
+                "date": p.created_at.strftime("%Y-%m-%d %H:%M") if p.created_at else None
+            } for p in posts
+        ],
+        "comments": [
+            {
+                "id": c.id,
+                "content": c.content,
+                "date": c.created_at.strftime("%Y-%m-%d %H:%M") if c.created_at else None,
+                "post_id": c.post_id
+            } for c in comments
+        ]
+    }
