@@ -32,6 +32,7 @@ class Post(Base):
     category = Column(String(50), index=True)
     title = Column(String(255))
     content = Column(Text)
+    image_url = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     user_id = Column(Integer, ForeignKey("users.id"))
     is_notice = Column(Integer, default=0)  # 0: 일반글, 1: 공지글

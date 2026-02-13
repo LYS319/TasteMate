@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>룰렛 게임 - 회식 금액 분배</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Apple SD Gothic Neo', sans-serif;
+                background: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+            }
+
+            .container {
+                background: linear-gradient(135deg, #fff 60%, #ffe5e5 100%);
+                border-radius: 32px;
+                padding: 56px 48px;
+                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.22);
+                max-width: 700px;
+                min-width: 420px;
+                border: 2px solid #dc2626;
+                position: relative;
+            }
+
+            h1 {
+                text-align: center;
+                color: #333;
+                margin-bottom: 30px;
+                font-size: 2.5em;
+            }
+
+            .input-section {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 30px;
+                flex-wrap: wrap;
+            }
+
+            .input-group {
+                flex: 1;
+                min-width: 200px;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 8px;
+                color: #555;
+                font-weight: 600;
+            }
+
+            input {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                font-size: 16px;
+                transition: border-color 0.3s;
+            }
+
+            input:focus {
+                outline: none;
+                border-color: #4facfe;
+            }
+
+            button {
+                padding: 12px 30px;
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition:
+                    transform 0.2s,
+                    box-shadow 0.2s;
+                margin-top: 25px;
+            }
+
+            button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+            }
+
+            button:active {
+                transform: translateY(0);
+            }
+
+            .wheel-container {
+                margin: 40px auto;
+                position: relative;
+                width: 400px;
+                height: 400px;
+                max-width: 100%;
+            }
+
+            .wheel {
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                border: 10px solid #333;
+                position: relative;
+                overflow: hidden;
+                transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            }
+
+            .wheel-section {
+                position: absolute;
+                width: 50%;
+                height: 50%;
+                transform-origin: 100% 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 18px;
+                color: white;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                overflow: hidden;
+            }
+
+            .pointer {
+                position: absolute;
+                top: -20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 0;
+                height: 0;
+                border-left: 20px solid transparent;
+                border-right: 20px solid transparent;
+                border-top: 40px solid #ff6b6b;
+                z-index: 10;
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            }
+
+            .results {
+                margin-top: 40px;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .result-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px;
+                border-radius: 15px;
+                text-align: center;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                transition:
+                    transform 0.3s,
+                    box-shadow 0.3s;
+            }
+
+            .result-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            }
+
+            .result-card.selected {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                transform: scale(1.1);
+                box-shadow: 0 8px 25px rgba(245, 87, 108, 0.5);
+                animation: pulse 0.5s ease-out;
+            }
+
+            .result-name {
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+            .winner-message {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                color: white;
+                padding: 40px 60px;
+                border-radius: 20px;
+                font-size: 2.5em;
+                font-weight: 700;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                display: none;
+                animation: winnerPop 0.5s ease-out;
+                text-align: center;
+            }
+
+            .winner-message.show {
+                display: block;
+            }
+
+            @keyframes winnerPop {
+                0% {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.5);
+                }
+                50% {
+                    transform: translate(-50%, -50%) scale(1.1);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+            }
+
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 999;
+                display: none;
+            }
+
+            .overlay.show {
+                display: block;
+            }
+
+            @keyframes pulse {
+                0%,
+                100% {
+                    transform: scale(1.1);
+                }
+                50% {
+                    transform: scale(1.15);
+                }
+            }
+
+            .spinning {
+                animation: spin 0.1s linear infinite;
+            }
+
+            @keyframes spin {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .names-section {
+                margin-top: 20px;
+                display: none;
+            }
+
+            .names-section.show {
+                display: block;
+            }
+
+            .names-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .name-input-group {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .name-input-group label {
+                font-size: 14px;
+                margin-bottom: 5px;
+            }
+
+            .name-input-group input {
+                padding: 10px;
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🎯 룰렛 게임</h1>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="totalAmount">총 금액 (원)</label>
+                    <input type="number" id="totalAmount" placeholder="예: 100000" min="1" />
+                </div>
+                <div class="input-group">
+                    <label for="people">인원 수</label>
+                    <input
+                        type="number"
+                        id="people"
+                        placeholder="예: 3"
+                        min="2"
+                        max="12"
+                        onchange="updateNameInputs()"
+                    />
+                </div>
+            </div>
+
+            <div class="names-section" id="namesSection">
+                <label style="margin-bottom: 15px; display: block; font-weight: 600; color: #555">이름 입력</label>
+                <div class="names-grid" id="namesGrid"></div>
+            </div>
+
+            <div style="text-align: center">
+                <button onclick="startRandom()">뽑기 시작!</button>
+            </div>
+
+            <div class="wheel-container">
+                <div class="pointer"></div>
+                <div class="wheel" id="wheel"></div>
+            </div>
+
+            <div class="results" id="results"></div>
+
+            <div class="overlay" id="overlay"></div>
+            <div class="winner-message" id="winnerMessage"></div>
+        </div>
+
+        <script>
+            const colors = [
+                '#FF6B6B',
+                '#4ECDC4',
+                '#45B7D1',
+                '#FFA07A',
+                '#98D8C8',
+                '#F7DC6F',
+                '#BB8FCE',
+                '#85C1E2',
+                '#F8B739',
+                '#6C5CE7',
+                '#A29BFE',
+                '#FD79A8',
+            ];
+
+            function updateNameInputs() {
+                const peopleCount = parseInt(document.getElementById('people').value);
+                const namesSection = document.getElementById('namesSection');
+                const namesGrid = document.getElementById('namesGrid');
+
+                if (peopleCount >= 2 && peopleCount <= 12) {
+                    namesSection.classList.add('show');
+                    namesGrid.innerHTML = '';
+
+                    for (let i = 0; i < peopleCount; i++) {
+                        const nameGroup = document.createElement('div');
+                        nameGroup.className = 'name-input-group';
+
+                        const label = document.createElement('label');
+                        label.textContent = `이름 ${i + 1}`;
+
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.id = `name-${i}`;
+                        input.placeholder = `이름 ${i + 1}`;
+                        input.required = true;
+
+                        nameGroup.appendChild(label);
+                        nameGroup.appendChild(input);
+                        namesGrid.appendChild(nameGroup);
+                    }
+                } else {
+                    namesSection.classList.remove('show');
+                }
+            }
+
+            function startRandom() {
+                const totalAmount = parseInt(document.getElementById('totalAmount').value);
+                const peopleCount = parseInt(document.getElementById('people').value);
+
+                if (!totalAmount || totalAmount <= 0) {
+                    alert('총 금액을 올바르게 입력해주세요!');
+                    return;
+                }
+
+                if (!peopleCount || peopleCount < 2 || peopleCount > 12) {
+                    alert('인원 수를 올바르게 입력해주세요! (인원: 2-12명)');
+                    return;
+                }
+
+                // 이름 가져오기 및 빈칸 검증
+                const names = [];
+                const emptyFields = [];
+
+                for (let i = 0; i < peopleCount; i++) {
+                    const nameInput = document.getElementById(`name-${i}`);
+                    const name = nameInput ? nameInput.value.trim() : '';
+
+                    if (!name) {
+                        emptyFields.push(i + 1);
+                    } else {
+                        names.push(name);
+                    }
+                }
+
+                // 빈칸이 있으면 경고
+                if (emptyFields.length > 0) {
+                    alert(`이름을 모두 입력해주세요!\n빈칸: ${emptyFields.join(', ')}번`);
+                    return;
+                }
+
+                const wheel = document.getElementById('wheel');
+                const results = document.getElementById('results');
+
+                wheel.innerHTML = '';
+                results.innerHTML = '';
+
+                // 금액 분배: 1등이 가장 적게, 등수가 내려갈수록 더 많이 내도록 가중치 부여
+                const weights = [];
+                let weightSum = 0;
+                for (let rank = 0; rank < peopleCount; rank++) {
+                    const w = rank + 1; // 1,2,3,... (숫자가 클수록 더 많이 냄)
+                    weights.push(w);
+                    weightSum += w;
+                }
+                const amountsByRank = [];
+                let distributed = 0;
+                for (let rank = 0; rank < peopleCount; rank++) {
+                    const value = Math.floor((totalAmount * weights[rank]) / weightSum);
+                    amountsByRank.push(value);
+                    distributed += value;
+                }
+                // 반올림 오차 보정 (총합이 정확히 totalAmount가 되도록)
+                let remainder = totalAmount - distributed;
+                let r = peopleCount - 1;
+                while (remainder !== 0) {
+                    const step = remainder > 0 ? 1 : -1;
+                    amountsByRank[r] += step;
+                    remainder -= step;
+                    r = (r - 1 + peopleCount) % peopleCount;
+                }
+                // 룰렛 생성 (간단한 섹션)
+                const anglePerSection = 360 / peopleCount;
+                names.forEach((name, index) => {
+                    const section = document.createElement('div');
+                    section.className = 'wheel-section';
+                    section.style.background = colors[index % colors.length];
+                    const startAngle = index * anglePerSection;
+                    section.style.transform = `rotate(${startAngle}deg)`;
+                    section.textContent = name;
+                    wheel.appendChild(section);
+                });
+                // 룰렛 돌리기: 완전 랜덤 각도
+                const spins = 5 + Math.random() * 3;
+                const randomAngle = Math.random() * 360;
+                const totalRotation = spins * 360 + randomAngle;
+                wheel.style.transform = `rotate(${totalRotation}deg)`;
+                // 결과 표시
+                setTimeout(() => {
+                    // 룰렛이 멈춘 후 포인터가 가리키는 index 계산
+                    const finalRotation = totalRotation % 360;
+                    const pointerAngle = (360 - finalRotation + anglePerSection / 2) % 360;
+                    let firstIndex = Math.floor(pointerAngle / anglePerSection);
+                    // 등수/금액 분배: firstIndex가 1등, 그 다음이 2등 ...
+                    const playerRanks = new Array(peopleCount);
+                    const playerAmounts = new Array(peopleCount);
+                    for (let i = 0; i < peopleCount; i++) {
+                        const idx = (firstIndex + i) % peopleCount;
+                        playerRanks[idx] = i + 1;
+                        playerAmounts[idx] = amountsByRank[i];
+                    }
+                    // 결과 카드 생성 (이름, 등수, 금액)
+                    results.innerHTML = '';
+                    names.forEach((name, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'result-card';
+                        card.id = `card-${index}`;
+                        const rank = playerRanks[index];
+                        const amount = playerAmounts[index];
+                        card.innerHTML = `
+                        <div class="result-name">${name} (${rank}등)</div>
+                        <div class="result-amount">${amount.toLocaleString()}원</div>
+                    `;
+                        results.appendChild(card);
+                    });
+                    // 1등 카드 강조
+                    const selectedCard = document.getElementById(`card-${firstIndex}`);
+                    selectedCard.classList.add('selected');
+                    selectedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // 당첨 메시지 표시 (1등: 가장 적게 부담)
+                    const overlay = document.getElementById('overlay');
+                    const winnerMessage = document.getElementById('winnerMessage');
+                    winnerMessage.textContent = `${names[firstIndex]}님 1등! (가장 적게 부담)`;
+                    overlay.classList.add('show');
+                    winnerMessage.classList.add('show');
+                    // 클릭하면 닫기
+                    overlay.onclick = function () {
+                        overlay.classList.remove('show');
+                        winnerMessage.classList.remove('show');
+                    };
+                }, 3000);
+            }
+        </script>
+    </body>
+</html>

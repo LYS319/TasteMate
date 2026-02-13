@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <title>AI 술게임 핀볼</title>
+        <style>
+            body {
+                font-family: 'Apple SD Gothic Neo', sans-serif;
+                text-align: center;
+                background: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
+                margin: 0;
+            }
+            .setup {
+                background: linear-gradient(135deg, #fff 60%, #ffe5e5 100%);
+                padding: 56px 48px;
+                border-radius: 32px;
+                display: inline-block;
+                margin: 56px;
+                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.22);
+                max-width: 700px;
+                min-width: 420px;
+                border: 2px solid #dc2626;
+                position: relative;
+            }
+            .setup h2 {
+                font-size: 2.2rem;
+                color: #dc2626;
+                margin-bottom: 24px;
+                letter-spacing: 1px;
+                font-weight: 900;
+                text-shadow: 0 2px 12px #ffe5e5;
+            }
+            canvas {
+                background: linear-gradient(135deg, #222 60%, #444 100%);
+                border-radius: 24px;
+                cursor: crosshair;
+                box-shadow: 0 12px 48px rgba(220, 38, 38, 0.18);
+                margin-top: 32px;
+                margin-bottom: 32px;
+                width: 540px !important;
+                height: 700px !important;
+                border: 4px solid #dc2626;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                transition: box-shadow 0.2s;
+            }
+            canvas:hover {
+                box-shadow: 0 24px 64px rgba(220,38,38,0.18);
+            }
+            input {
+                padding: 12px 20px;
+                width: 120px;
+                border: 2px solid #dc2626;
+                border-radius: 12px;
+                font-size: 1.1rem;
+                margin: 6px;
+                transition: border-color 0.18s, box-shadow 0.18s;
+                box-shadow: 0 2px 8px rgba(220,38,38,0.07);
+            }
+            input:focus {
+                outline: none;
+                border-color: #dc2626;
+                box-shadow: 0 4px 16px rgba(220,38,38,0.13);
+            }
+            button {
+                background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+                color: #dc2626;
+                border: 2.5px solid #dc2626;
+                padding: 18px 40px;
+                border-radius: 16px;
+                font-size: 1.25rem;
+                font-weight: 900;
+                cursor: pointer;
+                margin: 16px;
+                box-shadow: 0 4px 16px rgba(220,38,38,0.13);
+                transition: background 0.18s, box-shadow 0.18s, transform 0.18s;
+            }
+            button:hover {
+                background: #ffe5e5;
+                box-shadow: 0 12px 32px rgba(220,38,38,0.18);
+                transform: translateY(-2px);
+            }
+        </style>
+
+        <div class="setup">
+            <h2>⚽ 핀볼 술게임</h2>
+            항목 수: <input type="number" id="itemCount" value="4" min="2" max="8" />
+            <button onclick="initGame()">게임 생성</button>
+            <div id="item-inputs" style="margin-top: 10px"></div>
+        </div>
+
+        <div id="game-container" style="display: none">
+            <p>상단의 원하는 위치를 <strong>클릭</strong>해서 공을 떨어뜨리세요!</p>
+            <canvas id="pinballCanvas"></canvas>
+        </div>
+
+        <script>
+            const canvas = document.getElementById('pinballCanvas');
+            const ctx = canvas.getContext('2d');
+            let pegs = [];
+            let slots = [];
+            let ball = { x: 0, y: 0, vx: 0, vy: 0, active: false };
+            const gravity = 0.2;
+            const friction = 0.6; // 튕길 때 속도 감소율
+
+            function initGame() {
+                const n = document.getElementById('itemCount').value;
+                const inputDiv = document.getElementById('item-inputs');
+                inputDiv.innerHTML = '';
+                for (let i = 0; i < n; i++) {
+                    inputDiv.innerHTML += `<input type="text" class="slot-val" placeholder="벌칙 ${i + 1}" value="벌칙${i + 1}"> `;
+                }
+                inputDiv.innerHTML += `<br><button onclick="setupCanvas()">시작하기</button>`;
+            }
+
+            function setupCanvas() {
+                const slotInputs = document.querySelectorAll('.slot-val');
+                slots = Array.from(slotInputs).map((i) => i.value);
+
+                canvas.width = 400;
+                canvas.height = 500;
+                document.getElementById('game-container').style.display = 'block';
+
+                // 장애물(못) 생성 - 지그재그 배치
+                pegs = [];
+                const rows = 6;
+                for (let r = 0; r < rows; r++) {
+                    const cols = r % 2 === 0 ? 6 : 5;
+                    for (let c = 0; c < cols; c++) {
+                        pegs.push({
+                            x: (canvas.width / (cols + 1)) * (c + 1),
+                            y: 100 + r * 50,
+                            r: 5,
+                        });
+                    }
+                }
+                draw();
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // 못 그리기
+                ctx.fillStyle = '#fff';
+                pegs.forEach((peg) => {
+                    ctx.beginPath();
+                    ctx.arc(peg.x, peg.y, peg.r, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // 하단 슬롯 구획선 및 텍스트
+                const slotWidth = canvas.width / slots.length;
+                ctx.strokeStyle = '#555';
+                ctx.fillStyle = '#fffa65';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+
+                slots.forEach((text, i) => {
+                    const x = i * slotWidth;
+                    ctx.strokeRect(x, canvas.height - 50, slotWidth, 50);
+                    ctx.fillText(text, x + slotWidth / 2, canvas.height - 20);
+                });
+
+                // 공 그리기
+                if (ball.active) {
+                    ctx.fillStyle = '#ff4757';
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#ff4757';
+                    ctx.beginPath();
+                    ctx.arc(ball.x, ball.y, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0; // 초기화
+                    updateBall();
+                }
+                requestAnimationFrame(draw);
+            }
+
+            function updateBall() {
+                ball.vy += gravity;
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+
+                // 벽 충돌
+                if (ball.x < 8 || ball.x > canvas.width - 8) {
+                    ball.vx *= -1;
+                    ball.x = ball.x < 8 ? 8 : canvas.width - 8;
+                }
+
+                // 못 충돌 로직
+                pegs.forEach((peg) => {
+                    const dx = ball.x - peg.x;
+                    const dy = ball.y - peg.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 13) {
+                        // 공 반지름 8 + 못 반지름 5
+                        const angle = Math.atan2(dy, dx);
+                        ball.vx = Math.cos(angle) * 4; // 튕겨나가는 속도
+                        ball.vy = Math.sin(angle) * 4;
+                        // 겹침 방지
+                        ball.x = peg.x + Math.cos(angle) * 14;
+                        ball.y = peg.y + Math.sin(angle) * 14;
+                    }
+                });
+
+                // 바닥 도착
+                if (ball.y > canvas.height - 30) {
+                    ball.active = false;
+                    const finalSlot = Math.floor(ball.x / (canvas.width / slots.length));
+                    setTimeout(() => alert('결과: ' + slots[finalSlot]), 50);
+                }
+            }
+
+            canvas.onclick = function (e) {
+                if (ball.active) return;
+                const rect = canvas.getBoundingClientRect();
+                ball.x = e.clientX - rect.left;
+                ball.y = 20;
+                ball.vx = (Math.random() - 0.5) * 2; // 초기 미세한 난수 속도
+                ball.vy = 2;
+                ball.active = true;
+            };
+        </script>
+    </body>
+</html>

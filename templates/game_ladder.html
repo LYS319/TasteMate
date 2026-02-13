@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <title>애니메이션 사다리타기</title>
+        <style>
+            body {
+                font-family: 'Apple SD Gothic Neo', sans-serif;
+                text-align: center;
+                background: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
+                margin: 0;
+            }
+            .setup-box {
+                background: linear-gradient(135deg, #fff 60%, #ffe5e5 100%);
+                padding: 56px 48px;
+                border-radius: 32px;
+                display: inline-block;
+                margin: 56px;
+                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.22);
+                max-width: 700px;
+                min-width: 420px;
+                border: 2px solid #dc2626;
+                position: relative;
+            }
+            .setup-box h2 {
+                font-size: 2.2rem;
+                color: #dc2626;
+                margin-bottom: 24px;
+                letter-spacing: 1px;
+                font-weight: 900;
+                text-shadow: 0 2px 12px #ffe5e5;
+            }
+            canvas {
+                background: linear-gradient(135deg, #fff 60%, #f5f6f7 100%);
+                border-radius: 24px;
+                cursor: pointer;
+                box-shadow: 0 12px 48px rgba(220, 38, 38, 0.18);
+                margin-top: 32px;
+                margin-bottom: 32px;
+                width: 540px !important;
+                height: 700px !important;
+                border: 4px solid #dc2626;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                transition: box-shadow 0.2s;
+            }
+            canvas:hover {
+                box-shadow: 0 24px 64px rgba(220, 38, 38, 0.18);
+            }
+            input {
+                padding: 12px 20px;
+                width: 120px;
+                border: 2px solid #dc2626;
+                border-radius: 12px;
+                font-size: 1.1rem;
+                margin: 6px;
+                transition:
+                    border-color 0.18s,
+                    box-shadow 0.18s;
+                box-shadow: 0 2px 8px rgba(220, 38, 38, 0.07);
+                text-align: center;
+            }
+            input:focus {
+                outline: none;
+                border-color: #dc2626;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+            }
+            button {
+                background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+                color: #dc2626;
+                border: 2.5px solid #dc2626;
+                padding: 18px 40px;
+                border-radius: 16px;
+                font-size: 1.25rem;
+                font-weight: 900;
+                cursor: pointer;
+                margin: 16px;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+                transition:
+                    background 0.18s,
+                    box-shadow 0.18s,
+                    transform 0.18s;
+            }
+            button:hover {
+                background: #ffe5e5;
+                box-shadow: 0 12px 32px rgba(220, 38, 38, 0.18);
+                transform: translateY(-2px);
+            }
+            .member-row {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin-bottom: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="setup-box">
+            <h2>🍻 술게임 사다리타기</h2>
+            인원수: <input type="number" id="count" value="3" min="2" max="10" />
+            <button onclick="initInputs()">입력창 생성</button>
+            <div id="inputs"></div>
+            <button id="startBtn" style="display: none" onclick="createLadder()">사다리 만들기</button>
+        </div>
+
+        <div id="game-area" style="display: none">
+            <p style="color: #666">이름을 클릭하면 사다리를 타고 내려갑니다!</p>
+            <canvas id="canvas"></canvas>
+        </div>
+
+        <script>
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            let members = [],
+                results = [],
+                bridges = [];
+            const colWidth = 120,
+                rowHeight = 450,
+                padding = 60;
+            let isDrawing = false;
+
+            function initInputs() {
+                const n = document.getElementById('count').value;
+                const container = document.getElementById('inputs');
+                container.innerHTML = '';
+                for (let i = 0; i < n; i++) {
+                    container.innerHTML += `<div class="member-row">
+                <input type="text" class="name-in" placeholder="이름 ${i + 1}">
+                <input type="text" class="val-in" placeholder="벌칙 ${i + 1}">
+            </div>`;
+                }
+                document.getElementById('startBtn').style.display = 'inline-block';
+            }
+
+            function createLadder() {
+                members = Array.from(document.querySelectorAll('.name-in')).map((i) => i.value || '미정');
+                results = Array.from(document.querySelectorAll('.val-in')).map((i) => i.value || '꽝');
+
+                canvas.width = (members.length - 1) * colWidth + padding * 2;
+                canvas.height = rowHeight + 120;
+                document.getElementById('game-area').style.display = 'block';
+
+                // 가로 다리 랜덤 생성 (겹치지 않게)
+                bridges = [];
+                for (let i = 0; i < members.length - 1; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        bridges.push({ col: i, y: 80 + Math.random() * (rowHeight - 40) });
+                    }
+                }
+                bridges.sort((a, b) => a.y - b.y);
+                drawBase();
+            }
+
+            function drawBase() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = '#ccc';
+                ctx.lineWidth = 5;
+                ctx.lineCap = 'round';
+
+                members.forEach((name, i) => {
+                    const x = padding + i * colWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(x, 60);
+                    ctx.lineTo(x, rowHeight + 60);
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 16px sans-serif';
+                    ctx.fillText(name, x - 20, 40);
+                    ctx.fillText(results[i], x - 20, rowHeight + 90);
+                });
+
+                bridges.forEach((b) => {
+                    const x = padding + b.col * colWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(x, b.y);
+                    ctx.lineTo(x + colWidth, b.y);
+                    ctx.stroke();
+                });
+            }
+
+            canvas.onclick = function (e) {
+                if (isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                for (let i = 0; i < members.length; i++) {
+                    if (Math.abs(x - (padding + i * colWidth)) < 30) {
+                        startAnimation(i);
+                        break;
+                    }
+                }
+            };
+
+            async function startAnimation(startCol) {
+                isDrawing = true;
+                drawBase(); // 이전 선 지우기
+
+                let currentCol = startCol;
+                let currentY = 60;
+                ctx.strokeStyle = '#ff4d4d';
+                ctx.lineWidth = 6;
+
+                // 길 찾기 로직 + 애니메이션
+                const pathBridges = bridges.filter((b) => b.col === currentCol || b.col === currentCol - 1);
+
+                while (currentY < rowHeight + 60) {
+                    let nextY = rowHeight + 60;
+                    let targetBridge = null;
+
+                    // 현재 기둥에서 가장 가까운 아래쪽 다리 찾기
+                    for (let b of bridges) {
+                        if (b.y > currentY && (b.col === currentCol || b.col === currentCol - 1)) {
+                            nextY = b.y;
+                            targetBridge = b;
+                            break;
+                        }
+                    }
+
+                    // 아래로 이동 애니메이션
+                    await animateLine(
+                        padding + currentCol * colWidth,
+                        currentY,
+                        padding + currentCol * colWidth,
+                        nextY,
+                    );
+                    currentY = nextY;
+
+                    if (targetBridge) {
+                        let nextX =
+                            targetBridge.col === currentCol
+                                ? padding + (currentCol + 1) * colWidth
+                                : padding + (currentCol - 1) * colWidth;
+                        // 옆으로 이동 애니메이션
+                        await animateLine(padding + currentCol * colWidth, currentY, nextX, currentY);
+                        currentCol = targetBridge.col === currentCol ? currentCol + 1 : currentCol - 1;
+                    }
+                }
+
+                setTimeout(() => {
+                    alert(`결과: ${members[startCol]}님은 [ ${results[currentCol]} ] 당첨!`);
+                    isDrawing = false;
+                }, 200);
+            }
+
+            function animateLine(x1, y1, x2, y2) {
+                return new Promise((resolve) => {
+                    let startTime = null;
+                    const duration = 200; // 이동 속도 (밀리초)
+
+                    function step(timestamp) {
+                        if (!startTime) startTime = timestamp;
+                        const progress = Math.min((timestamp - startTime) / duration, 1);
+
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x1 + (x2 - x1) * progress, y1 + (y2 - y1) * progress);
+                        ctx.stroke();
+
+                        if (progress < 1) {
+                            requestAnimationFrame(step);
+                        } else {
+                            resolve();
+                        }
+                    }
+                    requestAnimationFrame(step);
+                });
+            }
+        </script>
+    </body>
+</html>

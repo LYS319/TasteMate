@@ -1,3 +1,5 @@
+# 랜덤 금액 분배 게임 라우터
+# 게임 라우터 (app 인스턴스 생성 이후)
 # ...existing code...
 # ...existing code...
 
@@ -24,6 +26,9 @@ templates = Jinja2Templates(directory="templates")
 # 정적 파일(이미지) 서빙
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+@app.get("/", response_class=HTMLResponse)
+def root(request: Request):
+    return templates.TemplateResponse("테이스트메이트.html", {"request": request})
 # 회원정보 페이지 라우터
 @app.get("/mypage", response_class=HTMLResponse)
 def mypage(request: Request):
@@ -256,6 +261,7 @@ def create_post(
     content: str = Form(...),
     user_id: int = Form(...),
     is_notice: int = Form(0),
+    image: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
     user = db.query(User).filter(User.id == user_id).first()
@@ -263,7 +269,15 @@ def create_post(
         return JSONResponse(status_code=400, content={"detail": "유효하지 않은 사용자입니다."})
     if getattr(user, 'status', None) == '차단':
         return JSONResponse(status_code=403, content={"detail": "차단되어 게시글을 쓸 수 없습니다."})
-    new_post = Post(category=category.upper(), title=title, content=content, owner=user, is_notice=is_notice)
+    image_url = None
+    if image:
+        upload_dir = "static/uploads"
+        os.makedirs(upload_dir, exist_ok=True)
+        file_location = os.path.join(upload_dir, image.filename)
+        with open(file_location, "wb") as f:
+            f.write(image.file.read())
+        image_url = f"/static/uploads/{image.filename}"
+    new_post = Post(category=category.upper(), title=title, content=content, owner=user, is_notice=is_notice, image_url=image_url)
     db.add(new_post)
     db.commit()
     return {"message": "게시글이 성공적으로 등록되었습니다!", "redirect": "/community"}
@@ -327,20 +341,6 @@ def post_detail_page(request: Request, post_id: int, db: Session = Depends(get_d
         return templates.TemplateResponse("post_detail.html", {"request": request, "error": "게시글을 찾을 수 없습니다."}, status_code=404)
     return templates.TemplateResponse("post_detail.html", {"request": request, "post": post})
 
-@app.get("/post/{post_id}", response_class=HTMLResponse)
-def post_page(request: Request, post_id: int, db: Session = Depends(get_db)):
-    post = db.query(Post).filter(Post.id == post_id).first()
-    if not post:
-        return templates.TemplateResponse("post_detail.html", {"request": request, "error": "게시글을 찾을 수 없습니다."}, status_code=404)
-    return templates.TemplateResponse("post_detail.html", {"request": request, "post": post})
-
-@app.get("/community/post/{post_id}", response_class=HTMLResponse)
-def community_post_page(request: Request, post_id: int, db: Session = Depends(get_db)):
-    post = db.query(Post).filter(Post.id == post_id).first()
-    if not post:
-        return templates.TemplateResponse("post_detail.html", {"request": request, "error": "게시글을 찾을 수 없습니다."}, status_code=404)
-    return templates.TemplateResponse("post_detail.html", {"request": request, "post": post})
-
 @app.get("/api/posts/detail/{post_id}")
 def api_post_detail(post_id: int, db: Session = Depends(get_db)):
     post = db.query(Post).filter(Post.id == post_id).first()
@@ -356,6 +356,7 @@ def api_post_detail(post_id: int, db: Session = Depends(get_db)):
         "category": post.category,
         "is_notice": getattr(post, 'is_notice', 0),
         "date": post.created_at.strftime("%Y-%m-%d %H:%M"),
+        "image_url": getattr(post, 'image_url', None),
         "comments": [
             {
                 "author": c.owner.nickname if c.owner else "",
@@ -367,6 +368,7 @@ def api_post_detail(post_id: int, db: Session = Depends(get_db)):
 
 @app.post("/api/comments")
 def create_comment(content: str = Form(...), post_id: int = Form(...), user_id: int = Form(...), db: Session = Depends(get_db)):
+    # 댓글 생성 로직 (예시)
     user = db.query(User).filter(User.id == user_id).first()
     post = db.query(Post).filter(Post.id == post_id).first()
     if not user or not post:
@@ -376,6 +378,25 @@ def create_comment(content: str = Form(...), post_id: int = Form(...), user_id: 
     db.commit()
     return {"message": "댓글이 등록되었습니다."}
 
+@app.get("/game/pinball", response_class=HTMLResponse)
+def game_pinball(request: Request):
+    return templates.TemplateResponse("game_pinball.html", {"request": request})
+
+@app.get("/game/ladder", response_class=HTMLResponse)
+def game_ladder(request: Request):
+    return templates.TemplateResponse("game_ladder.html", {"request": request})
+    user = db.query(User).filter(User.id == user_id).first()
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not user or not post:
+        return JSONResponse(status_code=400, content={"detail": "유효하지 않은 사용자 또는 게시글입니다."})
+    new_comment = Comment(content=content, owner=user, post=post)
+    db.add(new_comment)
+    db.commit()
+    return {"message": "댓글이 등록되었습니다."}
+
+@app.get("/game/random-amount", response_class=HTMLResponse)
+def game_random_amount(request: Request):
+     return templates.TemplateResponse("game_random_amount.html", {"request": request})
 @app.post("/api/posts/{post_id}/like")
 def toggle_like(post_id: int, user_id: int = Form(...), db: Session = Depends(get_db)):
     post = db.query(Post).filter(Post.id == post_id).first()

@@ -108,6 +108,7 @@
             <div id="post-title" class="post-title">게시글 불러오는 중...</div>
             <div style="font-size: 0.95rem; color: #666; margin-bottom: 20px; font-weight: bold" id="post-date"></div>
             <div id="post-content" class="post-content"></div>
+            <div id="post-image-area"></div>
             <div id="post-action-btns" style="display: flex; gap: 8px; margin-bottom: 18px"></div>
 
             <div style="margin-bottom: 18px">
@@ -158,6 +159,12 @@
                     document.getElementById('post-content').innerText = data.content;
                     document.getElementById('post-date').innerText =
                         `작성자: ${data.author} | 카테고리: ${data.category} | 작성일: ${data.date}`;
+                    // 이미지 표시
+                    const imgArea = document.getElementById('post-image-area');
+                    imgArea.innerHTML = '';
+                    if (data.image_url) {
+                        imgArea.innerHTML = `<img src="${data.image_url}" alt="게시글 이미지" style="max-width:100%;margin-bottom:18px;border-radius:8px;box-shadow:0 2px 12px rgba(220,38,38,0.13);" />`;
+                    }
                     // 수정/삭제 버튼 노출 제어
                     const userNickname = localStorage.getItem('nickname');
                     const actionBtns = document.getElementById('post-action-btns');
