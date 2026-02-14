@@ -14,6 +14,121 @@ from game_ideal_router import router as ideal_router
 app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
+# 카테고리별 인기글 API (댓글 많은 순)
+@app.get("/api/main/popular")
+def main_popular_posts(db: Session = Depends(get_db)):
+    categories = ["혼밥", "커플", "회식", "기타"]
+    result = {}
+    for cat in categories:
+        post = (
+            db.query(Post)
+            .filter(Post.category == cat)
+            .outerjoin(Post.comments)
+            .group_by(Post.id)
+            .order_by(func.count(Comment.id).desc(), Post.created_at.desc())
+            .first()
+        )
+        if post:
+            result[cat] = {
+                "id": post.id,
+                "title": post.title,
+                "content": post.content,
+                "nickname": post.owner.nickname if post.owner else "",
+                "created_at": post.created_at,
+                "comment_count": len(post.comments),
+                "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0
+            }
+        else:
+            result[cat] = None
+    return result
+
+# 카테고리별 인기글 API (댓글 많은 순)
+@app.get("/api/main/popular")
+def main_popular_posts(db: Session = Depends(get_db)):
+    categories = ["혼밥", "커플", "회식", "기타"]
+    result = {}
+    for cat in categories:
+        post = (
+            db.query(Post)
+            .filter(Post.category == cat)
+            .outerjoin(Post.comments)
+            .group_by(Post.id)
+            .order_by(func.count(Comment.id).desc(), Post.created_at.desc())
+            .first()
+        )
+        if post:
+            result[cat] = {
+                "id": post.id,
+                "title": post.title,
+                "content": post.content,
+                "nickname": post.owner.nickname if post.owner else "",
+                "created_at": post.created_at,
+                "comment_count": len(post.comments),
+                "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0
+            }
+        else:
+            result[cat] = None
+    return result
+
+# 랜덤 금액 분배 게임 라우터
+# 게임 라우터 (app 인스턴스 생성 이후)
+# ...existing code...
+# ...existing code...
+
+# ...existing code...
+# ====== IMPORTS (최상단에 위치) ======
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, FileResponse
+from starlette.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, text, func
+from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
+from dotenv import load_dotenv
+import os
+from Database import Like, User, Post, Comment, get_db
+from game_ideal_router import router as ideal_router
+
+# --- 7. 서버 실행 ---
+@app.get("/api/main/popular")
+def main_popular_posts(db: Session = Depends(get_db)):
+    categories = ["혼밥", "커플", "회식", "기타"]
+    result = {}
+    for cat in categories:
+        post = (
+            db.query(Post)
+            .filter(Post.category == cat)
+            .outerjoin(Post.comments)
+            .group_by(Post.id)
+            .order_by(func.count(Comment.id).desc(), Post.created_at.desc())
+            .first()
+        )
+    for cat in categories:
+        post = (
+            db.query(Post)
+            .filter(Post.category == cat)
+            .outerjoin(Post.comments)
+            .group_by(Post.id)
+            .order_by(func.count(Comment.id).desc(), Post.created_at.desc())
+            .first()
+        )
+        if post:
+            result[cat] = {
+                "id": post.id,
+                "title": post.title,
+                "content": post.content,
+                "nickname": post.owner.nickname if post.owner else "",
+                "created_at": post.created_at,
+                "comment_count": len(post.comments),
+                "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0
+            }
+        else:
+            result[cat] = None
+    return result
+app = FastAPI(title="Taste Mate Final System")
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
 templates = Jinja2Templates(directory="templates")
 
 # 정적 파일(이미지) 서빙
@@ -394,8 +509,8 @@ def game_ladder(request: Request):
     db.commit()
     return {"message": "댓글이 등록되었습니다."}
 
-@app.get("/game/random-amount", response_class=HTMLResponse)
-def game_random_amount_dash(request: Request):
+@app.get("/game/random_amount", response_class=HTMLResponse)
+def game_random_amount(request: Request):
     return templates.TemplateResponse("game_random_amount.html", {"request": request})
 
 # 점심 메뉴 월드컵 게임 라우트
@@ -486,12 +601,14 @@ def admin_stats(db: Session = Depends(get_db)):
     post_count = db.query(Post).count()
     comment_count = db.query(Comment).count()
 
-    from datetime import datetime
-    today = datetime.now().date()
 
-    today_signup = db.query(User).filter(func.date(User.created_at) == today).count() if hasattr(User, 'created_at') else 0
-    today_post = db.query(Post).filter(func.date(Post.created_at) == today).count() if hasattr(Post, 'created_at') else 0
-    today_comment = db.query(Comment).filter(func.date(Comment.created_at) == today).count() if hasattr(Comment, 'created_at') else 0
+    from datetime import datetime, timedelta
+    today = datetime.now().date()
+    tomorrow = today + timedelta(days=1)
+
+    today_signup = db.query(User).filter(User.created_at >= today, User.created_at < tomorrow).count() if hasattr(User, 'created_at') else 0
+    today_post = db.query(Post).filter(Post.created_at >= today, Post.created_at < tomorrow).count() if hasattr(Post, 'created_at') else 0
+    today_comment = db.query(Comment).filter(Comment.created_at >= today, Comment.created_at < tomorrow).count() if hasattr(Comment, 'created_at') else 0
 
     return {
         "user_count": user_count,

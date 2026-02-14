@@ -3,269 +3,155 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>테이스트메이트 - 사다리타기</title>
+        <title>테이스트메이트 - 사다리타기 Pro</title>
         <style>
-            /* --- TasteMate 메인 스타일 이식 --- */
-            body {
-                margin: 0;
-                font-family: 'Noto Sans KR', sans-serif;
-                background: #fff;
-            }
+            /* --- TasteMate 공식 상단바 및 공통 스타일 --- */
+            body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: #fff; }
             .header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 16px 32px;
-                background: rgba(255, 255, 255, 0.85);
-                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
-                backdrop-filter: blur(12px);
-                position: sticky;
-                top: 0;
-                z-index: 2000;
+                display: flex; justify-content: space-between; align-items: center; padding: 16px 32px;
+                background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
+                backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 2000; box-sizing: border-box; width: 100%;
             }
-            .header-left {
-                display: flex;
-                align-items: center;
-                gap: 24px;
+            .header-left { display: flex; align-items: center; gap: 24px; }
+            .header-logo { display: flex; align-items: center; gap: 18px; font-size: 1.5rem; font-weight: bold; color: #dc2626; text-decoration: none; }
+            
+            .menu-bar { display: flex; gap: 18px; align-items: center; margin-left: 24px; }
+            .menu-item { font-size: 1.15rem; font-weight: 700; color: #dc2626; text-decoration: none; padding: 8px 18px; border-radius: 8px; cursor: pointer; transition: background 0.18s; }
+            .menu-item:hover { background: #fff5f5; }
+            
+            .game-dropdown { position: relative; }
+            .dropdown-content {
+                display: none; position: absolute; top: 36px; left: 0; background: #fff; min-width: 140px;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13); border-radius: 12px; padding: 12px 0; z-index: 1000; flex-direction: column;
             }
-            .header-logo {
-                display: flex;
-                align-items: center;
-                gap: 18px;
-                font-size: 1.5rem;
-                font-weight: bold;
-                color: #dc2626;
-                text-decoration: none;
-            }
-            .game-btn {
-                margin-left: 8px;
-                padding: 6px 18px;
-                background: #fff5f5;
-                color: #dc2626;
-                border: 1.5px solid #dc2626;
-                border-radius: 8px;
-                font-size: 1rem;
-                font-weight: 700;
-                cursor: pointer;
-                transition: background 0.18s;
-            }
-            .game-btn:hover {
-                background: #ffe5e5;
-            }
-            .menu-toggle-btn {
-                background: none;
-                border: none;
-                font-size: 2.1rem;
-                margin-left: 8px;
-                cursor: pointer;
-                border-radius: 8px;
-                padding: 4px 12px;
-                transition: background 0.18s;
-            }
-            .menu-toggle-btn:hover {
-                background: #ffe5e5;
-            }
-            #mainNavMenu {
-                min-width: 140px;
-                animation: fadeInMenu 0.18s;
-                position: absolute;
-                top: 60px;
-                left: 32px;
-                background: #fff;
-                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
-                border-radius: 12px;
-                padding: 18px 24px 14px 24px;
-                z-index: 1000;
-                display: none;
-            }
-            @keyframes fadeInMenu {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            .nav-emoji-btn {
-                background: none;
-                border: none;
-                font-size: 1.7rem;
-                margin: 0 2px;
-                cursor: pointer;
-                border-radius: 8px;
-                padding: 4px 10px;
-                transition: background 0.18s;
-            }
-            .nav-emoji-btn:hover {
-                background: #ffe5e5;
-            }
-            .header-right {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            .login-btn {
-                padding: 8px 16px;
-                color: #fff;
-                border: none;
-                border-radius: 6px;
-                font-size: 0.95rem;
-                font-weight: bold;
-                cursor: pointer;
-                transition: background 0.2s;
-                background: #dc2626;
-            }
+            .game-dropdown:hover .dropdown-content { display: flex; }
+            .dropdown-content a { color: #dc2626; padding: 10px 24px; text-decoration: none; font-size: 1.08rem; font-weight: 600; border-radius: 8px; transition: background 0.18s; }
+            .dropdown-content a:hover { background: #ffe5e5; }
 
-            /* --- 기존 사다리타기 스타일 유지 및 최적화 --- */
+            .header-right { display: flex; align-items: center; gap: 10px; }
+            .login-btn { padding: 8px 16px; color: #fff; border: none; border-radius: 6px; font-size: 0.95rem; font-weight: bold; cursor: pointer; background: #dc2626; transition: background 0.2s; }
+            
+            /* --- 사다리타기 게임 컨텐츠 스타일 --- */
             .game-container {
-                text-align: center;
-                background: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
-                padding-top: 40px;
-                padding-bottom: 80px;
-                min-height: calc(100vh - 80px);
+                text-align: center; background: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
+                padding: 40px 20px 80px; min-height: calc(100vh - 80px);
             }
             .setup-box {
-                background: linear-gradient(135deg, #fff 60%, #ffe5e5 100%);
-                padding: 56px 48px;
-                border-radius: 32px;
-                display: inline-block;
-                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.22);
-                max-width: 700px;
-                min-width: 420px;
-                border: 2px solid #dc2626;
-                position: relative;
+                background: white; padding: 40px; border-radius: 32px; display: inline-block;
+                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.15); max-width: 700px; border: 2px solid #dc2626;
             }
-            .setup-box h2 {
-                font-size: 2.2rem;
-                color: #dc2626;
-                margin-bottom: 24px;
-                letter-spacing: 1px;
-                font-weight: 900;
-                text-shadow: 0 2px 12px #ffe5e5;
-            }
+            .setup-box h2 { font-size: 2rem; color: #dc2626; margin-bottom: 24px; font-weight: 900; }
+            
             canvas {
-                background: linear-gradient(135deg, #fff 60%, #f5f6f7 100%);
-                border-radius: 24px;
-                cursor: pointer;
-                box-shadow: 0 12px 48px rgba(220, 38, 38, 0.18);
-                margin: 32px auto;
-                border: 4px solid #dc2626;
-                display: block;
-                transition: box-shadow 0.2s;
+                background: #fff; border-radius: 24px; cursor: pointer;
+                box-shadow: 0 12px 48px rgba(220, 38, 38, 0.18); margin: 32px auto;
+                border: 4px solid #dc2626; display: block;
             }
             input {
-                padding: 12px 20px;
-                width: 120px;
-                border: 2px solid #dc2626;
-                border-radius: 12px;
-                font-size: 1.1rem;
-                margin: 6px;
-                text-align: center;
+                padding: 10px; width: 110px; border: 2px solid #eee; border-radius: 10px;
+                font-size: 1rem; margin: 4px; text-align: center;
             }
-            .member-row {
-                display: flex;
-                justify-content: center;
-                gap: 10px;
-                margin-bottom: 5px;
-            }
+            input:focus { border-color: #dc2626; outline: none; }
+
             .action-btn {
-                background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
-                color: #dc2626;
-                border: 2.5px solid #dc2626;
-                padding: 18px 40px;
-                border-radius: 16px;
-                font-size: 1.25rem;
-                font-weight: 900;
-                cursor: pointer;
-                margin: 16px;
-                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
-                transition: all 0.18s;
+                background: #dc2626; color: white; border: none;
+                padding: 14px 32px; border-radius: 12px; font-size: 1.1rem;
+                font-weight: 800; cursor: pointer; margin-top: 10px; transition: 0.2s;
             }
-            .action-btn:hover {
-                background: #ffe5e5;
-                transform: translateY(-2px);
-            }
+            .action-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+            #resultText { font-size: 1.5rem; font-weight: bold; color: #dc2626; margin-top: 20px; min-height: 2rem; }
         </style>
-        <script>
-            function toggleMenu() {
-                const menu = document.getElementById('mainNavMenu');
-                menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
-            }
-        </script>
     </head>
     <body>
         <header class="header">
             <div class="header-left">
-                <button class="menu-toggle-btn" aria-label="메뉴 열기" onclick="toggleMenu()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
-                <div style="display: flex; gap: 8px; align-items: center">
-                    <button class="game-btn" onclick="location.href = '/game/ideal'">메뉴 월드컵</button>
-                    <button class="game-btn" onclick="location.href = '/game/pinball'">핀볼</button>
-                    <button class="game-btn" onclick="location.href = '/game/ladder'">사다리타기</button>
-                    <button class="game-btn" onclick="location.href = '/game/random-amount'">룰렛 게임</button>
-                </div>
-                <nav class="main-nav" id="mainNavMenu">
-                    <button class="nav-emoji-btn" onclick="location.href = '/main'" title="홈">🏠 홈</button><br />
-                    <button class="nav-emoji-btn" onclick="location.href = '/aichat'" title="AI추천">🤖 AI추천</button
-                    ><br />
-                    <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">
-                        🧑‍🤝‍🧑 커뮤니티
-                    </button>
+                <nav class="menu-bar">
+                    <a class="menu-item" href="/aichat">AI추천</a>
+                    <a class="menu-item" href="/community">커뮤니티</a>
+                    <div class="menu-item game-dropdown">
+                        <span>게임 ▾</span>
+                        <div class="dropdown-content">
+                            <a href="/game/pinball">핀볼</a>
+                            <a href="/game/ladder">사다리타기</a>
+                            <a href="/game/random_amount">룰렛 게임</a>
+                            <a href="/game/worldcup">음식 월드컵</a>
+                            <a href="/game/calculator">계산기</a>
+                        </div>
+                    </div>
                 </nav>
             </div>
-            <div class="header-right">
+
+            <div class="header-right" id="headerRightArea">
                 <button class="login-btn" onclick="location.href = '/login'">로그인</button>
-                <button
-                    class="login-btn"
-                    style="background: #fff; color: #dc2626; border: 1px solid #dc2626"
-                    onclick="location.href = '/signup'"
-                >
-                    회원가입
-                </button>
+                <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626" onclick="location.href = '/signup'">회원가입</button>
             </div>
         </header>
 
         <main class="game-container">
             <div class="setup-box">
-                <h2>🍻 술게임 사다리타기</h2>
-                인원수: <input type="number" id="count" value="3" min="2" max="10" />
-                <button class="action-btn" onclick="initInputs()" style="padding: 10px 20px; font-size: 1rem">
-                    입력창 생성
-                </button>
-                <div id="inputs"></div>
-                <button id="startBtn" class="action-btn" style="display: none" onclick="createLadder()">
-                    사다리 만들기
-                </button>
+                <h2>🍻 사다리타기</h2>
+                인원수: <input type="number" id="count" value="4" min="2" max="10" />
+                <button class="action-btn" onclick="initInputs()" style="padding: 8px 16px; font-size: 0.9rem">창 생성</button>
+                <div id="inputs" style="margin-top: 20px"></div>
+                <button id="startBtn" class="action-btn" style="display: none" onclick="createLadder()">사다리 만들기</button>
+                <button class="action-btn" style="background:#666; font-size:0.9rem; padding: 8px 16px;" onclick="location.reload()">새로고침</button>
             </div>
 
             <div id="game-area" style="display: none">
-                <p style="color: #666; margin-top: 20px">이름을 클릭하면 사다리를 타고 내려갑니다!</p>
+                <div id="resultText">이름을 클릭해서 결과를 확인하세요!</div>
                 <canvas id="canvas"></canvas>
             </div>
         </main>
 
         <script>
+            // --- 상단바 로그인 상태 제어 ---
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+
+                if (nickname && headerRightArea) {
+                    let adminButton = '';
+                    if (isAdmin === '1') {
+                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자</button>`;
+                    }
+                    headerRightArea.innerHTML = `
+                        <span style="font-weight: 700; color: #dc2626; font-size: 1.05rem; margin-right: 5px;">👤 ${nickname}님</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="location.href='/mypage'" style="background: #f39c12;">정보</button>
+                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
+                    `;
+                }
+            });
+
+            function logout() {
+                localStorage.clear();
+                alert('로그아웃 되었습니다.');
+                window.location.href = '/main';
+            }
+
+            // --- 사다리타기 게임 로직 (기존 유지) ---
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
-            let members = [],
-                results = [],
-                bridges = [];
-            const colWidth = 120,
-                rowHeight = 450,
-                padding = 60;
+            const resultTextDiv = document.getElementById('resultText');
+            
+            let members = [], results = [], bridges = [];
+            const colWidth = 140, rowHeight = 400, padding = 80;
             let isDrawing = false;
+            const pathColors = ['#dc2626', '#2563eb', '#059669', '#d97706', '#7c3aed', '#db2777'];
 
             function initInputs() {
                 const n = document.getElementById('count').value;
                 const container = document.getElementById('inputs');
                 container.innerHTML = '';
                 for (let i = 0; i < n; i++) {
-                    container.innerHTML += `<div class="member-row">
-                        <input type="text" class="name-in" placeholder="이름 ${i + 1}">
-                        <input type="text" class="val-in" placeholder="벌칙 ${i + 1}">
-                    </div>`;
+                    container.innerHTML += `
+                        <div style="margin-bottom:5px;">
+                            <input type="text" class="name-in" placeholder="이름 ${i + 1}" value="사람${i+1}">
+                            <input type="text" class="val-in" placeholder="벌칙 ${i + 1}" value="${i === 0 ? '당첨' : '통과'}">
+                        </div>`;
                 }
                 document.getElementById('startBtn').style.display = 'inline-block';
             }
@@ -273,13 +159,21 @@
             function createLadder() {
                 members = Array.from(document.querySelectorAll('.name-in')).map((i) => i.value || '미정');
                 results = Array.from(document.querySelectorAll('.val-in')).map((i) => i.value || '꽝');
+                
                 canvas.width = (members.length - 1) * colWidth + padding * 2;
-                canvas.height = rowHeight + 120;
+                canvas.height = rowHeight + 150;
                 document.getElementById('game-area').style.display = 'block';
+                document.querySelector('.setup-box').style.display = 'none';
+
                 bridges = [];
                 for (let i = 0; i < members.length - 1; i++) {
-                    for (let j = 0; j < 4; j++) {
-                        bridges.push({ col: i, y: 80 + Math.random() * (rowHeight - 40) });
+                    let lastY = 0;
+                    for (let j = 0; j < 5; j++) {
+                        let y = 100 + Math.random() * (rowHeight - 60);
+                        if (Math.abs(y - lastY) > 30) {
+                            bridges.push({ col: i, y: y });
+                            lastY = y;
+                        }
                     }
                 }
                 bridges.sort((a, b) => a.y - b.y);
@@ -288,20 +182,26 @@
 
             function drawBase() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.strokeStyle = '#ccc';
-                ctx.lineWidth = 5;
+                ctx.strokeStyle = '#ddd';
+                ctx.lineWidth = 4;
                 ctx.lineCap = 'round';
+                
                 members.forEach((name, i) => {
                     const x = padding + i * colWidth;
                     ctx.beginPath();
-                    ctx.moveTo(x, 60);
-                    ctx.lineTo(x, rowHeight + 60);
+                    ctx.moveTo(x, 70);
+                    ctx.lineTo(x, rowHeight + 70);
                     ctx.stroke();
+
                     ctx.fillStyle = '#333';
-                    ctx.font = 'bold 16px sans-serif';
-                    ctx.fillText(name, x - 20, 40);
-                    ctx.fillText(results[i], x - 20, rowHeight + 90);
+                    ctx.font = 'bold 16px Noto Sans KR';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(name, x, 50);
+                    
+                    ctx.fillStyle = '#666';
+                    ctx.fillText(results[i], x, rowHeight + 100);
                 });
+
                 bridges.forEach((b) => {
                     const x = padding + b.col * colWidth;
                     ctx.beginPath();
@@ -314,25 +214,34 @@
             canvas.onclick = function (e) {
                 if (isDrawing) return;
                 const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const scaleX = canvas.width / rect.width;
+                const x = (e.clientX - rect.left) * scaleX;
+                
                 for (let i = 0; i < members.length; i++) {
-                    if (Math.abs(x - (padding + i * colWidth)) < 30) {
-                        startAnimation(i);
+                    const lineX = padding + i * colWidth;
+                    if (Math.abs(x - lineX) < 40) {
+                        const randomColor = pathColors[i % pathColors.length];
+                        startAnimation(i, randomColor);
                         break;
                     }
                 }
             };
 
-            async function startAnimation(startCol) {
+            async function startAnimation(startCol, color) {
                 isDrawing = true;
-                drawBase();
+                resultTextDiv.innerText = `${members[startCol]}님 이동 중...`;
+                
                 let currentCol = startCol;
-                let currentY = 60;
-                ctx.strokeStyle = '#dc2626';
+                let currentY = 70;
+                
+                ctx.strokeStyle = color;
                 ctx.lineWidth = 6;
-                while (currentY < rowHeight + 60) {
-                    let nextY = rowHeight + 60;
+                ctx.lineJoin = 'round';
+
+                while (currentY < rowHeight + 70) {
+                    let nextY = rowHeight + 70;
                     let targetBridge = null;
+
                     for (let b of bridges) {
                         if (b.y > currentY && (b.col === currentCol || b.col === currentCol - 1)) {
                             nextY = b.y;
@@ -340,40 +249,37 @@
                             break;
                         }
                     }
+
                     await animateLine(
-                        padding + currentCol * colWidth,
-                        currentY,
-                        padding + currentCol * colWidth,
-                        nextY,
+                        padding + currentCol * colWidth, currentY,
+                        padding + currentCol * colWidth, nextY
                     );
                     currentY = nextY;
+
                     if (targetBridge) {
-                        let nextX =
-                            targetBridge.col === currentCol
-                                ? padding + (currentCol + 1) * colWidth
-                                : padding + (currentCol - 1) * colWidth;
+                        let nextCol = targetBridge.col === currentCol ? currentCol + 1 : currentCol - 1;
+                        let nextX = padding + nextCol * colWidth;
                         await animateLine(padding + currentCol * colWidth, currentY, nextX, currentY);
-                        currentCol = targetBridge.col === currentCol ? currentCol + 1 : currentCol - 1;
+                        currentCol = nextCol;
                     }
                 }
-                setTimeout(() => {
-                    alert(`결과: ${members[startCol]}님은 [ ${results[currentCol]} ] 당첨!`);
-                    isDrawing = false;
-                }, 200);
+
+                resultTextDiv.innerHTML = `결과: <strong>${members[startCol]}</strong>님 → <span style="color:${color}">[ ${results[currentCol]} ]</span>`;
+                isDrawing = false;
             }
 
             function animateLine(x1, y1, x2, y2) {
                 return new Promise((resolve) => {
-                    let startTime = null;
-                    const duration = 150;
-                    function step(timestamp) {
-                        if (!startTime) startTime = timestamp;
-                        const progress = Math.min((timestamp - startTime) / duration, 1);
+                    let start = null;
+                    const duration = 120;
+                    function step(now) {
+                        if (!start) start = now;
+                        const t = Math.min((now - start) / duration, 1);
                         ctx.beginPath();
                         ctx.moveTo(x1, y1);
-                        ctx.lineTo(x1 + (x2 - x1) * progress, y1 + (y2 - y1) * progress);
+                        ctx.lineTo(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t);
                         ctx.stroke();
-                        if (progress < 1) requestAnimationFrame(step);
+                        if (t < 1) requestAnimationFrame(step);
                         else resolve();
                     }
                     requestAnimationFrame(step);
