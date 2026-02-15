@@ -14,121 +14,6 @@ from game_ideal_router import router as ideal_router
 app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-# 카테고리별 인기글 API (댓글 많은 순)
-@app.get("/api/main/popular")
-def main_popular_posts(db: Session = Depends(get_db)):
-    categories = ["혼밥", "커플", "회식", "기타"]
-    result = {}
-    for cat in categories:
-        post = (
-            db.query(Post)
-            .filter(Post.category == cat)
-            .outerjoin(Post.comments)
-            .group_by(Post.id)
-            .order_by(func.count(Comment.id).desc(), Post.created_at.desc())
-            .first()
-        )
-        if post:
-            result[cat] = {
-                "id": post.id,
-                "title": post.title,
-                "content": post.content,
-                "nickname": post.owner.nickname if post.owner else "",
-                "created_at": post.created_at,
-                "comment_count": len(post.comments),
-                "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0
-            }
-        else:
-            result[cat] = None
-    return result
-
-# 카테고리별 인기글 API (댓글 많은 순)
-@app.get("/api/main/popular")
-def main_popular_posts(db: Session = Depends(get_db)):
-    categories = ["혼밥", "커플", "회식", "기타"]
-    result = {}
-    for cat in categories:
-        post = (
-            db.query(Post)
-            .filter(Post.category == cat)
-            .outerjoin(Post.comments)
-            .group_by(Post.id)
-            .order_by(func.count(Comment.id).desc(), Post.created_at.desc())
-            .first()
-        )
-        if post:
-            result[cat] = {
-                "id": post.id,
-                "title": post.title,
-                "content": post.content,
-                "nickname": post.owner.nickname if post.owner else "",
-                "created_at": post.created_at,
-                "comment_count": len(post.comments),
-                "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0
-            }
-        else:
-            result[cat] = None
-    return result
-
-# 랜덤 금액 분배 게임 라우터
-# 게임 라우터 (app 인스턴스 생성 이후)
-# ...existing code...
-# ...existing code...
-
-# ...existing code...
-# ====== IMPORTS (최상단에 위치) ======
-from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, FileResponse
-from starlette.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, text, func
-from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
-from dotenv import load_dotenv
-import os
-from Database import Like, User, Post, Comment, get_db
-from game_ideal_router import router as ideal_router
-
-# --- 7. 서버 실행 ---
-@app.get("/api/main/popular")
-def main_popular_posts(db: Session = Depends(get_db)):
-    categories = ["혼밥", "커플", "회식", "기타"]
-    result = {}
-    for cat in categories:
-        post = (
-            db.query(Post)
-            .filter(Post.category == cat)
-            .outerjoin(Post.comments)
-            .group_by(Post.id)
-            .order_by(func.count(Comment.id).desc(), Post.created_at.desc())
-            .first()
-        )
-    for cat in categories:
-        post = (
-            db.query(Post)
-            .filter(Post.category == cat)
-            .outerjoin(Post.comments)
-            .group_by(Post.id)
-            .order_by(func.count(Comment.id).desc(), Post.created_at.desc())
-            .first()
-        )
-        if post:
-            result[cat] = {
-                "id": post.id,
-                "title": post.title,
-                "content": post.content,
-                "nickname": post.owner.nickname if post.owner else "",
-                "created_at": post.created_at,
-                "comment_count": len(post.comments),
-                "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0
-            }
-        else:
-            result[cat] = None
-    return result
-app = FastAPI(title="Taste Mate Final System")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
-
 templates = Jinja2Templates(directory="templates")
 
 # 정적 파일(이미지) 서빙
@@ -384,7 +269,7 @@ def create_post(
     if getattr(user, 'status', None) == '차단':
         return JSONResponse(status_code=403, content={"detail": "차단되어 게시글을 쓸 수 없습니다."})
     image_url = None
-    if image:
+    if image and image.filename:
         upload_dir = "static/uploads"
         os.makedirs(upload_dir, exist_ok=True)
         file_location = os.path.join(upload_dir, image.filename)
@@ -713,3 +598,39 @@ def admin_user_activity(user_id: int, db: Session = Depends(get_db)):
     }
 # --- 메뉴 월드컵(ideal) 라우터 등록 ---
 app.include_router(ideal_router)
+
+
+@app.get("/search", response_class=HTMLResponse)
+def search(request: Request, db: Session = Depends(get_db)):
+    keyword = request.query_params.get("query") or request.query_params.get("keyword") or ''
+    # 커뮤니티 카테고리(혼밥/데이트/기타/회식)만 검색
+    valid_categories = ["혼밥", "데이트", "회식", "기타", "SOLO", "DATE", "WORK", "ETC"]
+    # 제목, 내용, 카테고리, 작성자 닉네임에 keyword가 포함된 게시글만 필터
+    posts = db.query(Post).join(User, Post.user_id == User.id)
+    # 카테고리 한글/영문 혼합 허용, 혼밥/데이트/회식/기타만
+    posts = posts.filter(
+        Post.category.in_(valid_categories),
+        (
+            Post.title.contains(keyword) |
+            Post.content.contains(keyword) |
+            User.nickname.contains(keyword)
+        ) if keyword else True
+    ).order_by(Post.created_at.desc()).all()
+    # 템플릿에 전달할 데이터 가공
+    post_list = [
+        {
+            "id": p.id,
+            "category": p.category,
+            "title": p.title,
+            "content": p.content,
+            "nickname": p.owner.nickname if p.owner else "",
+            "created_at": p.created_at.strftime("%Y-%m-%d %H:%M") if p.created_at else "",
+            "comment_count": len(p.comments),
+            "like_count": len(getattr(p, 'likes', [])) if hasattr(p, 'likes') else 0
+        }
+        for p in posts
+    ]
+    return templates.TemplateResponse(
+        "search.html",
+        {"request": request, "keyword": keyword, "posts": post_list}
+    )
