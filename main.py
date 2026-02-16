@@ -16,6 +16,31 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 
 templates = Jinja2Templates(directory="templates")
 
+# 회사소개 페이지 라우터
+
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, FileResponse
+from starlette.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, text, func
+from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
+from dotenv import load_dotenv
+import os
+from Database import Like, User, Post, Comment, get_db
+from game_ideal_router import router as ideal_router
+
+app = FastAPI(title="Taste Mate Final System")
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+templates = Jinja2Templates(directory="templates")
+
+# 회사소개 페이지 라우터
+@app.get("/about", response_class=HTMLResponse)
+def about_page(request: Request):
+    return templates.TemplateResponse("about.html", {"request": request})
+
 # 정적 파일(이미지) 서빙
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/food", StaticFiles(directory="food"), name="food")

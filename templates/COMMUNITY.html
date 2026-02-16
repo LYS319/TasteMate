@@ -91,9 +91,14 @@
                 justify-content: space-between;
                 align-items: center;
                 padding: 16px 32px;
-                background: rgba(255, 255, 255, 0.85);
-                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
-                backdrop-filter: blur(12px);
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08);
+                backdrop-filter: blur(15px);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
             }
             .header-left {
                 display: flex;
@@ -103,11 +108,15 @@
             .header-logo {
                 display: flex;
                 align-items: center;
-                gap: 18px;
-                font-size: 1.5rem;
-                font-weight: bold;
+                gap: 10px;
+                font-size: 1.6rem;
+                font-weight: 900;
                 color: #dc2626;
                 text-decoration: none;
+                transition: transform 0.2s;
+            }
+            .header-logo:hover {
+                transform: scale(1.05);
             }
 
             /* 🚨 헤더 우측 스타일 (메인페이지와 동일하게 맞춤) */

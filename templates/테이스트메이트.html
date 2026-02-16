@@ -53,9 +53,14 @@
                 justify-content: space-between;
                 align-items: center;
                 padding: 16px 32px;
-                background: rgba(255, 255, 255, 0.85);
-                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
-                backdrop-filter: blur(12px);
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08);
+                backdrop-filter: blur(15px);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
             }
             .header-left {
                 display: flex;
@@ -183,11 +188,15 @@
             .header-logo {
                 display: flex;
                 align-items: center;
-                gap: 18px;
-                font-size: 1.5rem;
-                font-weight: bold;
+                gap: 10px;
+                font-size: 1.6rem;
+                font-weight: 900;
                 color: #dc2626;
                 text-decoration: none;
+                transition: transform 0.2s;
+            }
+            .header-logo:hover {
+                transform: scale(1.05);
             }
             .main-title {
                 text-align: center;
@@ -309,12 +318,12 @@
             function handleSearch() {
                 const searchInput = document.getElementById('mainSearchInput');
                 const query = searchInput.value.trim();
-                
-                if (query === "") {
-                    alert("검색어를 입력해주세요.");
+
+                if (query === '') {
+                    alert('검색어를 입력해주세요.');
                     return;
                 }
-                
+
                 // 검색 결과 페이지로 이동 (쿼리 파라미터 전달)
                 // 실제 이동할 페이지 경로를 '/search' 혹은 원하는 경로로 수정하세요.
                 window.location.href = `/search?keyword=${encodeURIComponent(query)}`;
@@ -326,6 +335,7 @@
             <div class="header-left">
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
+                    <a class="menu-item" href="/about">회사소개</a>
                     <a class="menu-item" href="/aichat">AI추천</a>
                     <a class="menu-item" href="/community">커뮤니티</a>
                     <div class="menu-item game-dropdown">
@@ -343,9 +353,18 @@
 
             <div class="header-center">
                 <div class="search-box">
-                    <input type="text" id="mainSearchInput" placeholder="맛집이나 메뉴를 검색해보세요!" onkeyup="if(window.event.keyCode==13){handleSearch()}">
+                    <input
+                        type="text"
+                        id="mainSearchInput"
+                        placeholder="맛집이나 메뉴를 검색해보세요!"
+                        onkeyup="
+                            if (window.event.keyCode == 13) {
+                                handleSearch();
+                            }
+                        "
+                    />
                     <button class="search-submit-btn" onclick="handleSearch()">
-                        <span style="font-size: 1.2rem;">🔍</span>
+                        <span style="font-size: 1.2rem">🔍</span>
                     </button>
                 </div>
             </div>
@@ -370,62 +389,190 @@
             </div>
             <div style="display: flex; justify-content: center; gap: 32px; flex-wrap: nowrap; margin-bottom: 36px">
                 <div class="community-card">
-                    <div class="card-title" style="white-space: nowrap">🍽️ 오늘의 추천메뉴 <span style="background: #ffe066; color: #b91c1c; font-size: 0.95rem; padding: 2px 10px; border-radius: 8px; margin-left: 6px; font-weight: 700; vertical-align: middle;">추천</span></div>
+                    <div class="card-title" style="white-space: nowrap">
+                        🍽️ 오늘의 추천메뉴
+                        <span
+                            style="
+                                background: #ffe066;
+                                color: #b91c1c;
+                                font-size: 0.95rem;
+                                padding: 2px 10px;
+                                border-radius: 8px;
+                                margin-left: 6px;
+                                font-weight: 700;
+                                vertical-align: middle;
+                            "
+                            >추천</span
+                        >
+                    </div>
                     <div class="card-count">글 12개</div>
                     <div class="card-recent">최근: "오늘 점심 뭐 먹지?"</div>
                     <div class="card-tag">#추천메뉴</div>
                 </div>
                 <div class="community-card">
-                    <div class="card-title">🍚 강남 혼밥 맛집 공유 <span style="background: #ffe066; color: #b91c1c; font-size: 0.95rem; padding: 2px 10px; border-radius: 8px; margin-left: 6px; font-weight: 700; vertical-align: middle;">강남 인기</span></div>
+                    <div class="card-title">
+                        🍚 강남 혼밥 맛집 공유
+                        <span
+                            style="
+                                background: #ffe066;
+                                color: #b91c1c;
+                                font-size: 0.95rem;
+                                padding: 2px 10px;
+                                border-radius: 8px;
+                                margin-left: 6px;
+                                font-weight: 700;
+                                vertical-align: middle;
+                            "
+                            >강남 인기</span
+                        >
+                    </div>
                     <div class="card-count">글 27개</div>
                     <div class="card-recent">최근: "강남 혼밥 어디가 좋아요?"</div>
                     <div class="card-tag">#강남혼밥</div>
                 </div>
                 <div class="community-card">
-                    <div class="card-title">🍜 라멘덕후모임 <span style="background: #e0f7fa; color: #00796b; font-size: 0.95rem; padding: 2px 10px; border-radius: 8px; margin-left: 6px; font-weight: 700; vertical-align: middle;">라멘 인기</span></div>
+                    <div class="card-title">
+                        🍜 라멘덕후모임
+                        <span
+                            style="
+                                background: #e0f7fa;
+                                color: #00796b;
+                                font-size: 0.95rem;
+                                padding: 2px 10px;
+                                border-radius: 8px;
+                                margin-left: 6px;
+                                font-weight: 700;
+                                vertical-align: middle;
+                            "
+                            >라멘 인기</span
+                        >
+                    </div>
                     <div class="card-count">글 18개</div>
                     <div class="card-recent">최근: "강남 라멘집 추천 부탁해요!"</div>
                     <div class="card-tag">#라멘덕후</div>
                 </div>
                 <div class="community-card">
-                    <div class="card-title">🎲 근처 맛집 룰렛 <span style="background: #e0e0e0; color: #333; font-size: 0.95rem; padding: 2px 10px; border-radius: 8px; margin-left: 6px; font-weight: 700; vertical-align: middle;">랜덤 추천</span></div>
+                    <div class="card-title">
+                        🎲 근처 맛집 룰렛
+                        <span
+                            style="
+                                background: #e0e0e0;
+                                color: #333;
+                                font-size: 0.95rem;
+                                padding: 2px 10px;
+                                border-radius: 8px;
+                                margin-left: 6px;
+                                font-weight: 700;
+                                vertical-align: middle;
+                            "
+                            >랜덤 추천</span
+                        >
+                    </div>
                     <div class="card-count">글 9개</div>
                     <div class="card-recent">최근: "근처 맛집 룰렛 돌려봤어요!"</div>
                     <div class="card-tag">#근처맛집룰렛</div>
                 </div>
             </div>
-            <div style="display: flex; justify-content: center; gap: 32px; flex-wrap: nowrap; margin-top: 32px;">
-                <div class="community-card">
-                    <div class="card-title" style="white-space: nowrap">🍚 혼밥 인기글 <span style="background: #ffe066; color: #b91c1c; font-size: 0.95rem; padding: 2px 10px; border-radius: 8px; margin-left: 6px; font-weight: 700; vertical-align: middle;">재방문율 90%</span></div>
-                    <div class="card-count">글 27개</div>
-                    <div class="card-recent">최근: "오늘 점심 어디가 좋을까요?"</div>
-                    <div class="card-tag">#혼밥</div>
-                </div>
-                <div class="community-card">
-                    <div class="card-title">💑 커플 인기글 <span style="background: #e0f7fa; color: #00796b; font-size: 0.95rem; padding: 2px 10px; border-radius: 8px; margin-left: 6px; font-weight: 700; vertical-align: middle;">데이트 인기</span></div>
-                    <div class="card-count">글 19개</div>
-                    <div class="card-recent">최근: "커플 맛집 추천 부탁해요!"</div>
-                    <div class="card-tag">#커플</div>
-                </div>
-                <div class="community-card">
-                    <div class="card-title">🍻 회식 인기글 <span style="background: #ffe5e5; color: #dc2626; font-size: 0.95rem; padding: 2px 10px; border-radius: 8px; margin-left: 6px; font-weight: 700; vertical-align: middle;">직장인 인기</span></div>
-                    <div class="card-count">글 15개</div>
-                    <div class="card-recent">최근: "회식 장소 어디가 좋을까요?"</div>
-                    <div class="card-tag">#회식</div>
-                </div>
-                <div class="community-card">
-                    <div class="card-title">🧩 기타 인기글 <span style="background: #e0e0e0; color: #333; font-size: 0.95rem; padding: 2px 10px; border-radius: 8px; margin-left: 6px; font-weight: 700; vertical-align: middle;">다양한 주제</span></div>
-                    <div class="card-count">글 8개</div>
-                    <div class="card-recent">최근: "이색 맛집 공유해요!"</div>
-                    <div class="card-tag">#기타</div>
-                </div>
+            <div style="display: flex; justify-content: center; gap: 32px; flex-wrap: nowrap; margin-top: 32px">
+                <a href="/category/solo" style="text-decoration: none; color: inherit">
+                    <div class="community-card">
+                        <div class="card-title" style="white-space: nowrap">
+                            🍚 혼밥 인기글
+                            <span
+                                style="
+                                    background: #ffe066;
+                                    color: #b91c1c;
+                                    font-size: 0.95rem;
+                                    padding: 2px 10px;
+                                    border-radius: 8px;
+                                    margin-left: 6px;
+                                    font-weight: 700;
+                                    vertical-align: middle;
+                                "
+                                >재방문율 90%</span
+                            >
+                        </div>
+                        <div class="card-count">글 27개</div>
+                        <div class="card-recent">최근: "오늘 점심 어디가 좋을까요?"</div>
+                        <div class="card-tag">#혼밥</div>
+                    </div>
+                </a>
+                <a href="/category/date" style="text-decoration: none; color: inherit">
+                    <div class="community-card">
+                        <div class="card-title">
+                            💑 커플 인기글
+                            <span
+                                style="
+                                    background: #e0f7fa;
+                                    color: #00796b;
+                                    font-size: 0.95rem;
+                                    padding: 2px 10px;
+                                    border-radius: 8px;
+                                    margin-left: 6px;
+                                    font-weight: 700;
+                                    vertical-align: middle;
+                                "
+                                >데이트 인기</span
+                            >
+                        </div>
+                        <div class="card-count">글 19개</div>
+                        <div class="card-recent">최근: "커플 맛집 추천 부탁해요!"</div>
+                        <div class="card-tag">#커플</div>
+                    </div>
+                </a>
+                <a href="/category/work" style="text-decoration: none; color: inherit">
+                    <div class="community-card">
+                        <div class="card-title">
+                            🍻 회식 인기글
+                            <span
+                                style="
+                                    background: #ffe5e5;
+                                    color: #dc2626;
+                                    font-size: 0.95rem;
+                                    padding: 2px 10px;
+                                    border-radius: 8px;
+                                    margin-left: 6px;
+                                    font-weight: 700;
+                                    vertical-align: middle;
+                                "
+                                >직장인 인기</span
+                            >
+                        </div>
+                        <div class="card-count">글 15개</div>
+                        <div class="card-recent">최근: "회식 장소 어디가 좋을까요?"</div>
+                        <div class="card-tag">#회식</div>
+                    </div>
+                </a>
+                <a href="/category/etc" style="text-decoration: none; color: inherit">
+                    <div class="community-card">
+                        <div class="card-title">
+                            🧩 기타 인기글
+                            <span
+                                style="
+                                    background: #e0e0e0;
+                                    color: #333;
+                                    font-size: 0.95rem;
+                                    padding: 2px 10px;
+                                    border-radius: 8px;
+                                    margin-left: 6px;
+                                    font-weight: 700;
+                                    vertical-align: middle;
+                                "
+                                >다양한 주제</span
+                            >
+                        </div>
+                        <div class="card-count">글 8개</div>
+                        <div class="card-recent">최근: "이색 맛집 공유해요!"</div>
+                        <div class="card-tag">#기타</div>
+                    </div>
+                </a>
             </div>
-            
+
             <script>
                 // 기존 스크립트 유지 (날씨/시간 기반 추천, 룰렛 등)
                 // recommend-text ID가 있는 요소가 없어서 에러가 날 수 있으나, 요청대로 삭제하지 않았습니다.
                 // 필요한 경우 본문에 <div id="recommend-text"></div>를 추가하세요.
-                const recommendTextDiv = document.getElementById('recommend-text') || { innerHTML: "" };
+                const recommendTextDiv = document.getElementById('recommend-text') || { innerHTML: '' };
                 const menuByWeather = {
                     rain: ['비 오는 날엔 <b>김치전</b>!', '따뜻한 <b>파전+막걸리</b> 어때요?'],
                     snow: ['눈 오는 날엔 <b>어묵탕</b>!', '따뜻한 <b>우동</b> 추천!'],
@@ -494,9 +641,20 @@
                     const idx = Math.floor(Math.random() * menus.length);
                     recommendTextDiv.innerHTML = menus[idx];
                 }
-                
+
                 // 룰렛 관련 (기존 코드 유지)
-                const sampleStores = ['강남 김치찌개집', '역삼 돈까스 맛집', '신논현 파스타', '강남역 샐러드바', '역삼동 쌀국수', '강남역 초밥', '논현동 라멘', '강남역 분식', '역삼동 삼겹살', '강남역 카페'];
+                const sampleStores = [
+                    '강남 김치찌개집',
+                    '역삼 돈까스 맛집',
+                    '신논현 파스타',
+                    '강남역 샐러드바',
+                    '역삼동 쌀국수',
+                    '강남역 초밥',
+                    '논현동 라멘',
+                    '강남역 분식',
+                    '역삼동 삼겹살',
+                    '강남역 카페',
+                ];
                 // roulette-display 등의 ID가 실제 HTML에 없으므로 실제 사용시에는 요소를 추가해야 합니다.
                 document.addEventListener('DOMContentLoaded', getWeatherAndRecommend);
             </script>
@@ -505,7 +663,7 @@
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const nickname = localStorage.getItem('nickname');
-                const isAdmin = localStorage.getItem('is_admin'); 
+                const isAdmin = localStorage.getItem('is_admin');
                 const headerRightArea = document.getElementById('headerRightArea');
 
                 if (nickname && headerRightArea) {
@@ -536,7 +694,9 @@
                             const lat = position.coords.latitude;
                             const lon = position.coords.longitude;
                             try {
-                                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                                const res = await fetch(
+                                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
+                                );
                                 const data = await res.json();
                                 let city = data.address.city || data.address.province || data.address.region || '';
                                 let borough = data.address.borough || data.address.suburb || data.address.town || '';
