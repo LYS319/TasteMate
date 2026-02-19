@@ -2,7 +2,14 @@
 __pycache__/
 *.py[codz]
 *$py.class
+<<<<<<< HEAD
 
+=======
+.env
+# 가상환경 폴더 무시
+.venv/
+# git rm --cached -r .venv/ (명령어가 아니라 주석으로 남김)
+>>>>>>> Community-junyoung
 # C extensions
 *.so
 

@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>데이트 커뮤니티</title>
         <style>
+<<<<<<< HEAD
             body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: #fff; }
             .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1); backdrop-filter: blur(12px); }
             .header-left { display: flex; align-items: center; gap: 24px; }
@@ -23,27 +24,201 @@
             .main-title { text-align: center; font-size: 2.2rem; font-weight: 900; color: #dc2626; margin: 48px 0 24px 0; letter-spacing: 1px; }
             .desc { text-align: center; color: #b91c1c; margin-bottom: 32px; font-size: 1.1rem; }
             .category-btn { flex: 1; padding: 10px 0; border-radius: 8px; text-align: center; text-decoration: none; font-weight: 700; border: 1.5px solid #ffe5e5; }
+=======
+            .fade-in {
+                animation: fadeIn 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            body {
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: #fff;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 32px;
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08);
+                backdrop-filter: blur(15px);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+            }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 24px;
+            }
+            .header-logo {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 1.6rem;
+                font-weight: 900;
+                color: #dc2626;
+                text-decoration: none;
+                transition: transform 0.2s;
+            }
+            .header-logo:hover {
+                transform: scale(1.05);
+            }
+            .menu-toggle-btn {
+                background: none;
+                border: none;
+                font-size: 2.1rem;
+                margin-left: 8px;
+                cursor: pointer;
+                border-radius: 8px;
+                padding: 4px 12px;
+                transition: background 0.18s;
+            }
+            .menu-toggle-btn:hover {
+                background: #ffe5e5;
+            }
+            #mainNavMenu {
+                min-width: 140px;
+                animation: fadeInMenu 0.18s;
+                position: absolute;
+                top: 60px;
+                left: 32px;
+                background: #fff;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+                border-radius: 12px;
+                padding: 18px 24px 14px 24px;
+                z-index: 1000;
+                display: none;
+            }
+            @keyframes fadeInMenu {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .nav-emoji-btn {
+                background: none;
+                border: none;
+                font-size: 1.7rem;
+                margin: 0 2px;
+                cursor: pointer;
+                border-radius: 8px;
+                padding: 4px 10px;
+                transition: background 0.18s;
+            }
+            .nav-emoji-btn:hover {
+                background: #ffe5e5;
+            }
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .current-location {
+                font-size: 0.95rem;
+                color: #dc2626;
+                background: #fff5f5;
+                border: 1px solid #ffe5e5;
+                border-radius: 6px;
+                padding: 8px 14px;
+                font-weight: 700;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .current-location:hover {
+                background: #ffe5e5;
+            }
+            .login-btn {
+                padding: 8px 16px;
+                background: #dc2626;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.95rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .login-btn:hover {
+                background: #b91c1c;
+            }
+            .main-title {
+                text-align: center;
+                font-size: 2.2rem;
+                font-weight: 900;
+                color: #dc2626;
+                margin: 48px 0 24px 0;
+                letter-spacing: 1px;
+            }
+            .desc {
+                text-align: center;
+                color: #b91c1c;
+                margin-bottom: 32px;
+                font-size: 1.1rem;
+            }
+            .category-btn {
+                flex: 1;
+                padding: 10px 0;
+                border-radius: 8px;
+                text-align: center;
+                text-decoration: none;
+                font-weight: 700;
+                border: 1.5px solid #ffe5e5;
+            }
+>>>>>>> Community-junyoung
         </style>
         <script>
             function toggleMenu() {
                 const menu = document.getElementById('mainNavMenu');
+<<<<<<< HEAD
                 menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
             }
         </script>
     </head>
     <body>
+=======
+                menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+            }
+        </script>
+    </head>
+    <body class="fade-in">
+>>>>>>> Community-junyoung
         <header class="header">
             <div class="header-left">
                 <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="main-nav" id="mainNavMenu">
                     <button class="nav-emoji-btn" onclick="location.href = '/main'" title="홈">🏠 홈</button><br />
+<<<<<<< HEAD
                     <button class="nav-emoji-btn" onclick="location.href = '/aichat'" title="AI추천">🤖 AI추천</button><br />
                     <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">🧑‍🤝‍🧑 커뮤니티</button>
+=======
+                    <button class="nav-emoji-btn" onclick="location.href = '/aichat'" title="AI추천">🤖 AI추천</button
+                    ><br />
+                    <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">
+                        🧑‍🤝‍🧑 커뮤니티
+                    </button>
+>>>>>>> Community-junyoung
                 </nav>
             </div>
             <div class="header-right" id="headerRightArea">
                 <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+<<<<<<< HEAD
                 <button class="login-btn" style="background:#fff; color:#dc2626; border:1px solid #dc2626;" onclick="location.href = '/signup'">회원가입</button>
             </div>
         </header>
@@ -72,6 +247,156 @@
                 const isAdmin = localStorage.getItem('is_admin'); 
                 const headerRightArea = document.getElementById('headerRightArea');
                 
+=======
+                <button
+                    class="login-btn"
+                    style="background: #fff; color: #dc2626; border: 1px solid #dc2626"
+                    onclick="location.href = '/signup'"
+                >
+                    회원가입
+                </button>
+            </div>
+        </header>
+
+        <div
+            class="fade-in"
+            style="max-width: 600px; margin: 32px auto 0 auto; display: flex; gap: 12px; justify-content: center"
+        >
+            <a href="/category/solo" class="category-btn" style="background: #fff5f5; color: #dc2626">혼밥</a>
+            <a href="/category/date" class="category-btn" style="background: #dc2626; color: #fff">데이트</a>
+            <a href="/category/work" class="category-btn" style="background: #fff5f5; color: #dc2626">회식</a>
+            <a href="/category/etc" class="category-btn" style="background: #fff5f5; color: #dc2626">기타</a>
+        </div>
+
+        <div class="main-title fade-in">💑 데이트 커뮤니티</div>
+        <div class="desc fade-in">연인과의 특별한 식사, 데이트 맛집과 추억을 공유해보세요!</div>
+
+        <div
+            style="
+                max-width: 600px;
+                margin: 24px auto 0 auto;
+                display: flex;
+                gap: 8px;
+                justify-content: center;
+                align-items: center;
+            "
+        >
+            <!-- 검색 input 영역 하나만 남김 -->
+        </div>
+
+        <!-- 검색/글쓰기 영역 -->
+        <div
+            style="
+                max-width: 600px;
+                margin: 24px auto 0 auto;
+                display: flex;
+                gap: 8px;
+                justify-content: center;
+                align-items: center;
+            "
+        >
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="검색어를 입력하세요"
+                style="
+                    padding: 8px 14px;
+                    border-radius: 6px;
+                    border: 1.5px solid #ffe5e5;
+                    width: 220px;
+                    font-size: 1rem;
+                "
+            />
+            <button
+                id="searchBtn"
+                style="
+                    padding: 8px 18px;
+                    border-radius: 6px;
+                    border: 1.5px solid #dc2626;
+                    background: #fff;
+                    color: #dc2626;
+                    font-weight: 700;
+                    cursor: pointer;
+                "
+            >
+                검색
+            </button>
+            <div id="pagingArea" style="display: flex; gap: 4px; align-items: center; margin-left: 8px"></div>
+            <button
+                onclick="location.href = '/write'"
+                style="
+                    padding: 8px 18px;
+                    border-radius: 6px;
+                    border: 1.5px solid #dc2626;
+                    background: #dc2626;
+                    color: #fff;
+                    font-weight: 700;
+                    cursor: pointer;
+                    margin-left: 8px;
+                "
+            >
+                ✏️ 글쓰기
+            </button>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 24px">
+            <button
+                id="latestBtn"
+                style="
+                    padding: 8px 18px;
+                    border-radius: 6px;
+                    border: 1.5px solid #ffe5e5;
+                    background: #dc2626;
+                    color: #fff;
+                    font-weight: 700;
+                    cursor: pointer;
+                    margin-right: 8px;
+                "
+            >
+                최신순
+            </button>
+            <button
+                id="popularBtn"
+                style="
+                    padding: 8px 18px;
+                    border-radius: 6px;
+                    border: 1.5px solid #ffe5e5;
+                    background: #fff5f5;
+                    color: #dc2626;
+                    font-weight: 700;
+                    cursor: pointer;
+                    margin-right: 8px;
+                "
+            >
+                인기순
+            </button>
+            <button
+                id="commentBtn"
+                style="
+                    padding: 8px 18px;
+                    border-radius: 6px;
+                    border: 1.5px solid #ffe5e5;
+                    background: #fff5f5;
+                    color: #dc2626;
+                    font-weight: 700;
+                    cursor: pointer;
+                "
+            >
+                댓글순
+            </button>
+        </div>
+
+        <div id="post-container" style="max-width: 600px; margin: 0 auto 32px auto">
+            <div style="text-align: center; color: #888">게시글을 불러오는 중입니다...</div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+
+>>>>>>> Community-junyoung
                 if (nickname && headerRightArea) {
                     let adminButton = '';
                     if (isAdmin === '1') {
@@ -92,6 +417,7 @@
                 const locSpan = document.getElementById('gps-location');
                 if (!locSpan) return;
                 if (navigator.geolocation) {
+<<<<<<< HEAD
                     locSpan.innerText = "📍 위치 찾는 중...";
                     navigator.geolocation.getCurrentPosition(async (position) => {
                         const lat = position.coords.latitude;
@@ -104,11 +430,35 @@
                             locSpan.innerText = `📍 ${city} ${borough}`.trim() || '📍 위치 확인됨';
                         } catch (e) { locSpan.innerText = "📍 위치 확인됨"; }
                     }, () => { locSpan.innerText = "📍 권한 거부됨"; });
+=======
+                    locSpan.innerText = '📍 위치 찾는 중...';
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            try {
+                                const res = await fetch(
+                                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
+                                );
+                                const data = await res.json();
+                                let city = data.address.city || data.address.province || data.address.region || '';
+                                let borough = data.address.borough || data.address.suburb || data.address.town || '';
+                                locSpan.innerText = `📍 ${city} ${borough}`.trim() || '📍 위치 확인됨';
+                            } catch (e) {
+                                locSpan.innerText = '📍 위치 확인됨';
+                            }
+                        },
+                        () => {
+                            locSpan.innerText = '📍 권한 거부됨';
+                        },
+                    );
+>>>>>>> Community-junyoung
                 }
             }
 
             function logout() {
                 localStorage.clear();
+<<<<<<< HEAD
                 alert("안전하게 로그아웃 되었습니다.");
                 window.location.href = "/main";
             }
@@ -116,10 +466,56 @@
             async function loadPosts() {
                 try {
                     const res = await fetch('/api/posts/DATE'); 
+=======
+                alert('안전하게 로그아웃 되었습니다.');
+                window.location.href = '/main';
+            }
+
+            let currentSort = 'latest';
+            const latestBtn = document.getElementById('latestBtn');
+            const popularBtn = document.getElementById('popularBtn');
+            const commentBtn = document.getElementById('commentBtn');
+
+            function updateSortButtons() {
+                latestBtn.style.background = currentSort === 'latest' ? '#dc2626' : '#fff5f5';
+                latestBtn.style.color = currentSort === 'latest' ? '#fff' : '#dc2626';
+                popularBtn.style.background = currentSort === 'popular' ? '#dc2626' : '#fff5f5';
+                popularBtn.style.color = currentSort === 'popular' ? '#fff' : '#dc2626';
+                commentBtn.style.background = currentSort === 'comment' ? '#dc2626' : '#fff5f5';
+                commentBtn.style.color = currentSort === 'comment' ? '#fff' : '#dc2626';
+            }
+
+            latestBtn.onclick = () => {
+                currentSort = 'latest';
+                updateSortButtons();
+                loadPosts();
+            };
+            popularBtn.onclick = () => {
+                currentSort = 'popular';
+                updateSortButtons();
+                loadPosts();
+            };
+            commentBtn.onclick = () => {
+                currentSort = 'comment';
+                updateSortButtons();
+                loadPosts();
+            };
+
+            updateSortButtons();
+
+            async function loadPosts() {
+                try {
+                    let url = '/api/posts/DATE';
+                    if (currentSort === 'latest') url = '/api/posts/DATE/latest';
+                    if (currentSort === 'popular') url = '/api/posts/DATE/popular';
+                    if (currentSort === 'comment') url = '/api/posts/DATE/comment';
+                    const res = await fetch(url);
+>>>>>>> Community-junyoung
                     const posts = await res.json();
                     const container = document.getElementById('post-container');
 
                     if (posts.length === 0) {
+<<<<<<< HEAD
                         container.innerHTML = '<div style="color: #b91c1c; text-align: center; padding: 30px; border: 1px solid #ffe5e5; border-radius: 8px;">아직 등록된 글이 없습니다.</div>';
                         return;
                     }
@@ -137,9 +533,83 @@
                     container.innerHTML = `<ul style="padding: 0; margin: 0;">${listHTML}</ul>`;
                 } catch (error) {
                     document.getElementById('post-container').innerHTML = '<div style="color: red; text-align: center">데이터를 불러오는데 실패했습니다.</div>';
+=======
+                        container.innerHTML =
+                            '<div style="color: #b91c1c; text-align: center; padding: 30px; border: 1px solid #ffe5e5; border-radius: 8px;">아직 등록된 글이 없습니다.</div>';
+                        return;
+                    }
+
+                    // SOLO.html과 동일하게 공지글 분리 및 스타일 적용
+                    const notices = posts.filter((post) => post.is_notice === 1 || post.is_notice === '1');
+                    const normals = posts.filter((post) => !(post.is_notice === 1 || post.is_notice === '1'));
+                    const noticeHTML = notices
+                        .map(
+                            (post) => `
+                        <li class="notice-post" style="
+                            border: 2.5px solid #dc2626 !important;
+                            background: #fff0f0 !important;
+                            box-shadow: 0 0 0 2px #dc262633 !important;
+                            padding: 22px 22px 18px 22px;
+                            margin-bottom: 8px;
+                            list-style: none;
+                            position: relative;
+                            animation: notice-pop 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+                        ">
+                            <span style="position:absolute;left:-12px;top:-18px;font-size:2.1rem;">📢</span>
+                            <span style="background:#dc2626;color:#fff;font-weight:900;padding:2px 12px;border-radius:16px;font-size:1.02rem;vertical-align:middle;margin-right:8px;box-shadow:0 2px 8px #ff525255;">공지</span>
+                            <span style="font-weight:900;font-size:1.18rem;color:#b91c1c;vertical-align:middle;">
+                                <a href="/post_detail/${post.id}" style="color: #b91c1c; text-decoration: none">${post.title}</a>
+                            </span>
+                            <div style="margin-top: 10px; color: #222; white-space: pre-line; font-size:1.05rem;">${post.content}</div>
+                            <div style="margin-top: 12px; font-size: 0.92rem; color: #b91c1c; display: flex; justify-content: flex-end; align-items: center; gap: 0.5em;">
+                                <span style="color:#fff; background:#b91c1c; border-radius:8px; padding:2px 8px; font-weight:700;">💬 ${post.comment_count || 0}</span>
+                                <span style="color:#fff; background:#dc2626; border-radius:8px; padding:2px 8px; font-weight:700;">❤️ ${post.like_count || 0}</span>
+                                <span style="margin-left:12px; color:#fff; background:#b91c1c; border-radius:8px; padding:2px 8px; font-weight:700;">👤 ${post.nickname || post.author || ''}${post.is_admin === 1 || post.is_admin === '1' ? " <span style='color:#ffd600;font-size:0.98em;'>(관리자)</span>" : ''}</span>
+                                <span style="margin-left:8px; color:#fff; background:#dc2626; border-radius:8px; padding:2px 8px; font-weight:400; font-size:0.95em;">${post.created_at || post.date || ''}</span>
+                            </div>
+                        </li>
+                        <style>
+                        @keyframes notice-pop {
+                            0% { transform: scale(0.95) translateY(-20px); opacity: 0.2; }
+                            80% { transform: scale(1.04) translateY(4px); opacity: 1; }
+                            100% { transform: scale(1) translateY(0); opacity: 1; }
+                        }
+                        </style>
+                    `,
+                        )
+                        .join('');
+
+                    const normalHTML = normals
+                        .map(
+                            (post) => `
+                        <li style="border: 1.5px solid #ffe5e5; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; background: #fff8f8; list-style: none;">
+                            <div style="font-weight: 700; font-size: 1.15rem; color: #dc2626">
+                                <a href="/post_detail/${post.id}" style="color: #dc2626; text-decoration: none">${post.title}</a>
+                            </div>
+                            <div style="margin-top: 8px; color: #222; white-space: pre-line">${post.content}</div>
+                            <div style="margin-top: 10px; font-size: 0.85rem; color: #888; display: flex; justify-content: flex-end; align-items: center; gap: 0.5em;">
+                                <span style="color:#b91c1c; font-weight:700;">💬 ${post.comment_count || 0}</span>
+                                <span style="color:#dc2626; font-weight:700;">❤️ ${post.like_count || 0}</span>
+                                <span style="margin-left:12px; color:#888; font-weight:700;">👤 ${post.nickname || post.author || ''}</span>
+                                <span style="margin-left:8px; color:#bbb; font-weight:400; font-size:0.95em;">${post.created_at || post.date || ''}</span>
+                            </div>
+                        </li>
+                    `,
+                        )
+                        .join('');
+
+                    container.innerHTML = `<ul style="padding: 0; margin: 0;">${noticeHTML}${normalHTML}</ul>`;
+                } catch (error) {
+                    document.getElementById('post-container').innerHTML =
+                        '<div style="color: red; text-align: center">데이터를 불러오는데 실패했습니다.</div>';
+>>>>>>> Community-junyoung
                 }
             }
             loadPosts();
         </script>
     </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> Community-junyoung
