@@ -4,15 +4,9 @@
         <meta charset="UTF-8" />
         <title>상세보기</title>
         <style>
-            <meta name='viewport' content='width=device-width, initial-scale=1.0' > @media (max-width: 600px) {
-                body {
-                    font-size: 1rem;
-                    padding: 8px;
-                }
-                h1 {
-                    font-size: 1.3rem;
-                }
-            }
+        </style>
+    </head>
+    <body>
             body {
                 margin: 0;
                 font-family: 'Noto Sans KR', sans-serif;
@@ -102,7 +96,7 @@
             }
         </style>
     </head>
-    <body>
+    <body class="fade-in">
         <header class="header">
             <div class="header-left">
                 <a href="/main" class="header-logo">TasteMate</a>
@@ -112,7 +106,7 @@
             </div>
         </header>
 
-        <div class="container">
+        <div class="container" style="position: relative">
             <div id="post-title" class="post-title">게시글 불러오는 중...</div>
             <div style="font-size: 0.95rem; color: #666; margin-bottom: 20px; font-weight: bold" id="post-date"></div>
             <div id="post-content" class="post-content"></div>
@@ -129,13 +123,63 @@
             </div>
 
             <div class="comment-section">
-                <div class="comment-title">💬 댓글</div>
+                <div class="comment-title">
+                    💬 댓글
+                    <span id="comment-count" style="font-size: 0.95rem; color: #dc2626; font-weight: 700"></span>
+                </div>
                 <ul id="comment-list" class="comment-list"></ul>
-                <form id="commentForm" class="comment-form">
-                    <textarea name="content" placeholder="댓글을 입력하세요" required></textarea>
-                    <button type="submit">댓글 등록</button>
+                <form id="commentForm" class="comment-form" style="display: flex; gap: 8px; align-items: stretch">
+                    <textarea
+                        id="commentTextarea"
+                        name="content"
+                        placeholder="댓글을 입력하세요"
+                        required
+                        style="flex: 1; resize: vertical"
+                    ></textarea>
+                    <button
+                        id="commentSubmitBtn"
+                        type="submit"
+                        style="min-width: 90px; display: flex; align-items: center; justify-content: center"
+                    >
+                        댓글 등록
+                    </button>
                 </form>
+                <div style="display: flex; justify-content: center; margin: 16px 0 0 0">
+                    <button
+                        type="button"
+                        onclick="window.history.back()"
+                        id="backBtn"
+                        style="
+                            padding: 8px 18px;
+                            border-radius: 6px;
+                            border: 1.5px solid #dc2626;
+                            background: #fff;
+                            color: #dc2626;
+                            font-weight: 700;
+                            cursor: pointer;
+                            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.08);
+                        "
+                    >
+                        ← 뒤로가기
+                    </button>
+                </div>
             </div>
+            <script>
+                // 댓글 등록 버튼의 높이를 textarea와 맞추기 위한 스크립트
+                document.addEventListener('DOMContentLoaded', function () {
+                    const textarea = document.getElementById('commentTextarea');
+                    const btn = document.getElementById('commentSubmitBtn');
+                    if (textarea && btn) {
+                        function adjustBtnHeight() {
+                            btn.style.height = textarea.offsetHeight + 'px';
+                        }
+                        adjustBtnHeight();
+                        textarea.addEventListener('input', adjustBtnHeight);
+                        // textarea 크기 조절(드래그) 시에도 반영
+                        new ResizeObserver(adjustBtnHeight).observe(textarea);
+                    }
+                });
+            </script>
         </div>
 
         <script>
@@ -161,6 +205,13 @@
             async function loadPostDetail() {
                 try {
                     const res = await fetch(`/api/posts/detail/${postId}`);
+                    const data = await res.json();
+                    document.getElementById('post-title').innerText = data.title;
+                    document.getElementById('post-content').innerText = data.content;
+                    // 🚨 작성자 이름(data.author) 렌더링 추가
+                    document.getElementById('post-date').innerText = `작성자: ${data.author} | 카테고리: ${data.category} | 작성일: ${data.date}`;
+                    
+                    const commentsHtml = data.comments.map(c => `
                     if (!res.ok) throw new Error('게시글이 없습니다.');
                     const data = await res.json();
                     document.getElementById('post-title').innerText = data.title;
@@ -234,18 +285,29 @@
                     }
 
                     fetchLikeCount();
-                    const commentsHtml = data.comments
+                    const comments = data.comments || [];
+                    const commentsHtml = comments
                         .map(
                             (c) => `
                         <li>
                             <div style="font-size: 0.85rem; color: #dc2626; font-weight: bold; margin-bottom: 4px;">👤 ${c.author} <span style="color:#aaa; font-weight:normal;">| ${c.date}</span></div>
                             <div>${c.content}</div>
                         </li>
+                } catch (err) {
+                    document.getElementById('post-title').innerText = '데이터를 불러올 수 없습니다.';
+                }
+            }
+
                     `,
                         )
                         .join('');
                     document.getElementById('comment-list').innerHTML =
                         commentsHtml || '<li style="text-align:center; color:#888;">첫 댓글을 남겨보세요!</li>';
+                    // 댓글 개수 표시
+                    const commentCountElem = document.getElementById('comment-count');
+                    if (commentCountElem) {
+                        commentCountElem.textContent = `(${comments.length})`;
+                    }
                 } catch (err) {
                     document.getElementById('post-title').innerText = '데이터를 불러올 수 없습니다.';
                 }
@@ -272,7 +334,6 @@
                     alert('좋아요 처리에 실패했습니다.');
                 }
             };
-
             // 3. 댓글 등록 로직
             document.getElementById('commentForm').onsubmit = async (e) => {
                 e.preventDefault();

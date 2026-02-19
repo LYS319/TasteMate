@@ -1,32 +1,40 @@
 <!doctype html>
 <html lang="ko">
+
+                    if (res.ok) {
+                        // 🚨 로그인 정보에 is_admin 추가!
+                        localStorage.setItem('user_id', data.user_id);
+                        localStorage.setItem('nickname', data.nickname);
+                        localStorage.setItem('is_admin', data.is_admin);
+
+                        const returnUrl = sessionStorage.getItem('return_url');
+                        if (returnUrl) {
+                            sessionStorage.removeItem('return_url');
+                            window.location.href = returnUrl;
+                        } else {
+                            window.location.href = data.redirect;
+                        }
+                    } else {
+                        alert(data.detail || '이메일이나 비밀번호가 일치하지 않습니다.');
+                    }
+                } catch (err) {
+                    alert('서버 연결에 실패했습니다.');
+                }
+            } else {
+                alert(data.detail || "이메일이나 비밀번호가 일치하지 않습니다.");
+            }
+        } catch (err) {
+            alert("서버 연결에 실패했습니다.");
+        }
+    };
+</script>
+</body>
+</html>
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 로그인</title>
         <style>
-            @media (max-width: 600px) {
-                .header {
-                    padding: 10px 8px;
-                    font-size: 1.1rem;
-                }
-                .login-main {
-                    max-width: 100%;
-                    margin: 40px 0 0 0;
-                    padding: 0 4px;
-                }
-                .login-title {
-                    font-size: 1.2rem;
-                }
-                .login-form input {
-                    font-size: 1rem;
-                    padding: 8px 8px;
-                }
-                .login-btn-main {
-                    font-size: 1rem;
-                    padding: 12px 0;
-                }
-            }
             .menu-toggle-btn {
                 background: none;
                 border: none;
@@ -171,7 +179,7 @@
             }
         </script>
     </head>
-    <body>
+    <body class="fade-in">
         <header class="header">
             <div class="header-left">
                 <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>

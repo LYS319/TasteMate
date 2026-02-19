@@ -6,4 +6,3 @@ python-dotenv
 starlette
 jinja2
 pydantic-settings
-google-generativeai
