@@ -168,7 +168,7 @@
             }
         </script>
     </head>
-    <body>
+    <body class="fade-in">
         <header class="header">
             <div class="header-left">
                 <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>
@@ -382,7 +382,7 @@
                 window.location.href = '/main';
             }
 
-            let currentSort = 'popular';
+            let currentSort = 'latest';
             const latestBtn = document.getElementById('latestBtn');
             const popularBtn = document.getElementById('popularBtn');
             const commentBtn = document.getElementById('commentBtn');
@@ -430,7 +430,47 @@
                         return;
                     }
 
-                    const listHTML = posts
+                    // SOLO.html과 동일하게 공지글 분리 및 스타일 적용
+                    const notices = posts.filter((post) => post.is_notice === 1 || post.is_notice === '1');
+                    const normals = posts.filter((post) => !(post.is_notice === 1 || post.is_notice === '1'));
+                    const noticeHTML = notices
+                        .map(
+                            (post) => `
+                        <li class="notice-post" style="
+                            border: 2.5px solid #dc2626 !important;
+                            background: #fff0f0 !important;
+                            box-shadow: 0 0 0 2px #dc262633 !important;
+                            padding: 22px 22px 18px 22px;
+                            margin-bottom: 8px;
+                            list-style: none;
+                            position: relative;
+                            animation: notice-pop 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+                        ">
+                            <span style="position:absolute;left:-12px;top:-18px;font-size:2.1rem;">📢</span>
+                            <span style="background:#dc2626;color:#fff;font-weight:900;padding:2px 12px;border-radius:16px;font-size:1.02rem;vertical-align:middle;margin-right:8px;box-shadow:0 2px 8px #ff525255;">공지</span>
+                            <span style="font-weight:900;font-size:1.18rem;color:#b91c1c;vertical-align:middle;">
+                                <a href="/post_detail/${post.id}" style="color: #b91c1c; text-decoration: none">${post.title}</a>
+                            </span>
+                            <div style="margin-top: 10px; color: #222; white-space: pre-line; font-size:1.05rem;">${post.content}</div>
+                            <div style="margin-top: 12px; font-size: 0.92rem; color: #b91c1c; display: flex; justify-content: flex-end; align-items: center; gap: 0.5em;">
+                                <span style="color:#fff; background:#b91c1c; border-radius:8px; padding:2px 8px; font-weight:700;">💬 ${post.comment_count || 0}</span>
+                                <span style="color:#fff; background:#dc2626; border-radius:8px; padding:2px 8px; font-weight:700;">❤️ ${post.like_count || 0}</span>
+                                <span style="margin-left:12px; color:#fff; background:#b91c1c; border-radius:8px; padding:2px 8px; font-weight:700;">👤 ${post.nickname || post.author || ''}${post.is_admin === 1 || post.is_admin === '1' ? " <span style='color:#ffd600;font-size:0.98em;'>(관리자)</span>" : ''}</span>
+                                <span style="margin-left:8px; color:#fff; background:#dc2626; border-radius:8px; padding:2px 8px; font-weight:400; font-size:0.95em;">${post.created_at || post.date || ''}</span>
+                            </div>
+                        </li>
+                        <style>
+                        @keyframes notice-pop {
+                            0% { transform: scale(0.95) translateY(-20px); opacity: 0.2; }
+                            80% { transform: scale(1.04) translateY(4px); opacity: 1; }
+                            100% { transform: scale(1) translateY(0); opacity: 1; }
+                        }
+                        </style>
+                    `,
+                        )
+                        .join('');
+
+                    const normalHTML = normals
                         .map(
                             (post) => `
                         <li style="border: 1.5px solid #ffe5e5; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; background: #fff8f8; list-style: none;">
@@ -449,7 +489,7 @@
                         )
                         .join('');
 
-                    container.innerHTML = `<ul style="padding: 0; margin: 0;">${listHTML}</ul>`;
+                    container.innerHTML = `<ul style="padding: 0; margin: 0;">${noticeHTML}${normalHTML}</ul>`;
                 } catch (error) {
                     document.getElementById('post-container').innerHTML =
                         '<div style="color: red; text-align: center">데이터를 불러오는데 실패했습니다.</div>';

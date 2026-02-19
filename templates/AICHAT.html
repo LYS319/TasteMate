@@ -146,20 +146,6 @@
                     <nav id="mainNavMenu">
                         <button class="nav-emoji-btn" onclick="location.href = '/main'" title="홈">🏠 홈</button><br />
                         <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">🧑‍🤝‍🧑 커뮤니티</button><br />
-                        <button class="nav-emoji-btn" onclick="openCalculator()" title="계산기">🧮 계산기</button>
-                        <!-- 계산기 모달 -->
-                        <div id="calculatorModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.18); z-index:2000; justify-content:center; align-items:center;">
-                            <div style="background:#fff; border-radius:16px; box-shadow:0 4px 16px rgba(220,38,38,0.13); padding:32px 28px; min-width:320px; text-align:center; position:relative;">
-                                <button onclick="closeCalculator()" style="position:absolute; top:12px; right:12px; background:none; border:none; font-size:1.4rem; cursor:pointer;">✖</button>
-                                <h2 style="color:#dc2626; margin-bottom:18px;">1인당 계산기</h2>
-                                <div style="margin-bottom:16px;">
-                                    <input id="calcPeople" type="number" min="1" placeholder="명수 입력" style="padding:8px 12px; border-radius:8px; border:1px solid #dc2626; font-size:1rem; width:120px; margin-right:8px;" />
-                                    <input id="calcAmount" type="number" min="0" placeholder="총 금액 입력" style="padding:8px 12px; border-radius:8px; border:1px solid #dc2626; font-size:1rem; width:120px;" />
-                                </div>
-                                <button onclick="calculateAmount()" style="background:#dc2626; color:#fff; border:none; border-radius:8px; padding:8px 24px; font-size:1rem; font-weight:700; cursor:pointer;">계산하기</button>
-                                <div id="calcResult" style="margin-top:18px; color:#222; font-size:1.1rem;"></div>
-                            </div>
-                        </div>
                 </div>
                 <h1 id="ai-chat-fullscreen-title">🤖 AI CHATBOT</h1>
             </div>
@@ -182,27 +168,6 @@
         </div>
 
         <script>
-                    // 계산기 모달 열기/닫기
-                    function openCalculator() {
-                        document.getElementById('calculatorModal').style.display = 'flex';
-                    }
-                    function closeCalculator() {
-                        document.getElementById('calculatorModal').style.display = 'none';
-                        document.getElementById('calcResult').innerText = '';
-                        document.getElementById('calcPeople').value = '';
-                        document.getElementById('calcAmount').value = '';
-                    }
-                    function calculateAmount() {
-                        const people = parseInt(document.getElementById('calcPeople').value);
-                        const amount = parseInt(document.getElementById('calcAmount').value);
-                        if (!people || !amount || people < 1 || amount < 0) {
-                            document.getElementById('calcResult').innerText = '명수와 금액을 올바르게 입력하세요.';
-                            return;
-                        }
-                        const perPerson = Math.floor(amount / people);
-                        const remain = amount % people;
-                        document.getElementById('calcResult').innerText = `1인당 ${perPerson.toLocaleString()}원, 남는 금액 ${remain.toLocaleString()}원`;
-                    }
             // 햄버거 메뉴 토글 기능
             function toggleMenu() {
                 const menu = document.getElementById('mainNavMenu');

@@ -5,6 +5,50 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 커뮤니티</title>
         <style>
+            /* --- 애니메이션 정의 --- */
+            @keyframes fadeInPage {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .fade-in {
+                animation: fadeInPage 0.6s ease-out;
+            }
+
+            /* 순차적 등장을 위한 클래스 */
+            .post-card {
+                animation: slideUp 0.5s ease-out forwards;
+                opacity: 0; /* 애니메이션 시작 전 숨김 */
+            }
+            .post-card:nth-child(1) {
+                animation-delay: 0.1s;
+            }
+            .post-card:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+            .post-card:nth-child(3) {
+                animation-delay: 0.3s;
+            }
+            .post-card:nth-child(4) {
+                animation-delay: 0.4s;
+            }
+
+            /* --- 기존 스타일 유지 --- */
             .category-btn-group {
                 display: flex;
                 gap: 18px;
@@ -23,13 +67,15 @@
                 border: 1.5px solid #ffe5e5;
                 cursor: pointer;
                 transition:
-                    background 0.18s,
-                    color 0.18s;
+                    background 0.2s,
+                    color 0.2s,
+                    transform 0.2s; /* transform 추가 */
             }
             .category-btn:hover,
             .category-btn.active {
                 background: #dc2626;
                 color: #fff;
+                transform: scale(1.02); /* 호버 효과 추가 */
             }
             .menu-toggle-btn {
                 background: none;
@@ -119,7 +165,6 @@
                 transform: scale(1.05);
             }
 
-            /* 🚨 헤더 우측 스타일 (메인페이지와 동일하게 맞춤) */
             .header-right {
                 display: flex;
                 align-items: center;
@@ -153,8 +198,8 @@
 
             .community-main {
                 max-width: 800px;
-                margin: 60px auto 0 auto;
-                padding: 0 16px;
+                margin: 0 auto 0 auto;
+                padding: 100px 16px 0 16px;
             }
             .community-title {
                 font-size: 2.2rem;
@@ -185,11 +230,15 @@
                 flex-direction: column;
                 gap: 8px;
                 cursor: pointer;
-                transition: transform 0.2s;
+                transition:
+                    transform 0.2s,
+                    border-color 0.2s,
+                    box-shadow 0.2s;
             }
             .post-card:hover {
-                transform: translateY(-2px);
+                transform: translateY(-5px); /* 좀 더 명확한 부상 효과 */
                 border-color: #dc2626;
+                box-shadow: 0 8px 20px rgba(220, 38, 38, 0.1);
             }
             .post-title {
                 font-size: 1.18rem;
@@ -222,10 +271,13 @@
                 font-size: 1.1rem;
                 font-weight: 700;
                 cursor: pointer;
-                transition: background 0.2s;
+                transition:
+                    background 0.2s,
+                    transform 0.2s;
             }
             .write-btn:hover {
                 background: #b91c1c;
+                transform: translateY(-2px);
             }
         </style>
         <script>
@@ -235,7 +287,7 @@
             }
         </script>
     </head>
-    <body>
+    <body class="fade-in">
         <header class="header">
             <div class="header-left">
                 <button class="menu-toggle-btn" aria-label="메뉴 열기" onclick="toggleMenu()">☰</button>
@@ -259,7 +311,6 @@
                 >
                     회원가입
                 </button>
-                <!-- COMMUNITY 페이지에서는 검색창 미노출 -->
             </div>
         </header>
         <main class="community-main">
