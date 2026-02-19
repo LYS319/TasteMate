@@ -1,147 +1,129 @@
 <!doctype html>
 <html lang="ko">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>혼밥 커뮤니티</title>
-        <style>
-            body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: #fff; }
-            .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1); backdrop-filter: blur(12px); }
-            .header-left { display: flex; align-items: center; gap: 24px; }
-            .header-logo { display: flex; align-items: center; gap: 18px; font-size: 1.5rem; font-weight: bold; color: #dc2626; text-decoration: none; }
-            .menu-toggle-btn { background: none; border: none; font-size: 2.1rem; margin-left: 8px; cursor: pointer; border-radius: 8px; padding: 4px 12px; transition: background 0.18s; }
-            .menu-toggle-btn:hover { background: #ffe5e5; }
-            #mainNavMenu { min-width: 140px; animation: fadeInMenu 0.18s; position: absolute; top: 60px; left: 32px; background: #fff; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13); border-radius: 12px; padding: 18px 24px 14px 24px; z-index: 1000; display: none; }
-            @keyframes fadeInMenu { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-            .nav-emoji-btn { background: none; border: none; font-size: 1.7rem; margin: 0 2px; cursor: pointer; border-radius: 8px; padding: 4px 10px; transition: background 0.18s; }
-            .nav-emoji-btn:hover { background: #ffe5e5; }
-            .header-right { display: flex; align-items: center; gap: 10px; }
-            .current-location { font-size: 0.95rem; color: #dc2626; background: #fff5f5; border: 1px solid #ffe5e5; border-radius: 6px; padding: 8px 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
-            .current-location:hover { background: #ffe5e5; }
-            .login-btn { padding: 8px 16px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 0.95rem; font-weight:bold; cursor: pointer; transition: background 0.2s; }
-            .login-btn:hover { background: #b91c1c; }
-            .main-title { text-align: center; font-size: 2.2rem; font-weight: 900; color: #dc2626; margin: 48px 0 24px 0; letter-spacing: 1px; }
-            .desc { text-align: center; color: #b91c1c; margin-bottom: 32px; font-size: 1.1rem; }
-            .category-btn { flex: 1; padding: 10px 0; border-radius: 8px; text-align: center; text-decoration: none; font-weight: 700; border: 1.5px solid #ffe5e5; }
-        </style>
-        <script>
-            function toggleMenu() {
-                const menu = document.getElementById('mainNavMenu');
-                menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
-            }
-        </script>
-    </head>
-    <body>
-        <header class="header">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>혼밥 커뮤니티 - TasteMate</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+        .community-main { margin-top: 80px; padding-bottom: 100px; }
+        
+        /* 🌟 카테고리 네비게이션 스타일 */
+        .category-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .cat-btn {
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #444;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .cat-btn.active {
+            background: var(--main-red);
+            color: #fff;
+        }
+        
+        /* 🚩 공지사항 강조 디자인 */
+        .notice-item {
+            background-color: var(--bg-light) !important;
+            border: 2px solid var(--main-red) !important;
+            box-shadow: 0 4px 15px var(--shadow-soft);
+        }
+        .notice-badge {
+            background-color: var(--main-red);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 8px;
+        }
+
+        .write-float-btn {
+            position: fixed; bottom: 30px; right: 20px;
+            background: var(--main-red); color: #fff;
+            padding: 15px 25px; border-radius: 30px;
+            font-weight: bold; text-decoration: none;
+            box-shadow: 0 4px 15px var(--shadow-deep);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
             <div class="header-left">
                 <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
-                <nav class="main-nav" id="mainNavMenu">
-                    <button class="nav-emoji-btn" onclick="location.href = '/main'" title="홈">🏠 홈</button><br />
-                    <button class="nav-emoji-btn" onclick="location.href = '/aichat'" title="AI추천">🤖 AI추천</button><br />
-                    <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">🧑‍🤝‍🧑 커뮤니티</button>
+                <nav id="mainNavMenu">
+                    <button class="nav-emoji-btn" onclick="location.href='/main'">🏠 홈</button>
+                    <button class="nav-emoji-btn" onclick="location.href='/community'">🧑‍🤝‍🧑 커뮤니티</button>
                 </nav>
             </div>
-            <div class="header-right" id="headerRightArea">
-                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
-                <button class="login-btn" style="background:#fff; color:#dc2626; border:1px solid #dc2626;" onclick="location.href = '/signup'">회원가입</button>
-            </div>
-        </header>
+            <div class="header-right" id="headerRightArea"></div>
+        </div>
+    </header>
 
-        <div style="max-width: 600px; margin: 32px auto 0 auto; display: flex; gap: 12px; justify-content: center">
-            <a href="/category/solo" class="category-btn" style="background: #dc2626; color: #fff;">혼밥</a>
-            <a href="/category/date" class="category-btn" style="background: #fff5f5; color: #dc2626;">데이트</a>
-            <a href="/category/work" class="category-btn" style="background: #fff5f5; color: #dc2626;">회식</a>
-            <a href="/category/etc" class="category-btn" style="background: #fff5f5; color: #dc2626;">기타</a>
+    <main class="container community-main">
+        <div class="category-nav">
+            <a href="/category/solo" class="cat-btn active">🍱 혼밥</a>
+            <a href="/category/date" class="cat-btn">💖 데이트</a>
+            <a href="/category/work" class="cat-btn">🍻 회식</a>
+            <a href="/category/etc" class="cat-btn">✨ 기타</a>
         </div>
 
-        <div class="main-title">🍱 혼밥 커뮤니티</div>
-        <div class="desc">혼자서도 즐거운 식사, 혼밥 맛집과 경험을 공유해보세요!</div>
+        <h1 class="main-title">🍱 혼밥 커뮤니티</h1>
         
-        <div style="text-align: center; margin-bottom: 20px;">
-            <button onclick="location.href='/write'" style="padding: 10px 20px; background: #dc2626; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">✏️ 글쓰기</button>
+        <div class="community-preview" id="postListContainer">
+            <p style="text-align:center; padding:50px; color:#ccc;">게시글을 불러오고 있습니다...</p>
         </div>
+    </main>
 
-        <div id="post-container" style="max-width: 600px; margin: 0 auto 32px auto">
-            <div style="text-align: center; color: #888;">게시글을 불러오는 중입니다...</div>
-        </div>
+    <a href="/write" class="write-float-btn">✍️ 글쓰기</a>
 
-        <script>
-            // 공통 헤더 로그인/GPS 로직
-            document.addEventListener("DOMContentLoaded", () => {
-                const nickname = localStorage.getItem('nickname');
-                const isAdmin = localStorage.getItem('is_admin'); 
-                const headerRightArea = document.getElementById('headerRightArea');
-                
-                if (nickname && headerRightArea) {
-                    let adminButton = '';
-                    if (isAdmin === '1') {
-                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자 기능</button>`;
-                    }
-                    headerRightArea.innerHTML = `
-                        <span style="font-weight: 700; color: #dc2626; font-size: 1.05rem; margin-right: 5px;">👤 ${nickname}님</span>
-                        ${adminButton}
-                        <button class="login-btn" onclick="location.href='/mypage'" style="background: #f39c12;">회원정보</button>
-                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
-                        <span class="current-location" id="gps-location" onclick="getGPSLocation()" title="클릭하여 내 위치 찾기">📍 위치 탐색 (클릭)</span>
-                    `;
-                    getGPSLocation();
+    <script src="/static/script.js"></script>
+    <script>
+        async function fetchPosts() {
+            const container = document.getElementById('postListContainer');
+            try {
+                // 현재 페이지의 카테고리 이름을 추출 (예: solo)
+                const category = window.location.pathname.split('/').pop().toUpperCase();
+                const response = await fetch(`/api/posts/${category}?sort=latest`);
+                const posts = await response.json();
+
+                if (!posts || posts.length === 0) {
+                    container.innerHTML = `<p style="text-align:center; padding:50px; color:#999;">작성된 글이 없습니다.</p>`;
+                    return;
                 }
-            });
 
-            function getGPSLocation() {
-                const locSpan = document.getElementById('gps-location');
-                if (!locSpan) return;
-                if (navigator.geolocation) {
-                    locSpan.innerText = "📍 위치 찾는 중...";
-                    navigator.geolocation.getCurrentPosition(async (position) => {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        try {
-                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-                            const data = await res.json();
-                            let city = data.address.city || data.address.province || data.address.region || "";
-                            let borough = data.address.borough || data.address.suburb || data.address.town || "";
-                            locSpan.innerText = `📍 ${city} ${borough}`.trim() || '📍 위치 확인됨';
-                        } catch (e) { locSpan.innerText = "📍 위치 확인됨"; }
-                    }, () => { locSpan.innerText = "📍 권한 거부됨"; });
-                }
-            }
+                container.innerHTML = posts.map(post => {
+                    const isNotice = post.is_notice === 1;
+                    const cardClass = isNotice ? 'community-card notice-item' : 'community-card';
+                    const noticeBadge = isNotice ? '<span class="notice-badge">📢 [공지]</span>' : '';
 
-            function logout() {
-                localStorage.clear();
-                alert("안전하게 로그아웃 되었습니다.");
-                window.location.href = "/main";
-            }
-
-            // 게시글 데이터 불러오기 로직
-            async function loadPosts() {
-                try {
-                    const res = await fetch('/api/posts/SOLO'); 
-                    const posts = await res.json();
-                    const container = document.getElementById('post-container');
-
-                    if (posts.length === 0) {
-                        container.innerHTML = '<div style="color: #b91c1c; text-align: center; padding: 30px; border: 1px solid #ffe5e5; border-radius: 8px;">아직 등록된 글이 없습니다.</div>';
-                        return;
-                    }
-
-                    const listHTML = posts.map(post => `
-                        <li style="border: 1.5px solid #ffe5e5; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; background: #fff8f8; list-style: none;">
-                            <div style="font-weight: 700; font-size: 1.15rem; color: #dc2626">
-                                <a href="/post/${post.id}" style="color: #dc2626; text-decoration: none">${post.title}</a>
+                    return `
+                        <div class="${cardClass}" onclick="location.href='/post/${post.id}'" style="cursor:pointer; margin-bottom:15px; padding:16px; border-radius:12px; border:1px solid #ffe5e5;">
+                            <div class="card-title" style="font-size:1.2rem; font-weight:800; margin-bottom:8px;">
+                                ${noticeBadge}${post.title}
                             </div>
-                            <div style="margin-top: 8px; color: #222; white-space: pre-line">${post.content}</div>
-                            <div style="margin-top: 10px; font-size: 0.85rem; color: #888; text-align: right;">👤 ${post.author} | ${post.date}</div>
-                        </li>
-                    `).join('');
-
-                    container.innerHTML = `<ul style="padding: 0; margin: 0;">${listHTML}</ul>`;
-                } catch (error) {
-                    document.getElementById('post-container').innerHTML = '<div style="color: red; text-align: center">데이터를 불러오는데 실패했습니다.</div>';
-                }
+                            <div class="card-info" style="display:flex; justify-content:space-between; font-size:0.85rem; color:#999;">
+                                <span>👤 ${post.author}</span>
+                                <span>📅 ${post.date} | ❤️ ${post.like_count}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                container.innerHTML = `<p style="text-align:center; color:red; padding:50px;">데이터 로드 중 오류 발생</p>`;
             }
-            loadPosts();
-        </script>
-    </body>
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchPosts);
+    </script>
+</body>
 </html>

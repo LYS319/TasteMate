@@ -1,48 +1,35 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Float
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-import datetime
+import os
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
 
+# 1. .env 파일 로드
+load_dotenv()
+
+# 2. .env에서 개별 항목 읽기 (변수명이 .env와 정확히 일치해야 함)
+DB_USER = os.getenv("TIDB_USER")      # 예: 'root'
+DB_PW = os.getenv("TIDB_PASSWORD")    # 예: 'password'
+DB_HOST = os.getenv("TIDB_HOST")      # 사용자님이 추가하신 주소
+DB_PORT = os.getenv("TIDB_PORT", "4000") # 기본값 4000
+DB_NAME = os.getenv("TIDB_NAME", "test") # 기본값 test
+
+# 3. 필수 정보 확인 (에러 방지용)
+if not all([DB_USER, DB_PW, DB_HOST]):
+    raise ValueError("❌ .env 파일에 TIDB_USER, TIDB_PASSWORD, TIDB_HOST 중 누락된 항목이 있습니다.")
+
+# 4. DATABASE_URL 조립 (TiDB 전용 SSL 설정 포함)
+# 
+DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PW}@{DB_HOST}:{DB_PORT}/{DB_NAME}?ssl_verify_cert=true&ssl_verify_identity=true"
+
+# 5. 엔진 생성 및 세션 설정
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    nickname = Column(String)
-    
-    # 관계 설정
-    posts = relationship("Post", back_populates="owner")
-    chat_history = relationship("ChatHistory", back_populates="user")
-
-class Post(Base):
-    __tablename__ = "posts"
-    id = Column(Integer, primary_key=True, index=True)
-    category = Column(String)  # 연애, 추천, 만남 등 
-    title = Column(String)
-    content = Column(Text)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    
-    owner = relationship("User", back_populates="posts")
-
-class ChatHistory(Base):
-    __tablename__ = "chat_history"
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    query = Column(Text)  # 사용자 질문 [cite: 72]
-    response = Column(Text)  # AI 답변
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-
-    user = relationship("User", back_populates="chat_history")
-
-class Store(Base):
-    __tablename__ = "stores"
-    id = Column(Integer, primary_key=True, index=True)
-    kakao_id = Column(String, unique=True) # 카카오 맵 API 고유 ID
-    name = Column(String)
-    category = Column(String)
-    lat = Column(Float)
-    lon = Column(Float)
-    rating = Column(Float) #
+# DB 세션 의존성 주입 함수
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

@@ -2,38 +2,70 @@
 <html lang="ko">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>상세보기</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/static/style.css">
+        <title>상세보기 - TasteMate</title>
         <style>
             body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: #fff; }
             .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1); }
             .header-logo { font-size: 1.5rem; font-weight: bold; color: #dc2626; text-decoration: none; }
             .login-btn { padding: 8px 20px; background: #dc2626; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-            .container { max-width: 600px; margin: 40px auto; padding: 32px 24px; border-radius: 12px; background: #fff8f8; box-shadow: 0 2px 16px rgba(220, 38, 38, 0.08); }
-            .post-title { font-size: 2rem; font-weight: 900; color: #dc2626; margin-bottom: 12px; }
-            .post-content { color: #222; margin-bottom: 18px; white-space: pre-line; line-height: 1.6; }
+            .container { max-width: 600px; margin: 40px auto; padding: 32px 24px; border-radius: 12px; background: #fff; border: 1.5px solid #ffe5e5; box-shadow: 0 4px 20px rgba(220, 38, 38, 0.05); }
+            
+            .notice-badge { color: #dc2626; font-weight: 900; margin-right: 8px; }
+            .post-title { font-size: 2.2rem; font-weight: 900; color: #1a1a1a; margin-bottom: 12px; }
+            .post-content { color: #333; margin-bottom: 24px; white-space: pre-line; line-height: 1.8; font-size: 1.1rem; }
+            
+            /* 🛠️ 수정/삭제 버튼 스타일 */
+            .action-btns { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 15px; }
+            .btn-sm { padding: 5px 12px; font-size: 0.85rem; border-radius: 4px; cursor: pointer; border: 1px solid #ddd; background: #fff; }
+            .btn-delete { color: #dc2626; border-color: #ffcccc; }
+            
+            .like-section { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 40px 0; padding: 20px; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; }
+            #likeBtn { background: none; border: 2px solid #ffe5e5; border-radius: 50%; width: 64px; height: 64px; font-size: 2rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+            #likeCount { font-size: 1.3rem; font-weight: 800; color: #dc2626; }
+
             .comment-section { margin-top: 32px; }
-            .comment-title { font-size: 1.1rem; font-weight: 700; color: #b91c1c; margin-bottom: 8px; }
+            .comment-title { font-size: 1.2rem; font-weight: 700; color: #dc2626; margin-bottom: 15px; }
             .comment-list { list-style: none; padding: 0; margin-bottom: 16px; }
-            .comment-list li { background: #fff; border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid #ffe5e5; }
-            .comment-form textarea { width: 100%; min-height: 60px; border-radius: 6px; border: 1.5px solid #ffe5e5; padding: 8px; margin-bottom: 8px; box-sizing: border-box; }
-            .comment-form button { background: #dc2626; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; font-weight: 700; cursor: pointer; }
+            .comment-list li { background: #fff8f8; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; border: 1px solid #ffe5e5; }
+            .comment-form textarea { width: 100%; min-height: 80px; border-radius: 8px; border: 1.5px solid #ffe5e5; padding: 12px; margin-bottom: 10px; box-sizing: border-box; }
+            .comment-form button { background: #dc2626; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-weight: 700; cursor: pointer; float: right; }
         </style>
     </head>
     <body>
         <header class="header">
-            <div class="header-left">
-                <a href="/main" class="header-logo">TasteMate</a>
-            </div>
-            <div class="header-right">
-                <button id="headerLoginBtn" class="login-btn" onclick="location.href = '/login'">로그인</button>
-            </div>
+            <div class="header-left"><a href="/main" class="header-logo">TasteMate</a></div>
+            <div class="header-right"><button id="headerLoginBtn" class="login-btn" onclick="location.href = '/login'">로그인</button></div>
         </header>
 
         <div class="container">
-            <div id="post-title" class="post-title">게시글 불러오는 중...</div>
-            <div style="font-size:0.95rem; color:#666; margin-bottom:20px; font-weight: bold;" id="post-date"></div>
-            <div id="post-content" class="post-content"></div>
+            <div id="postActions" class="action-btns" style="display: none;">
+                <button onclick="toggleEditPost(true)" class="btn-sm">수정</button>
+                <button onclick="deletePost()" class="btn-sm btn-delete">삭제</button>
+            </div>
+
+            <div id="postViewArea">
+                <div id="post-title" class="post-title">게시글 불러오는 중...</div>
+                <div style="font-size:0.95rem; color:#666; margin-bottom:20px; border-bottom: 1px solid #eee; padding-bottom: 10px;" id="post-date"></div>
+                <div id="post-content" class="post-content"></div>
+            </div>
+
+            <div id="postEditArea" style="display: none;">
+                <input type="text" id="editTitle" style="width:100%; font-size:1.5rem; padding:10px; margin-bottom:10px; border:1.5px solid #dc2626; border-radius:8px;">
+                <textarea id="editContent" style="width:100%; min-height:200px; padding:10px; border:1.5px solid #dc2626; border-radius:8px; font-size:1rem;"></textarea>
+                <div class="action-btns" style="margin-top:10px;">
+                    <button onclick="submitEditPost()" class="btn-sm" style="background:#dc2626; color:#fff;">저장</button>
+                    <button onclick="toggleEditPost(false)" class="btn-sm">취소</button>
+                </div>
+            </div>
+            
+            <div class="like-section">
+                <button id="likeBtn" onclick="handleLike()">🤍</button>
+                <span id="likeCount">0</span>
+            </div>
+
+            <div id="map" style="width:100%; height:350px; border-radius:12px; margin-top:20px; border:1px solid #ddd; display:none;"></div>
 
             <div class="comment-section">
                 <div class="comment-title">💬 댓글</div>
@@ -46,70 +78,137 @@
         </div>
 
         <script>
-            // 🚨 1. 로그인 상태에 따라 상단 버튼 변경
+            const userId = localStorage.getItem('user_id');
+            const pathParts = window.location.pathname.split('/');
+            const postId = pathParts[pathParts.length - 1];
+
             document.addEventListener("DOMContentLoaded", () => {
                 const nickname = localStorage.getItem('nickname');
                 const loginBtn = document.getElementById('headerLoginBtn');
                 if (nickname && loginBtn) {
                     loginBtn.textContent = `${nickname}님 (로그아웃)`;
-                    loginBtn.style.background = '#2c3e50'; // 로그아웃 느낌으로 색상 변경
-                    loginBtn.onclick = () => {
-                        localStorage.removeItem('user_id');
-                        localStorage.removeItem('nickname');
-                        location.reload(); // 로그아웃 시 새로고침
-                    };
+                    loginBtn.style.background = '#666'; 
+                    loginBtn.onclick = () => { localStorage.clear(); location.reload(); };
                 }
             });
 
-            // 2. 게시글 상세 및 댓글 불러오기
-            const pathParts = window.location.pathname.split('/');
-            const postId = pathParts[pathParts.length - 1];
-
             async function loadPostDetail() {
                 try {
-                    const res = await fetch(`/api/posts/detail/${postId}`);
-                    if (!res.ok) throw new Error("게시글이 없습니다.");
+                    const res = await fetch(`/api/posts/detail/${postId}?user_id=${userId || ''}`);
                     const data = await res.json();
                     
-                    document.getElementById('post-title').innerText = data.title;
+                    const titleElement = document.getElementById('post-title');
+                    titleElement.innerHTML = data.is_notice ? `<span class="notice-badge">📢</span>${data.title}` : data.title;
                     document.getElementById('post-content').innerText = data.content;
-                    // 🚨 작성자 이름(data.author) 렌더링 추가
                     document.getElementById('post-date').innerText = `작성자: ${data.author} | 카테고리: ${data.category} | 작성일: ${data.date}`;
                     
+                    // 작성자 본인일 경우 수정/삭제 버튼 노출
+                    if (userId && String(data.user_id) === String(userId)) {
+                        document.getElementById('postActions').style.display = 'flex';
+                    }
+
+                    document.getElementById('likeCount').innerText = data.like_count || 0;
+                    document.getElementById('likeBtn').innerText = data.is_liked ? '❤️' : '🤍';
+
+                    loadMapWithKey(data.title);
+
                     const commentsHtml = data.comments.map(c => `
                         <li>
-                            <div style="font-size: 0.85rem; color: #dc2626; font-weight: bold; margin-bottom: 4px;">👤 ${c.author} <span style="color:#aaa; font-weight:normal;">| ${c.date}</span></div>
-                            <div>${c.content}</div>
+                            <div style="display:flex; justify-content:space-between;">
+                                <div style="font-size: 0.85rem; color: #dc2626; font-weight: bold;">👤 ${c.author}</div>
+                                ${ (userId && String(c.user_id) === String(userId)) ? 
+                                    `<div style="font-size:0.75rem; color:#999; cursor:pointer;" onclick="deleteComment(${c.id})">삭제</div>` : '' }
+                            </div>
+                            <div style="margin-top:5px;">${c.content}</div>
                         </li>
                     `).join('');
                     document.getElementById('comment-list').innerHTML = commentsHtml || '<li style="text-align:center; color:#888;">첫 댓글을 남겨보세요!</li>';
-                } catch (err) {
-                    document.getElementById('post-title').innerText = "데이터를 불러올 수 없습니다.";
+                } catch (err) { console.error(err); }
+            }
+
+            // 게시글 수정 모드 토글
+            function toggleEditPost(show) {
+                document.getElementById('postViewArea').style.display = show ? 'none' : 'block';
+                document.getElementById('postEditArea').style.display = show ? 'block' : 'none';
+                if(show) {
+                    document.getElementById('editTitle').value = document.getElementById('post-title').innerText.replace('📢', '');
+                    document.getElementById('editContent').value = document.getElementById('post-content').innerText;
                 }
             }
 
-            // 3. 댓글 등록 로직
+            // 게시글 수정 제출
+            async function submitEditPost() {
+                const formData = new FormData();
+                formData.append('title', document.getElementById('editTitle').value);
+                formData.append('content', document.getElementById('editContent').value);
+                formData.append('user_id', userId);
+
+                const res = await fetch(`/api/posts/${postId}`, { method: 'PATCH', body: formData });
+                if(res.ok) { alert("수정되었습니다."); location.reload(); }
+            }
+
+            // 게시글 삭제
+            async function deletePost() {
+                if(!confirm("정말 삭제하시겠습니까?")) return;
+                const formData = new FormData();
+                formData.append('user_id', userId);
+                const res = await fetch(`/api/posts/${postId}/delete`, { method: 'POST', body: formData });
+                if(res.ok) { alert("삭제되었습니다."); location.href = '/community'; }
+            }
+
+            // 댓글 삭제
+            async function deleteComment(commentId) {
+                if(!confirm("댓글을 삭제할까요?")) return;
+                const formData = new FormData();
+                formData.append('user_id', userId);
+                const res = await fetch(`/api/comments/${commentId}/delete`, { method: 'POST', body: formData });
+                if(res.ok) loadPostDetail();
+            }
+
+            async function handleLike() {
+                if (!userId) { alert("로그인이 필요합니다."); return; }
+                const formData = new FormData();
+                formData.append('user_id', userId);
+                const res = await fetch(`/api/posts/${postId}/like`, { method: 'POST', body: formData });
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('likeBtn').innerText = data.liked ? '❤️' : '🤍';
+                    document.getElementById('likeCount').innerText = data.like_count;
+                }
+            }
+
+            async function loadMapWithKey(keyword) {
+                try {
+                    const res = await fetch('/api/config/kakao');
+                    const data = await res.json();
+                    const script = document.createElement('script');
+                    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${data.key}&libraries=services&autoload=false`;
+                    document.head.appendChild(script);
+                    script.onload = () => {
+                        kakao.maps.load(() => {
+                            const mapContainer = document.getElementById('map');
+                            const map = new kakao.maps.Map(mapContainer, { center: new kakao.maps.LatLng(37.56, 126.97), level: 3 });
+                            const ps = new kakao.maps.services.Places();
+                            ps.keywordSearch(keyword, (result, status) => {
+                                if (status === kakao.maps.services.Status.OK) {
+                                    mapContainer.style.display = 'block'; 
+                                    const loc = new kakao.maps.LatLng(result[0].y, result[0].x);
+                                    new kakao.maps.Marker({ map, position: loc });
+                                    map.setCenter(loc);
+                                }
+                            });
+                        });
+                    };
+                } catch (e) {}
+            }
+
             document.getElementById('commentForm').onsubmit = async (e) => {
                 e.preventDefault();
-                const userId = localStorage.getItem('user_id');
-                if (!userId) {
-                    alert("로그인이 필요합니다.");
-                    sessionStorage.setItem('return_url', window.location.pathname);
-                    window.location.href = '/login';
-                    return;
-                }
-
                 const formData = new FormData(e.target);
                 formData.append('post_id', postId);
                 formData.append('user_id', userId);
-
                 const res = await fetch('/api/comments', { method: 'POST', body: formData });
-                if(res.ok) {
-                    document.querySelector('textarea[name="content"]').value = ''; 
-                    loadPostDetail(); 
-                } else {
-                    alert("댓글 등록에 실패했습니다.");
-                }
+                if(res.ok) { e.target.content.value = ''; loadPostDetail(); }
             };
 
             loadPostDetail();
