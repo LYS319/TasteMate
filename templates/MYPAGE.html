@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="ko">
+<<<<<<< HEAD
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>내 회원정보</title>
+    <style>
+        body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: #fff5f5; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1); }
+        .header-logo { font-size: 1.5rem; font-weight: bold; color: #dc2626; text-decoration: none; }
+        .container { max-width: 500px; margin: 60px auto; padding: 40px; border-radius: 16px; background: #fff; box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08); }
+        .title { font-size: 2rem; font-weight: 900; color: #dc2626; margin-bottom: 30px; text-align: center; }
+        .info-box { background: #fff8f8; border: 1.5px solid #ffe5e5; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .info-label { font-weight: bold; color: #b91c1c; font-size: 1.1rem; margin-bottom: 5px; }
+        .info-value { font-size: 1.3rem; color: #333; margin-bottom: 20px; }
+        .stats-box { display: flex; gap: 15px; }
+        .stat { flex: 1; text-align: center; background: #fff; border: 1px solid #ffe5e5; border-radius: 10px; padding: 15px; }
+        .stat-num { font-size: 1.8rem; font-weight: 900; color: #dc2626; }
+        .back-btn { display: block; width: 100%; text-align: center; padding: 15px 0; background: #dc2626; color: #fff; font-weight: bold; font-size: 1.2rem; border: none; border-radius: 8px; margin-top: 30px; cursor: pointer; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/main" class="header-logo">TasteMate</a>
+    </header>
+    <div class="container">
+        <div class="title">👤 내 회원정보</div>
+        <div class="info-box">
+            <div class="info-label">닉네임</div>
+            <div class="info-value" id="my-nickname">로딩중...</div>
+            <div class="info-label">이메일 (아이디)</div>
+            <div class="info-value" id="my-email">로딩중...</div>
+        </div>
+        <div class="stats-box">
+            <div class="stat">
+                <div style="font-size:1rem; color:#888;">내가 쓴 게시글</div>
+                <div class="stat-num" id="my-posts">0</div>
+            </div>
+            <div class="stat">
+                <div style="font-size:1rem; color:#888;">내가 쓴 댓글</div>
+                <div class="stat-num" id="my-comments">0</div>
+            </div>
+        </div>
+        <button class="back-btn" onclick="location.href='/main'">메인으로 돌아가기</button>
+    </div>
+
+    <script>
+        async function loadMyInfo() {
+            const userId = localStorage.getItem('user_id');
+            if (!userId) {
+                alert("로그인이 만료되었습니다.");
+                window.location.href = '/login';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/users/${userId}/me`);
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('my-nickname').innerText = data.nickname;
+                    document.getElementById('my-email').innerText = data.email;
+                    document.getElementById('my-posts').innerText = data.post_count + "개";
+                    document.getElementById('my-comments').innerText = data.comment_count + "개";
+                }
+            } catch (e) {
+                alert("데이터를 불러올 수 없습니다.");
+            }
+        }
+        loadMyInfo();
+    </script>
+</body>
+</html>
+=======
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>내 회원정보</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: #fff5f5;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 32px;
+                background: rgba(255, 255, 255, 0.85);
+                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
+            }
+            .header-logo {
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: #dc2626;
+                text-decoration: none;
+            }
+            .container {
+                max-width: 500px;
+                margin: 60px auto;
+                padding: 40px;
+                border-radius: 16px;
+                background: #fff;
+                box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08);
+            }
+            .title {
+                font-size: 2rem;
+                font-weight: 900;
+                color: #dc2626;
+                margin-bottom: 30px;
+                text-align: center;
+            }
+            .info-box {
+                background: #fff8f8;
+                border: 1.5px solid #ffe5e5;
+                padding: 20px;
+                border-radius: 12px;
+                margin-bottom: 20px;
+            }
+            .info-label {
+                font-weight: bold;
+                color: #b91c1c;
+                font-size: 1.1rem;
+                margin-bottom: 5px;
+            }
+            .info-value {
+                font-size: 1.3rem;
+                color: #333;
+                margin-bottom: 20px;
+            }
+            .stats-box {
+                display: flex;
+                gap: 15px;
+            }
+            .stat {
+                flex: 1;
+                text-align: center;
+                background: #fff;
+                border: 1px solid #ffe5e5;
+                border-radius: 10px;
+                padding: 15px;
+            }
+            .stat-num {
+                font-size: 1.8rem;
+                font-weight: 900;
+                color: #dc2626;
+            }
+            .back-btn {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 15px 0;
+                background: #dc2626;
+                color: #fff;
+                font-weight: bold;
+                font-size: 1.2rem;
+                border: none;
+                border-radius: 8px;
+                margin-top: 30px;
+                cursor: pointer;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <header class="header">
+            <a href="/main" class="header-logo">TasteMate</a>
+        </header>
+        <div class="container">
+            <div class="title">👤 내 회원정보</div>
+            <div class="info-box">
+                <div class="info-label">닉네임</div>
+                <div class="info-value" id="my-nickname">로딩중...</div>
+                <input
+                    type="text"
+                    id="edit-nickname"
+                    placeholder="새 닉네임 입력"
+                    style="
+                        width: 100%;
+                        padding: 8px;
+                        margin-bottom: 10px;
+                        border-radius: 6px;
+                        border: 1px solid #ffe5e5;
+                    "
+                />
+                <button
+                    onclick="updateNickname()"
+                    style="
+                        width: 100%;
+                        padding: 8px;
+                        background: #dc2626;
+                        color: #fff;
+                        border: none;
+                        border-radius: 6px;
+                        font-weight: bold;
+                        margin-bottom: 16px;
+                    "
+                >
+                    닉네임 변경
+                </button>
+                <div class="info-label">이메일 (아이디)</div>
+                <div class="info-value" id="my-email">로딩중...</div>
+                <input
+                    type="email"
+                    id="edit-email"
+                    placeholder="새 이메일 입력"
+                    style="
+                        width: 100%;
+                        padding: 8px;
+                        margin-bottom: 10px;
+                        border-radius: 6px;
+                        border: 1px solid #ffe5e5;
+                    "
+                />
+                <button
+                    onclick="updateEmail()"
+                    style="
+                        width: 100%;
+                        padding: 8px;
+                        background: #dc2626;
+                        color: #fff;
+                        border: none;
+                        border-radius: 6px;
+                        font-weight: bold;
+                        margin-bottom: 16px;
+                    "
+                >
+                    이메일 변경
+                </button>
+                <div class="info-label">비밀번호 변경</div>
+                <input
+                    type="password"
+                    id="old-password"
+                    placeholder="기존 비밀번호 입력"
+                    style="
+                        width: 100%;
+                        padding: 8px;
+                        margin-bottom: 10px;
+                        border-radius: 6px;
+                        border: 1px solid #ffe5e5;
+                    "
+                />
+                <input
+                    type="password"
+                    id="edit-password"
+                    placeholder="새 비밀번호 입력"
+                    style="
+                        width: 100%;
+                        padding: 8px;
+                        margin-bottom: 10px;
+                        border-radius: 6px;
+                        border: 1px solid #ffe5e5;
+                    "
+                />
+                <button
+                    onclick="updatePassword()"
+                    style="
+                        width: 100%;
+                        padding: 8px;
+                        background: #dc2626;
+                        color: #fff;
+                        border: none;
+                        border-radius: 6px;
+                        font-weight: bold;
+                        margin-bottom: 16px;
+                    "
+                >
+                    비밀번호 변경
+                </button>
+                <button
+                    onclick="withdrawUser()"
+                    style="
+                        width: 100%;
+                        padding: 8px;
+                        background: #fff;
+                        color: #dc2626;
+                        border: 1.5px solid #dc2626;
+                        border-radius: 6px;
+                        font-weight: bold;
+                    "
+                >
+                    회원 탈퇴
+                </button>
+            </div>
+            <div class="stats-box">
+                <div class="stat">
+                    <div style="font-size: 1rem; color: #888">내가 쓴 게시글</div>
+                    <div class="stat-num" id="my-posts">0</div>
+                </div>
+                <div class="stat">
+                    <div style="font-size: 1rem; color: #888">내가 쓴 댓글</div>
+                    <div class="stat-num" id="my-comments">0</div>
+                </div>
+            </div>
+            <button class="back-btn" onclick="location.href = '/main'">메인으로 돌아가기</button>
+        </div>
+
+        <script>
+            async function loadMyInfo() {
+                const userId = localStorage.getItem('user_id');
+                if (!userId) {
+                    alert('로그인이 만료되었습니다.');
+                    window.location.href = '/login';
+                    return;
+                }
+                try {
+                    const res = await fetch(`/api/users/${userId}/me`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        document.getElementById('my-nickname').innerText = data.nickname;
+                        document.getElementById('my-email').innerText = data.email;
+                        document.getElementById('my-posts').innerText = data.post_count + '개';
+                        document.getElementById('my-comments').innerText = data.comment_count + '개';
+                    }
+                } catch (e) {
+                    alert('데이터를 불러올 수 없습니다.');
+                }
+            }
+            loadMyInfo();
+
+            async function updateNickname() {
+                const userId = localStorage.getItem('user_id');
+                const newNickname = document.getElementById('edit-nickname').value.trim();
+                if (!newNickname) {
+                    alert('새 닉네임을 입력하세요.');
+                    return;
+                }
+                const fd = new FormData();
+                fd.append('nickname', newNickname);
+                const res = await fetch(`/api/users/${userId}/nickname`, { method: 'PATCH', body: fd });
+                if (res.ok) {
+                    const result = await res.json();
+                    alert('닉네임이 변경되었습니다.');
+                    // localStorage의 nickname 값도 갱신
+                    localStorage.setItem('nickname', result.nickname);
+                    loadMyInfo();
+                } else {
+                    alert('닉네임 변경 실패');
+                }
+            }
+            async function updateEmail() {
+                const userId = localStorage.getItem('user_id');
+                const newEmail = document.getElementById('edit-email').value.trim();
+                if (!newEmail) {
+                    alert('새 이메일을 입력하세요.');
+                    return;
+                }
+                const fd = new FormData();
+                fd.append('email', newEmail);
+                const res = await fetch(`/api/users/${userId}/email`, { method: 'PATCH', body: fd });
+                if (res.ok) {
+                    alert('이메일이 변경되었습니다.');
+                    loadMyInfo();
+                } else {
+                    alert('이메일 변경 실패');
+                }
+            }
+            async function updatePassword() {
+                const userId = localStorage.getItem('user_id');
+                const oldPw = document.getElementById('old-password').value.trim();
+                const newPw = document.getElementById('edit-password').value.trim();
+                if (!oldPw) {
+                    alert('기존 비밀번호를 입력하세요.');
+                    return;
+                }
+                if (!newPw) {
+                    alert('새 비밀번호를 입력하세요.');
+                    return;
+                }
+                const fd = new FormData();
+                fd.append('old_password', oldPw);
+                fd.append('password', newPw);
+                const res = await fetch(`/api/users/${userId}/password`, { method: 'PATCH', body: fd });
+                if (res.ok) {
+                    alert('비밀번호가 변경되었습니다.');
+                } else {
+                    const data = await res.json();
+                    alert(data.detail || '비밀번호 변경 실패');
+                }
+            }
+            async function withdrawUser() {
+                const userId = localStorage.getItem('user_id');
+                if (!confirm('정말 회원 탈퇴하시겠습니까?')) return;
+                const res = await fetch(`/api/users/${userId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    alert('회원 탈퇴 완료');
+                    localStorage.clear();
+                    window.location.href = '/main';
+                } else {
+                    alert('회원 탈퇴 실패');
+                }
+            }
+        </script>
+    </body>
+</html>
+>>>>>>> Community-junyoung
