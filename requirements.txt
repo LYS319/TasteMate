@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy
+pymysql
+python-dotenv
+starlette
+jinja2
+pydantic-settings
+google-generativeai

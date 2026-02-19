@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>테이스트메이트 - 1인당 계산기</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* --- 예시 코드(핀볼)의 스타일 변수 및 규격 이식 --- */
+            :root {
+                --primary-color: #dc2626;
+                --primary-hover: #b91c1c;
+                --bg-gradient: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
+                --glass-bg: rgba(255, 255, 255, 0.85);
+            }
+
+            body {
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: var(--bg-gradient);
+                color: #333;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* --- 상단바: 예시 코드와 1:1 동일하게 수정 --- */
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 32px;
+                background: var(--glass-bg);
+                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
+                backdrop-filter: blur(12px);
+                position: sticky;
+                top: 0;
+                z-index: 2000;
+                box-sizing: border-box;
+                width: 100%;
+            }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 24px;
+            }
+            .header-logo {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 1.5rem;
+                font-weight: 900; /* 두께 900으로 상향 */
+                color: var(--primary-color);
+                text-decoration: none;
+                transition: transform 0.2s;
+            }
+            .header-logo:hover {
+                transform: scale(1.05);
+            }
+            .menu-bar {
+                display: flex;
+                gap: 18px;
+                align-items: center;
+                margin-left: 24px;
+            }
+            .menu-item {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: var(--primary-color);
+                text-decoration: none;
+                padding: 8px 18px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background 0.18s;
+            }
+            .menu-item:hover {
+                background: #fff5f5;
+            }
+
+            .game-dropdown {
+                position: relative;
+            }
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                top: 36px;
+                left: 0;
+                background: #fff;
+                min-width: 140px;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+                border-radius: 12px;
+                padding: 12px 0;
+                z-index: 1000;
+                flex-direction: column;
+            }
+            .game-dropdown:hover .dropdown-content {
+                display: flex;
+            }
+            .dropdown-content a {
+                color: var(--primary-color);
+                padding: 10px 24px;
+                text-decoration: none;
+                font-size: 1.05rem;
+                font-weight: 600;
+                border-radius: 8px;
+                transition: background 0.18s;
+            }
+            .dropdown-content a:hover {
+                background: #ffe5e5;
+            }
+
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .login-btn {
+                padding: 8px 16px;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.95rem;
+                font-weight: bold;
+                cursor: pointer;
+                background: var(--primary-color);
+                transition: background 0.2s;
+            }
+
+            /* --- 계산기 컨텐츠 디자인 (핀볼 스타일 박스 적용) --- */
+            .main-content {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 40px 20px;
+            }
+            .calc-container {
+                background: white;
+                padding: 40px;
+                border-radius: 32px; /* 핀볼 setup 박스 규격 */
+                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.15);
+                min-width: 360px;
+                max-width: 440px;
+                text-align: center;
+                border: 2px solid var(--primary-color);
+            }
+            .calc-title {
+                color: var(--primary-color);
+                margin-bottom: 25px;
+                font-size: 2.1rem;
+                font-weight: 900;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+            }
+            .calc-form {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+            .calc-label {
+                font-size: 1.1rem;
+                font-weight: 800;
+                color: #444;
+                margin-bottom: 8px;
+                text-align: left;
+                border-left: 4px solid var(--primary-color);
+                padding-left: 10px;
+            }
+            .calc-input {
+                padding: 14px;
+                border: 2px solid #ddd;
+                border-radius: 12px;
+                font-size: 1.1rem;
+                width: 100%;
+                box-sizing: border-box;
+                text-align: center;
+                outline: none;
+                transition: border-color 0.2s;
+            }
+            .calc-input:focus {
+                border-color: var(--primary-color);
+            }
+            .calc-btn {
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                padding: 15px 0;
+                border-radius: 12px;
+                font-size: 1.2rem;
+                font-weight: 800;
+                cursor: pointer;
+                margin-top: 10px;
+                transition: 0.2s;
+            }
+            .calc-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+            }
+            .calc-result {
+                margin-top: 25px;
+                color: var(--primary-color);
+                background: #fff5f5;
+                border: 1.5px solid #ffebeb;
+                border-radius: 15px;
+                padding: 20px;
+                display: none;
+                flex-direction: column;
+                gap: 10px;
+                animation: slideIn 0.3s ease-out;
+            }
+            @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        </style>
+    </head>
+    <body>
+        <header class="header">
+            <div class="header-left">
+                <a href="/main" class="header-logo">TasteMate</a>
+                <nav class="menu-bar">
+                    <a class="menu-item" href="/aichat">AI추천</a>
+                    <a class="menu-item" href="/community">커뮤니티</a>
+                    <div class="menu-item game-dropdown">
+                        <span>게임 ▾</span>
+                        <div class="dropdown-content">
+                            <a href="/game/pinball">핀볼</a>
+                            <a href="/game/ladder">사다리타기</a>
+                            <a href="/game/random_amount">룰렛 게임</a>
+                            <a href="/game/worldcup">음식 월드컵</a>
+                            <a href="/game/calculator">계산기</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="header-right" id="headerRightArea">
+                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626; margin-left:5px;" onclick="location.href = '/signup'">회원가입</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="calc-container">
+                <div class="calc-title"><span>🧮</span> 1인당 계산기</div>
+                <form class="calc-form" onsubmit="event.preventDefault(); calculateAmount();">
+                    <div>
+                        <div class="calc-label">👥 인원수</div>
+                        <input id="calcPeople" class="calc-input" type="number" min="1" placeholder="몇 명인가요?" />
+                    </div>
+                    <div>
+                        <div class="calc-label">💰 총 금액</div>
+                        <input id="calcAmount" class="calc-input" type="text" placeholder="금액을 입력하세요" />
+                    </div>
+                    <button class="calc-btn" type="submit">정산하기</button>
+                </form>
+                <div id="calcResult" class="calc-result"></div>
+            </div>
+        </main>
+
+        <script>
+            /* --- 로직 유지: 로그인/로그아웃 --- */
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+
+                if (nickname && headerRightArea) {
+                    let adminButton = '';
+                    if (isAdmin === '1') {
+                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자</button>`;
+                    }
+                    headerRightArea.innerHTML = `
+                        <span style="font-weight: 700; color: #dc2626; font-size: 1.05rem; margin-right: 8px;">👤 ${nickname}님</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="location.href='/mypage'" style="background: #f39c12; margin-left:4px;">정보</button>
+                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:4px;">로그아웃</button>
+                    `;
+                }
+            });
+
+            function logout() {
+                localStorage.clear();
+                alert('로그아웃 되었습니다.');
+                window.location.href = '/main';
+            }
+
+            /* --- 로직 유지: 계산기 수식 --- */
+            const calcAmountInput = document.getElementById('calcAmount');
+            calcAmountInput.addEventListener('input', function (e) {
+                let value = calcAmountInput.value.replace(/[^0-9]/g, '');
+                if (value) { calcAmountInput.value = Number(value).toLocaleString(); }
+                else { calcAmountInput.value = ''; }
+            });
+
+            function calculateAmount() {
+                const people = parseInt(document.getElementById('calcPeople').value);
+                const amountRaw = document.getElementById('calcAmount').value.replace(/,/g, '');
+                const amount = parseInt(amountRaw);
+                const resultDiv = document.getElementById('calcResult');
+
+                if (!people || !amount || people < 1 || amount < 0) {
+                    resultDiv.style.display = 'flex';
+                    resultDiv.innerHTML = '❗ 입력값이 올바르지 않습니다.';
+                    return;
+                }
+
+                const perPerson = Math.floor(amount / people / 100) * 100;
+                const remain = amount - perPerson * people;
+
+                resultDiv.style.display = 'flex';
+                resultDiv.innerHTML = `
+                    <div style="font-size: 1.3rem;">💸 1인당 <b>${perPerson.toLocaleString()}원</b></div>
+                    <div style="font-size: 1rem; color: #666;">🪙 남는 금액 <b>${remain.toLocaleString()}원</b></div>
+                `;
+            }
+        </script>
+    </body>
+</html>

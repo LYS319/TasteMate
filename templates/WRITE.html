@@ -5,49 +5,304 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 글쓰기</title>
         <style>
-            /* 기존 팀원 스타일 유지 */
-            .menu-toggle-btn { background: none; border: none; font-size: 2.1rem; margin-left: 8px; cursor: pointer; border-radius: 8px; padding: 4px 12px; transition: background 0.18s; }
-            .menu-toggle-btn:hover { background: #ffe5e5; }
-            #mainNavMenu { min-width: 140px; animation: fadeInMenu 0.18s; position: absolute; top: 60px; left: 32px; background: #fff; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13); border-radius: 12px; padding: 18px 24px 14px 24px; z-index: 1000; display: none; }
-            @keyframes fadeInMenu { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-            .nav-emoji-btn { background: none; border: none; font-size: 1.7rem; margin: 0 2px; cursor: pointer; border-radius: 8px; padding: 4px 10px; transition: background 0.18s; }
-            body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: #fff; }
-            .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1); backdrop-filter: blur(12px); }
-            .header-logo { display: flex; align-items: center; gap: 18px; font-size: 1.5rem; font-weight: bold; color: #dc2626; text-decoration: none; }
-            .login-btn { padding: 8px 16px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-            .write-main { max-width: 520px; margin: 60px auto 0 auto; padding: 0 16px; }
-            .write-title { font-size: 2rem; font-weight: 900; color: #dc2626; margin-bottom: 24px; letter-spacing: 1px; }
-            .write-form { display: flex; flex-direction: column; gap: 18px; }
-            .write-form label { font-size: 1.08rem; font-weight: 600; color: #b91c1c; margin-bottom: 6px; }
-            .write-form input, .write-form textarea, .write-form select { font-size: 1.08rem; padding: 10px 14px; border: 1.5px solid #ffe5e5; border-radius: 6px; background: #fff8f8; width: 100%; box-sizing: border-box; }
-            .write-form textarea { min-height: 120px; resize: none; }
-            .submit-btn { padding: 10px 32px; background: #dc2626; color: #fff; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: 700; cursor: pointer; }
-            .cancel-btn { padding: 10px 24px; background: #fff; color: #dc2626; border: 1.5px solid #dc2626; border-radius: 6px; font-size: 1.1rem; font-weight: 700; cursor: pointer; }
-
-            /* 🌟 공지사항 영역 스타일 추가 */
-            #noticeDiv { 
-                display: none; 
-                margin-top: 5px; 
-                padding: 15px; 
-                background: #fff0f0; 
-                border: 2px dashed #dc2626; 
-                border-radius: 10px; 
+            @media (max-width: 600px) {
+                .header {
+                    padding: 10px 8px;
+                    font-size: 1.1rem;
+                }
+                .write-main {
+                    max-width: 100%;
+                    margin: 40px 0 0 0;
+                    padding: 0 4px;
+                }
+                .write-title {
+                    font-size: 1.2rem;
+                }
+                .write-form input,
+                .write-form textarea {
+                    font-size: 1rem;
+                    padding: 8px 8px;
+                }
+                .write-btn-main {
+                    font-size: 1rem;
+                    padding: 12px 0;
+                }
+            }
+            .menu-toggle-btn {
+                background: none;
+                border: none;
+                font-size: 2.1rem;
+                margin-left: 8px;
+                cursor: pointer;
+                border-radius: 8px;
+                padding: 4px 12px;
+                transition: background 0.18s;
+            }
+            .menu-toggle-btn:hover {
+                background: #ffe5e5;
+            }
+            #mainNavMenu {
+                min-width: 140px;
+                animation: fadeInMenu 0.18s;
+                position: absolute;
+                top: 60px;
+                left: 32px;
+                background: #fff;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+                border-radius: 12px;
+                padding: 18px 24px 14px 24px;
+                z-index: 1000;
+                display: none;
+            }
+            @keyframes fadeInMenu {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .nav-emoji-btn {
+                background: none;
+                border: none;
+                font-size: 1.7rem;
+                margin: 0 2px;
+                cursor: pointer;
+                border-radius: 8px;
+                padding: 4px 10px;
+                transition: background 0.18s;
+            }
+            .nav-emoji-btn:hover,
+            .nav-emoji-btn.active {
+                background: #ffe5e5;
+            }
+            body {
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: #fff;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 32px;
+                background: rgba(255, 255, 255, 0.85);
+                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
+                backdrop-filter: blur(12px);
+            }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 24px;
+            }
+            .header-logo {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: #dc2626;
+                text-decoration: none;
+                transition: transform 0.2s;
+            }
+            .header-logo:hover {
+                transform: scale(1.05);
+            }
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .current-location {
+                font-size: 0.95rem;
+                color: #dc2626;
+                background: #fff5f5;
+                border: 1px solid #ffe5e5;
+                border-radius: 6px;
+                padding: 8px 14px;
+                font-weight: 700;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .current-location:hover {
+                background: #ffe5e5;
+            }
+            .login-btn {
+                padding: 8px 16px;
+                background: #dc2626;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.95rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .login-btn:hover {
+                background: #b91c1c;
+            }
+            .write-main {
+                max-width: 520px;
+                margin: 60px auto 0 auto;
+                padding: 0 16px;
+            }
+            .write-title {
+                font-size: 2rem;
+                font-weight: 900;
+                color: #dc2626;
+                margin-bottom: 24px;
+                letter-spacing: 1px;
+            }
+            .write-form {
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+            }
+            .write-form label {
+                font-size: 1.08rem;
+                font-weight: 600;
+                color: #b91c1c;
+                margin-bottom: 6px;
+            }
+            .write-form input,
+            .write-form textarea,
+            .write-form select {
+                font-size: 1.08rem;
+                padding: 10px 14px;
+                border: 1.5px solid #ffe5e5;
+                border-radius: 6px;
+                background: #fff8f8;
+                resize: none;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .write-form textarea {
+                min-height: 120px;
+            }
+            .write-form .form-actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+            }
+            .submit-btn {
+                padding: 10px 32px;
+                background: #dc2626;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 1.1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .submit-btn:hover {
+                background: #b91c1c;
+            }
+            .cancel-btn {
+                padding: 10px 24px;
+                background: #fff;
+                color: #dc2626;
+                border: 1.5px solid #dc2626;
+                border-radius: 6px;
+                font-size: 1.1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition:
+                    background 0.2s,
+                    color 0.2s;
+            }
+            .cancel-btn:hover {
+                background: #ffe5e5;
+                color: #b91c1c;
             }
         </style>
+        <script>
+            // 수정 모드: /write?edit=ID로 접근 시 기존 글 데이터 자동 입력
+            document.addEventListener('DOMContentLoaded', async () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const editId = urlParams.get('edit');
+                if (editId) {
+                    try {
+                        const res = await fetch(`/api/posts/detail/${editId}`);
+                        if (!res.ok) throw new Error('글 정보를 불러올 수 없습니다.');
+                        const data = await res.json();
+                        document.getElementById('category').value = data.category;
+                        document.getElementById('title').value = data.title;
+                        document.getElementById('content').value = data.content;
+                        // 공지글 체크박스
+                        if (data.is_notice && document.getElementById('is_notice')) {
+                            document.getElementById('is_notice').checked = !!data.is_notice;
+                        }
+                        // 버튼 텍스트 변경
+                        document.querySelector('.write-title').innerText = '✏️ 글 수정';
+                        document.querySelector('.submit-btn').innerText = '수정';
+                        // 수정 시 등록 이벤트를 수정 API로 변경
+                        document.getElementById('writeForm').onsubmit = async (e) => {
+                            e.preventDefault();
+                            const userId = localStorage.getItem('user_id');
+                            if (!userId) {
+                                alert('로그인이 필요한 서비스입니다.');
+                                sessionStorage.setItem('return_url', '/write');
+                                window.location.href = '/login';
+                                return;
+                            }
+                            const formData = new FormData(e.target);
+                            formData.append('user_id', userId);
+                            if (document.getElementById('is_notice') && document.getElementById('is_notice').checked) {
+                                formData.append('is_notice', '1');
+                            }
+                            try {
+                                const res = await fetch(`/api/posts/${editId}/edit`, {
+                                    method: 'POST',
+                                    body: formData,
+                                });
+                                const data = await res.json();
+                                if (res.ok) {
+                                    alert('게시글이 성공적으로 수정되었습니다!');
+                                    window.location.href = data.redirect;
+                                } else {
+                                    alert(data.detail || '글 수정에 실패했습니다.');
+                                }
+                            } catch (err) {
+                                alert('서버 연결에 실패했습니다.');
+                            }
+                        };
+                    } catch (err) {
+                        alert('글 정보를 불러올 수 없습니다.');
+                    }
+                }
+            });
+            function toggleMenu() {
+                const menu = document.getElementById('mainNavMenu');
+                menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+            }
+        </script>
     </head>
     <body>
         <header class="header">
             <div class="header-left">
-                <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>
+                <button class="menu-toggle-btn" aria-label="메뉴 열기" onclick="toggleMenu()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
-                <nav id="mainNavMenu">
-                    <button class="nav-emoji-btn" onclick="location.href = '/main'">🏠 홈</button><br />
-                    <button class="nav-emoji-btn" onclick="location.href = '/aichat'">🤖 AI추천</button><br />
-                    <button class="nav-emoji-btn" onclick="location.href = '/community'">🧑‍🤝‍🧑 커뮤니티</button>
+                <nav class="main-nav" id="mainNavMenu">
+                    <button class="nav-emoji-btn" onclick="location.href = '/main'" title="홈">🏠 홈</button><br />
+                    <button class="nav-emoji-btn" onclick="location.href = '/aichat'" title="AI추천">🤖 AI추천</button
+                    ><br />
+                    <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">
+                        🧑‍🤝‍🧑 커뮤니티
+                    </button>
                 </nav>
             </div>
             <div class="header-right" id="headerRightArea">
                 <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                <button
+                    class="login-btn"
+                    style="background: #fff; color: #dc2626; border: 1px solid #dc2626"
+                    onclick="location.href = '/signup'"
+                >
+                    회원가입
+                </button>
             </div>
         </header>
 
@@ -72,15 +327,14 @@
                     <label for="content">내용</label>
                     <textarea id="content" name="content" placeholder="내용을 입력하세요" required></textarea>
                 </div>
-
-                <div id="noticeDiv">
-                    <label style="display: flex; align-items: center; cursor: pointer; color: #dc2626; margin-bottom: 0;">
-                        <input type="checkbox" id="is_notice" name="is_notice" value="1" style="width: 20px; height: 20px; margin-right: 12px;">
-                        📢 이 게시글을 상단 공지사항으로 등록합니다
-                    </label>
+                <div>
+                    <label for="image">이미지 업로드</label>
+                    <input type="file" id="image" name="image" accept="image/*" />
                 </div>
-
-                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px;">
+                <div id="noticeDiv" style="display: none">
+                    <label><input type="checkbox" id="is_notice" name="is_notice" value="1" /> 공지글로 등록</label>
+                </div>
+                <div class="form-actions">
                     <button type="submit" class="submit-btn">등록</button>
                     <button type="button" class="cancel-btn" onclick="history.back()">취소</button>
                 </div>
@@ -88,46 +342,87 @@
         </main>
 
         <script>
-            function toggleMenu() {
-                const menu = document.getElementById('mainNavMenu');
-                menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
-            }
-
+            // 공통 헤더 로그인/GPS 로직
             document.addEventListener('DOMContentLoaded', () => {
                 const nickname = localStorage.getItem('nickname');
                 const isAdmin = localStorage.getItem('is_admin');
                 const headerRightArea = document.getElementById('headerRightArea');
 
-                // 1. 로그인 상태 헤더 처리
                 if (nickname && headerRightArea) {
+                    let adminButton = '';
+                    if (isAdmin === '1') {
+                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자 기능</button>`;
+                    }
                     headerRightArea.innerHTML = `
-                        <span style="font-weight: 700; color: #dc2626; margin-right: 10px;">👤 ${nickname}님</span>
-                        <button class="login-btn" onclick="localStorage.clear(); location.href='/main';" style="background: #666;">로그아웃</button>
+                        <span style="font-weight: 700; color: #dc2626; font-size: 1.05rem; margin-right: 5px;">👤 ${nickname}님</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="location.href='/mypage'" style="background: #f39c12;">회원정보</button>
+                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()" title="클릭하여 내 위치 찾기">📍 위치 탐색 (클릭)</span>
                     `;
+                    getGPSLocation();
                 }
+            });
 
-                // 2. 관리자일 때만 공지글 옵션 노출
+            function getGPSLocation() {
+                const locSpan = document.getElementById('gps-location');
+                if (!locSpan) return;
+                if (navigator.geolocation) {
+                    locSpan.innerText = '📍 위치 찾는 중...';
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            try {
+                                const res = await fetch(
+                                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
+                                );
+                                const data = await res.json();
+                                let city = data.address.city || data.address.province || data.address.region || '';
+                                let borough = data.address.borough || data.address.suburb || data.address.town || '';
+                                locSpan.innerText = `📍 ${city} ${borough}`.trim() || '📍 위치 확인됨';
+                            } catch (e) {
+                                locSpan.innerText = '📍 위치 확인됨';
+                            }
+                        },
+                        () => {
+                            locSpan.innerText = '📍 권한 거부됨';
+                        },
+                    );
+                }
+            }
+
+            function logout() {
+                localStorage.clear();
+                alert('안전하게 로그아웃 되었습니다.');
+                window.location.href = '/main';
+            }
+
+            // 관리자만 공지글 체크박스 노출
+            document.addEventListener('DOMContentLoaded', () => {
+                const isAdmin = localStorage.getItem('is_admin');
                 if (isAdmin === '1') {
                     document.getElementById('noticeDiv').style.display = 'block';
                 }
             });
 
-            // 3. 글 등록 로직
+            // 글쓰기 제출 로직
             document.getElementById('writeForm').onsubmit = async (e) => {
                 e.preventDefault();
                 const userId = localStorage.getItem('user_id');
                 if (!userId) {
                     alert('로그인이 필요한 서비스입니다.');
+                    sessionStorage.setItem('return_url', '/write');
                     window.location.href = '/login';
                     return;
                 }
 
                 const formData = new FormData(e.target);
                 formData.append('user_id', userId);
-                
-                // 체크박스가 해제되어 있으면 0으로 전송
-                if (!document.getElementById('is_notice').checked) {
-                    formData.set('is_notice', '0');
+                // 공지글 여부 추가
+                const isNotice = document.getElementById('is_notice');
+                if (isNotice && isNotice.checked) {
+                    formData.append('is_notice', '1');
                 }
 
                 try {
@@ -137,7 +432,11 @@
                         alert('게시글이 성공적으로 등록되었습니다!');
                         window.location.href = data.redirect;
                     } else {
-                        alert(data.detail || '글 등록에 실패했습니다.');
+                        if (data.detail === '차단되어 게시글을 쓸 수 없습니다.') {
+                            alert('차단되어 게시글을 쓸 수 없습니다.');
+                        } else {
+                            alert('글 등록에 실패했습니다.');
+                        }
                     }
                 } catch (err) {
                     alert('서버 연결에 실패했습니다.');

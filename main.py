@@ -1,3 +1,5 @@
+# 병합본 main.py (TasteMate-Community-junyoung 기준)
+# 실제 서비스용으로 최신 기능/라우터/템플릿 반영
 import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException, Form, Request
@@ -8,7 +10,76 @@ from datetime import datetime
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, func
 from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
 
-from config import settings 
+
+from config import settings
+
+# FastAPI 인스턴스 선언 (모든 import 바로 아래, 단 한 번만)
+app = FastAPI(title="Taste Mate Final System")
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+
+# --- Gemini 챗봇용 ---
+from pydantic import BaseModel
+from google import genai
+
+class ChatRequest(BaseModel):
+    message: str
+
+# --- Top Places API용 모델 ---
+class TopPlacesRequest(BaseModel):
+    category: str
+    lat: float
+    lon: float
+
+client = genai.Client(api_key=settings.GEMINI_API_KEY)
+
+@app.post("/api/chat")
+async def chat(request: ChatRequest):
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=f"""
+                당신은 모바일 서비스 '테이스트메이트 AI'입니다.
+
+                ⚠️ 반드시 아래 형식으로만 답변하세요.
+                - 블로그 스타일 금지
+                - 길게 설명 금지
+                - 한눈에 보이도록 간결하게 작성
+                - 모바일 화면에 맞게 줄 간격 유지
+
+                형식:
+
+                🍺 추천 주류:
+                - 한 줄 설명
+
+                🌶 추천 안주 TOP3:
+                1. 안주명 – 한 줄 이유
+                2. 안주명 – 한 줄 이유
+                3. 안주명 – 한 줄 이유
+
+                💡 페어링 포인트:
+                - 두 줄 이내 요약
+
+                사용자 질문:
+                {request.message}
+            """
+        )
+        return {"reply": response.text}
+    except Exception as e:
+        print("🔥 Gemini 에러:", e)
+        return {"reply": "AI 연결에 문제가 발생했습니다."}
+
+
+# --- 위치 기반 인기 장소 추천 API ---
+@app.post("/api/top-places")
+async def top_places(request: TopPlacesRequest):
+    # 실제 구현에서는 외부 API 또는 DB에서 장소를 조회해야 함
+    # 여기서는 예시로 mock 데이터 반환
+    mock_places = [
+        {"name": f"{request.category} 맛집{i+1}", "address": f"서울시 어딘가 {i+1}", "map_url": f"https://map.example.com/{i+1}"}
+        for i in range(5)
+    ]
+    return {"places": mock_places}
 
 load_dotenv()
 
@@ -78,12 +149,12 @@ class ChatHistory(Base):
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Taste Mate Final System")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
-
 script_dir = os.path.dirname(__file__)
 static_path = os.path.join(script_dir, "static")
 app.mount("/static", StaticFiles(directory=static_path), name="static")
+
+food_path = os.path.join(script_dir, "food")
+app.mount("/food", StaticFiles(directory=food_path), name="food")
 
 def get_db():
     db = SessionLocal()
@@ -104,14 +175,30 @@ def admin_page(): return FileResponse("templates/admin.html")
 def community_page(): return FileResponse("templates/COMMUNITY.html")
 @app.get("/category/{cat_name}", response_class=HTMLResponse)
 def category_page(cat_name: str): return FileResponse(f"templates/{cat_name.upper()}.html")
+
+# --- AI 챗봇 화면 라우터 추가 ---
+@app.get("/aichat", response_class=HTMLResponse)
+def aichat_page():
+    return FileResponse("templates/AICHAT.html")
 @app.get("/write", response_class=HTMLResponse)
 def write_page(): return FileResponse("templates/WRITE.html")
 @app.get("/post/{post_id}", response_class=HTMLResponse)
 def post_detail_page(post_id: int): return FileResponse("templates/post_detail.html")
+@app.get("/post_detail/{post_id}", response_class=HTMLResponse)
+def post_detail_page2(post_id: int):
+    return FileResponse("templates/post_detail.html")
 @app.get("/mypage", response_class=HTMLResponse)
 def mypage(): return FileResponse("templates/MYPAGE.html")
 @app.get("/api/config/kakao")
 def get_kakao_key(): return {"key": os.getenv("KAKAO_REST_API_KEY")}
+
+@app.get("/about", response_class=HTMLResponse)
+def about_page():
+    return FileResponse("templates/about.html")
+
+@app.get("/search", response_class=HTMLResponse)
+def search_page():
+    return FileResponse("templates/search.html")
 
 # --- [2. 계정 API] ---
 @app.post("/api/signup")
@@ -173,6 +260,26 @@ def get_posts_by_category(category: str, sort: str = "latest", db: Session = Dep
     posts = query.all()
     return [{"id": p.id, "title": p.title, "content": p.content, "date": p.created_at.strftime("%Y-%m-%d"), "author": p.owner.nickname if p.owner else "익명", "like_count": len(p.likes), "comment_count": len(p.comments), "is_notice": p.is_notice} for p in posts]
 
+@app.get("/api/posts/{category}/popular")
+def get_posts_popular(category: str, db: Session = Depends(get_db)):
+    posts = db.query(Post).filter(Post.category == category.upper()) \
+        .outerjoin(Post.likes) \
+        .group_by(Post.id) \
+        .order_by(Post.is_notice.desc(), func.count(Like.id).desc(), Post.created_at.desc()).all()
+    return [
+        {
+            "id": post.id,
+            "title": post.title,
+            "content": post.content,
+            "nickname": post.owner.nickname if post.owner else "",
+            "created_at": post.created_at.strftime("%Y-%m-%d %H:%M"),
+            "comment_count": len(post.comments),
+            "like_count": len(post.likes),
+            "is_notice": post.is_notice
+        }
+        for post in posts
+    ]
+
 # --- [4. 좋아요 및 댓글 API] ---
 @app.post("/api/posts/{post_id}/like")
 def toggle_like(post_id: int, user_id: int = Form(...), db: Session = Depends(get_db)):
@@ -214,6 +321,25 @@ def admin_list_posts(db: Session = Depends(get_db)):
 def list_users(db: Session = Depends(get_db)): 
     return [{"id": u.id, "email": u.email, "nickname": u.nickname, "is_admin": u.is_admin, "status": u.status} for u in db.query(User).all()]
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="192.168.0.239", port=8000)
+@app.get("/game/pinball", response_class=HTMLResponse)
+def game_pinball():
+    return FileResponse("templates/game_pinball.html")
+
+@app.get("/game/ladder", response_class=HTMLResponse)
+def game_ladder():
+    return FileResponse("templates/game_ladder.html")
+
+@app.get("/game/calculator", response_class=HTMLResponse)
+def game_calculator():
+    return FileResponse("templates/game_calculator.html")
+
+@app.get("/game/random_amount", response_class=HTMLResponse)
+def game_random_amount():
+    return FileResponse("templates/game_random_amount.html")
+
+@app.get("/game/worldcup", response_class=HTMLResponse)
+def game_worldcup():
+    return FileResponse("templates/game_worldcup.html")
+
+
+
