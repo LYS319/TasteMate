@@ -5,28 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 회원가입</title>
         <style>
-            @media (max-width: 600px) {
-                .header {
-                    padding: 10px 8px;
-                    font-size: 1.1rem;
-                }
-                .signup-main {
-                    max-width: 100%;
-                    margin: 40px 0 0 0;
-                    padding: 0 4px;
-                }
-                .signup-title {
-                    font-size: 1.2rem;
-                }
-                .signup-form input {
-                    font-size: 1rem;
-                    padding: 8px 8px;
-                }
-                .signup-btn-main {
-                    font-size: 1rem;
-                    padding: 12px 0;
-                }
-            }
             .menu-toggle-btn {
                 background: none;
                 border: none;
@@ -212,11 +190,15 @@
         <script>
             function toggleMenu() {
                 const menu = document.getElementById('mainNavMenu');
-                menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
             }
         </script>
     </head>
     <body>
+                menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+            }
+        </script>
+    </head>
+    <body class="fade-in">
         <header class="header">
             <div class="header-left">
                 <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>
@@ -268,6 +250,14 @@
                 try {
                     const res = await fetch('/api/signup', { method: 'POST', body: new FormData(e.target) });
                     const data = await res.json();
+                    if (res.ok) {
+                        alert('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
+                        window.location.href = data.redirect;
+                    } else {
+                        alert(data.detail || '회원가입에 실패했습니다.');
+                    }
+                } catch (err) {
+                    alert("서버 통신 오류가 발생했습니다.");
 
                     if (res.ok) {
                         alert('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
@@ -277,6 +267,7 @@
                     }
                 } catch (err) {
                     alert('서버 통신 오류가 발생했습니다.');
+
                 }
             };
         </script>

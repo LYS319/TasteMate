@@ -5,27 +5,50 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 커뮤니티</title>
         <style>
-            @media (max-width: 600px) {
-                .header {
-                    padding: 10px 8px;
-                    font-size: 1.1rem;
+            /* --- 애니메이션 정의 --- */
+            @keyframes fadeInPage {
+                from {
+                    opacity: 0;
                 }
-                .community-main {
-                    max-width: 100%;
-                    margin: 40px 0 0 0;
-                    padding: 0 4px;
-                }
-                .community-title {
-                    font-size: 1.2rem;
-                }
-                .category-btn {
-                    font-size: 1rem;
-                    padding: 10px 0;
-                }
-                .post-card {
-                    padding: 10px 8px 8px 8px;
+                to {
+                    opacity: 1;
                 }
             }
+
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .fade-in {
+                animation: fadeInPage 0.6s ease-out;
+            }
+
+            /* 순차적 등장을 위한 클래스 */
+            .post-card {
+                animation: slideUp 0.5s ease-out forwards;
+                opacity: 0; /* 애니메이션 시작 전 숨김 */
+            }
+            .post-card:nth-child(1) {
+                animation-delay: 0.1s;
+            }
+            .post-card:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+            .post-card:nth-child(3) {
+                animation-delay: 0.3s;
+            }
+            .post-card:nth-child(4) {
+                animation-delay: 0.4s;
+            }
+
+            /* --- 기존 스타일 유지 --- */
             .category-btn-group {
                 display: flex;
                 gap: 18px;
@@ -44,13 +67,15 @@
                 border: 1.5px solid #ffe5e5;
                 cursor: pointer;
                 transition:
-                    background 0.18s,
-                    color 0.18s;
+                    background 0.2s,
+                    color 0.2s,
+                    transform 0.2s; /* transform 추가 */
             }
             .category-btn:hover,
             .category-btn.active {
                 background: #dc2626;
                 color: #fff;
+                transform: scale(1.02); /* 호버 효과 추가 */
             }
             .menu-toggle-btn {
                 background: none;
@@ -140,7 +165,6 @@
                 transform: scale(1.05);
             }
 
-            /* 🚨 헤더 우측 스타일 (메인페이지와 동일하게 맞춤) */
             .header-right {
                 display: flex;
                 align-items: center;
@@ -174,8 +198,8 @@
 
             .community-main {
                 max-width: 800px;
-                margin: 60px auto 0 auto;
-                padding: 0 16px;
+                margin: 0 auto 0 auto;
+                padding: 100px 16px 0 16px;
             }
             .community-title {
                 font-size: 2.2rem;
@@ -206,11 +230,15 @@
                 flex-direction: column;
                 gap: 8px;
                 cursor: pointer;
-                transition: transform 0.2s;
+                transition:
+                    transform 0.2s,
+                    border-color 0.2s,
+                    box-shadow 0.2s;
             }
             .post-card:hover {
-                transform: translateY(-2px);
+                transform: translateY(-5px); /* 좀 더 명확한 부상 효과 */
                 border-color: #dc2626;
+                box-shadow: 0 8px 20px rgba(220, 38, 38, 0.1);
             }
             .post-title {
                 font-size: 1.18rem;
@@ -243,26 +271,42 @@
                 font-size: 1.1rem;
                 font-weight: 700;
                 cursor: pointer;
-                transition: background 0.2s;
+                transition:
+                    background 0.2s,
+                    transform 0.2s;
             }
             .write-btn:hover {
                 background: #b91c1c;
+                transform: translateY(-2px);
             }
+
         </style>
         <script>
             function toggleMenu() {
                 const menu = document.getElementById('mainNavMenu');
-                menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
             }
         </script>
     </head>
     <body>
+
+                menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+            }
+        </script>
+    </head>
+    <body class="fade-in">
+
         <header class="header">
             <div class="header-left">
                 <button class="menu-toggle-btn" aria-label="메뉴 열기" onclick="toggleMenu()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="main-nav" id="mainNavMenu">
                     <button class="nav-emoji-btn" onclick="location.href = '/main'" title="홈">🏠 홈</button><br />
+                </nav>
+            </div>
+
+            <div class="header-right" id="headerRightArea">
+                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                <button class="login-btn" style="background:#fff; color:#dc2626; border:1px solid #dc2626;" onclick="location.href = '/signup'">회원가입</button>
                     <button class="nav-emoji-btn" onclick="location.href = '/aichat'" title="AI추천">🤖 AI추천</button
                     ><br />
                     <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">
@@ -280,12 +324,13 @@
                 >
                     회원가입
                 </button>
-                <!-- COMMUNITY 페이지에서는 검색창 미노출 -->
+
             </div>
         </header>
         <main class="community-main">
             <div class="community-title">🧑‍🤝‍🧑 커뮤니티</div>
             <div class="community-desc">다양한 맛집, 모임, 질문을 자유롭게 공유하고 소통해보세요!</div>
+
 
             <div class="category-btn-group">
                 <button class="category-btn" type="button" onclick="location.href = '/category/solo'">혼밥</button>
@@ -293,6 +338,7 @@
                 <button class="category-btn" type="button" onclick="location.href = '/category/work'">회식</button>
                 <button class="category-btn" type="button" onclick="location.href = '/category/etc'">기타</button>
             </div>
+
 
             <div class="post-list">
                 <div class="post-card" onclick="location.href = '/category/solo'">
@@ -320,6 +366,10 @@
         </main>
 
         <script>
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+                
             document.addEventListener('DOMContentLoaded', () => {
                 const nickname = localStorage.getItem('nickname');
                 const isAdmin = localStorage.getItem('is_admin');
@@ -345,6 +395,31 @@
             function getGPSLocation() {
                 const locSpan = document.getElementById('gps-location');
                 if (!locSpan) return;
+                if (navigator.geolocation) {
+                    locSpan.innerText = '📍 위치 찾는 중...';
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            try {
+                                const res = await fetch(
+                                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
+                                );
+                                const data = await res.json();
+                                let city = data.address.city || data.address.province || data.address.region || '';
+                                let borough = data.address.borough || data.address.suburb || data.address.town || '';
+                                let shortAddr = `${city} ${borough}`.trim();
+                                locSpan.innerText = `📍 ${shortAddr || '위치 확인됨'}`;
+                            } catch (e) {
+                                locSpan.innerText = '📍 위치 확인됨';
+                            }
+                        },
+                        (error) => {
+                            locSpan.innerText = '📍 위치 권한 거부됨';
+                        },
+                    );
+                } else {
+                    locSpan.innerText = "📍 GPS 지원 안됨";
 
                 if (navigator.geolocation) {
                     locSpan.innerText = '📍 위치 찾는 중...';
@@ -371,14 +446,20 @@
                     );
                 } else {
                     locSpan.innerText = '📍 GPS 지원 안됨';
+
                 }
             }
 
             function logout() {
                 localStorage.clear();
+            }
+        </script>
+    </body>
+</html>
                 alert('안전하게 로그아웃 되었습니다.');
                 window.location.href = '/main';
             }
         </script>
     </body>
 </html>
+
