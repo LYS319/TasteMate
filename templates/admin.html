@@ -1,213 +1,500 @@
-<<<<<<< HEAD
-<!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>Taste Mate - 마스터 관리자 센터</title>
-    <style>
-        :root { --primary: #dc2626; --secondary: #2c3e50; --bg: #f4f7f6; --danger: #e74c3c; --success: #2ecc71; --warning: #f39c12; }
-        body { font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif; margin: 0; display: flex; background: var(--bg); color: #333; }
-        .sidebar { width: 250px; background: var(--secondary); color: white; height: 100vh; position: fixed; }
-        .sidebar h2 { text-align: center; border-bottom: 1px solid #3e4f5f; padding: 20px; color: #fff; margin:0;}
-        .menu-item { padding: 18px 25px; cursor: pointer; transition: 0.3s; font-weight: 600; }
-        .menu-item.active { background: var(--primary); font-weight: bold; border-left: 5px solid white; }
-        .menu-item:hover:not(.active) { background: #34495e; }
-        
-        .main-content { margin-left: 250px; padding: 40px; width: calc(100% - 250px); box-sizing: border-box; }
-        .content-section { display: none; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .content-section.active { display: block; animation: fadeIn 0.4s; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #fafafa; font-size: 13px; color: #666; }
-        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
-        .status-normal { background: #e8f5e9; color: var(--success); }
-        .status-banned { background: #ffebee; color: var(--danger); }
-        .btn { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; color: white; font-size: 12px; font-weight: bold; margin-right: 4px; transition: 0.2s;}
-        .btn:hover { opacity: 0.8; }
-        select { padding: 6px; border-radius: 4px; border: 1px solid #ddd; outline: none; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* 모달 스타일 */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 30px; border-radius: 12px; width: 60%; max-height: 80vh; overflow-y: auto; }
-        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .close:hover { color: black; }
-        .activity-box { border: 1px solid #eee; padding: 15px; margin-bottom: 12px; border-radius: 8px; background: #fafafa; }
-    </style>
-</head>
-<body>
-    <div class="sidebar">
-        <h2 style="cursor: pointer;" onclick="location.href='/main'">Taste Mate</h2>
-        <div class="menu-item active" onclick="switchSection('user-mgmt', this)">👤 회원 관리</div>
-        <div class="menu-item" onclick="switchSection('post-mgmt', this)">📝 게시글 관리</div>
-    </div>
-    
-    <div class="main-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 id="page-title" style="margin: 0; color: #2c3e50;">전체 회원 관리 (마스터 모드)</h1>
-            <button class="btn" style="background: var(--secondary); font-size: 14px; padding: 10px 20px;" onclick="location.href='/main'">메인으로 돌아가기</button>
-        </div>
-        
-        <section id="user-mgmt" class="content-section active">
-            <table>
-                <thead><tr><th>ID</th><th>사용자 정보</th><th>권한 설정</th><th>상태</th><th>관리 및 내역</th></tr></thead>
-                <tbody id="user-list"></tbody>
-            </table>
-        </section>
-
-        <section id="post-mgmt" class="content-section">
-            <table>
-                <thead><tr><th>ID</th><th>카테고리</th><th>작성자</th><th>제목</th><th>작성일시</th><th>관리</th></tr></thead>
-                <tbody id="post-list"></tbody>
-            </table>
-        </section>
-    </div>
-
-    <div id="activityModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2 id="modal-title" style="color:var(--primary); margin-top:0;">사용자 활동 내역</h2>
-            <div id="modal-stats" style="font-weight:bold; margin-bottom:20px; color:#666;"></div>
-            <h3>📝 작성한 글</h3>
-            <div id="modal-posts"></div>
-            <h3>💬 작성한 댓글</h3>
-            <div id="modal-comments"></div>
-        </div>
-    </div>
-
-    <script>
-        // 🚨 섹션 전환 스크립트
-        function switchSection(id, el) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            el.classList.add('active');
-            document.getElementById('page-title').innerText = id === 'user-mgmt' ? '전체 회원 관리 (마스터 모드)' : '전체 게시글 관리';
-            
-            // 탭에 따라 데이터 로드
-            if (id === 'user-mgmt') loadUsers();
-            else loadPosts();
-        }
-
-        // --- 1. 회원 관리 기능 ---
-        async function loadUsers() {
-            try {
-                const res = await fetch('/api/admin/users');
-                const users = await res.json();
-                const list = document.getElementById('user-list');
-                list.innerHTML = users.map(u => {
-                    const stat = u.status || "정상";
-                    return `
-                    <tr>
-                        <td>${u.id}</td>
-                        <td><strong>${u.nickname}</strong><br><small style="color:#888;">${u.email}</small></td>
-                        <td>
-                            <select onchange="updateRole(${u.id}, this.value)">
-                                <option value="0" ${u.is_admin === 0 ? 'selected' : ''}>일반 사용자</option>
-                                <option value="1" ${u.is_admin === 1 ? 'selected' : ''}>부관리자</option>
-                            </select>
-                        </td>
-                        <td><span class="status-badge ${stat === '차단' ? 'status-banned' : 'status-normal'}">${stat}</span></td>
-                        <td>
-                            <button class="btn" style="background:var(--primary)" onclick="viewActivity(${u.id})">내역조회</button>
-                            <button class="btn" style="background:var(--warning)" onclick="updateStatus(${u.id}, '${stat === '정상' ? '차단' : '정상'}')">
-                                ${stat === '정상' ? '활동금지' : '금지해제'}
-                            </button>
-                            <button class="btn" style="background:var(--danger)" onclick="kickUser(${u.id})">추방</button>
-                        </td>
-                    </tr>`;
-                }).join('');
-            } catch (error) { console.error("데이터 로드 실패:", error); }
-        }
-
-        async function updateRole(id, val) {
-            const fd = new FormData(); fd.append('is_admin', val);
-            const res = await fetch('/api/admin/users/' + id + '/role', { method: 'PATCH', body: fd });
-            if(res.ok) alert('권한이 변경되었습니다.');
-        }
-
-        async function updateStatus(id, stat) {
-            const msg = stat === '차단' ? '활동을 금지하시겠습니까?' : '금지를 해제하시겠습니까?';
-            if(!confirm(msg)) return;
-            const fd = new FormData(); fd.append('status', stat);
-            const res = await fetch('/api/admin/users/' + id + '/status', { method: 'PATCH', body: fd });
-            if(res.ok) loadUsers();
-        }
-
-        async function kickUser(id) {
-            if(confirm('사용자를 영구 추방하시겠습니까? (작성한 글/댓글도 모두 삭제됩니다)')) {
-                const res = await fetch('/api/admin/users/' + id, { method: 'DELETE' });
-                if(res.ok) loadUsers();
+    <head>
+        <meta charset="UTF-8" />
+        <title>Taste Mate - 마스터 관리자 센터</title>
+        <style>
+            :root {
+                --primary: #dc2626;
+                --secondary: #2c3e50;
+                --bg: #f4f7f6;
+                --danger: #e74c3c;
+                --success: #2ecc71;
+                --warning: #f39c12;
             }
-        }
-
-        // --- 2. 회원 활동 내역 모달창 기능 ---
-        async function viewActivity(userId) {
-            const res = await fetch('/api/admin/users/' + userId + '/activity');
-            if(res.ok) {
-                const data = await res.json();
-                document.getElementById('modal-title').innerText = `${data.nickname}님의 활동 내역`;
-                document.getElementById('modal-stats').innerText = `총 게시글: ${data.post_count}개 | 총 댓글: ${data.comment_count}개`;
-                
-                document.getElementById('modal-posts').innerHTML = data.posts.length > 0 
-                    ? data.posts.map(p => `<div class="activity-box"><strong>[${p.category}] ${p.title}</strong><br><small style="color:#888;">${p.date}</small></div>`).join('') 
-                    : '<p style="color:#999;">작성한 글이 없습니다.</p>';
-                    
-                document.getElementById('modal-comments').innerHTML = data.comments.length > 0 
-                    ? data.comments.map(c => `<div class="activity-box">${c.content}<br><small style="color:#888;">${c.date} (게시글 ID: ${c.post_id})</small></div>`).join('') 
-                    : '<p style="color:#999;">작성한 댓글이 없습니다.</p>';
-
-                document.getElementById('activityModal').style.display = "block";
+            body {
+                font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+                margin: 0;
+                display: flex;
+                background: var(--bg);
+                color: #333;
             }
-        }
-        function closeModal() { document.getElementById('activityModal').style.display = "none"; }
+            .sidebar {
+                width: 250px;
+                background: var(--secondary);
+                color: white;
+                height: 100vh;
+                position: fixed;
+            }
+            .sidebar h2 {
+                text-align: center;
+                border-bottom: 1px solid #3e4f5f;
+                padding: 20px;
+                color: #fff;
+                margin: 0;
+            }
+            .menu-item {
+                padding: 18px 25px;
+                cursor: pointer;
+                transition: 0.3s;
+                font-weight: 600;
+            }
+            .menu-item.active {
+                background: var(--primary);
+                font-weight: bold;
+                border-left: 5px solid white;
+            }
+            .menu-item:hover:not(.active) {
+                background: #34495e;
+            }
 
+            .main-content {
+                margin-left: 250px;
+                padding: 40px;
+                width: calc(100% - 250px);
+                box-sizing: border-box;
+            }
+            .content-section {
+                display: none;
+                background: white;
+                padding: 25px;
+                border-radius: 12px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            }
+            .content-section.active {
+                display: block;
+                animation: fadeIn 0.4s;
+            }
 
-        // --- 3. 🚨 대망의 전체 게시글 관리 기능 ---
-        async function loadPosts() {
-            try {
-                const res = await fetch('/api/admin/posts');
-                const posts = await res.json();
-                const list = document.getElementById('post-list');
-                
-                if (posts.length === 0) {
-                    list.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#999;">등록된 게시글이 없습니다.</td></tr>';
-                    return;
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th,
+            td {
+                padding: 15px;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+            }
+            th {
+                background: #fafafa;
+                font-size: 13px;
+                color: #666;
+            }
+            .status-badge {
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: bold;
+            }
+            .status-normal {
+                background: #e8f5e9;
+                color: var(--success);
+            }
+            .status-banned {
+                background: #ffebee;
+                color: var(--danger);
+            }
+            .btn {
+                padding: 8px 12px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                color: white;
+                font-size: 12px;
+                font-weight: bold;
+                margin-right: 4px;
+                transition: 0.2s;
+            }
+            .btn:hover {
+                opacity: 0.8;
+            }
+            select {
+                padding: 6px;
+                border-radius: 4px;
+                border: 1px solid #ddd;
+                outline: none;
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
                 }
-
-                list.innerHTML = posts.map(p => `
-                    <tr>
-                        <td>${p.id}</td>
-                        <td><strong style="color:var(--primary)">[${p.category}]</strong></td>
-                        <td>${p.author}</td>
-                        <td><a href="/post/${p.id}" target="_blank" style="color:#333; text-decoration:none; font-weight:bold;">${p.title} 🔗</a></td>
-                        <td style="font-size:12px; color:#666;">${p.date}</td>
-                        <td>
-                            <button class="btn" style="background:var(--danger)" onclick="deletePost(${p.id})">강제 삭제</button>
-                        </td>
-                    </tr>`).join('');
-            } catch (error) { console.error("게시글 로드 실패:", error); }
-        }
-
-        async function deletePost(id) {
-            if(confirm('이 게시글을 강제로 삭제하시겠습니까? (복구할 수 없습니다)')) {
-                const res = await fetch('/api/admin/posts/' + id, { method: 'DELETE' });
-                if(res.ok) {
-                    alert('삭제 완료');
-                    loadPosts(); // 목록 새로고침
-                } else {
-                    alert('삭제 실패');
+                to {
+                    opacity: 1;
                 }
             }
-        }
+
+            /* 모달 스타일 */
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+            .modal-content {
+                background-color: #fefefe;
+                margin: 5% auto;
+                padding: 30px;
+                border-radius: 12px;
+                width: 60%;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            .close:hover {
+                color: black;
+            }
+            .activity-box {
+                border: 1px solid #eee;
+                padding: 15px;
+                margin-bottom: 12px;
+                border-radius: 8px;
+                background: #fafafa;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sidebar">
+            <h2 style="cursor: pointer" onclick="location.href = '/main'">Taste Mate</h2>
+            <div class="menu-item active" onclick="switchSection('user-mgmt', this)">👤 회원 관리</div>
+            <div class="menu-item" onclick="switchSection('post-mgmt', this)">📝 게시글 관리</div>
+        </div>
+
+        <div class="main-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px">
+                <h1 id="page-title" style="margin: 0; color: #2c3e50">전체 회원 관리 (마스터 모드)</h1>
+                <button
+                    class="btn"
+                    style="background: var(--secondary); font-size: 14px; padding: 10px 20px"
+                    onclick="location.href = '/main'"
+                >
+                    메인으로 돌아가기
+                </button>
+            </div>
+
+            <section id="user-mgmt" class="content-section active">
+                <div style="display: flex; gap: 24px; margin-bottom: 22px">
+                    <div
+                        style="
+                            background: #fff5f5;
+                            border: 1.5px solid #ffe5e5;
+                            border-radius: 10px;
+                            padding: 18px 28px;
+                            min-width: 140px;
+                            text-align: center;
+                        "
+                    >
+                        <div style="font-size: 1.1rem; color: #dc2626; font-weight: 700">오늘 가입</div>
+                        <div
+                            id="stat-today-signup"
+                            style="font-size: 2rem; font-weight: 900; color: #dc2626; margin-top: 6px"
+                        >
+                            0
+                        </div>
+                    </div>
+                    <div
+                        style="
+                            background: #fff5f5;
+                            border: 1.5px solid #ffe5e5;
+                            border-radius: 10px;
+                            padding: 18px 28px;
+                            min-width: 140px;
+                            text-align: center;
+                        "
+                    >
+                        <div style="font-size: 1.1rem; color: #dc2626; font-weight: 700">오늘 게시글</div>
+                        <div
+                            id="stat-today-post"
+                            style="font-size: 2rem; font-weight: 900; color: #dc2626; margin-top: 6px"
+                        >
+                            0
+                        </div>
+                    </div>
+                    <div
+                        style="
+                            background: #fff5f5;
+                            border: 1.5px solid #ffe5e5;
+                            border-radius: 10px;
+                            padding: 18px 28px;
+                            min-width: 140px;
+                            text-align: center;
+                        "
+                    >
+                        <div style="font-size: 1.1rem; color: #dc2626; font-weight: 700">오늘 댓글</div>
+                        <div
+                            id="stat-today-comment"
+                            style="font-size: 2rem; font-weight: 900; color: #dc2626; margin-top: 6px"
+                        >
+                            0
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 18px; display: flex; align-items: center; gap: 12px">
+                    <label for="user-status-filter" style="font-weight: bold; color: #dc2626">상태:</label>
+                    <select
+                        id="user-status-filter"
+                        onchange="loadUsers()"
+                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd"
+                    >
+                        <option value="">전체</option>
+                        <option value="정상">정상</option>
+                        <option value="차단">차단</option>
+                    </select>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>사용자 정보</th>
+                            <th>권한 설정</th>
+                            <th>상태</th>
+                            <th>관리 및 내역</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-list"></tbody>
+                </table>
+            </section>
+
+            <section id="post-mgmt" class="content-section">
+                <div style="margin-bottom: 18px; display: flex; align-items: center; gap: 12px">
+                    <label for="post-category-filter" style="font-weight: bold; color: #dc2626">카테고리:</label>
+                    <select
+                        id="post-category-filter"
+                        onchange="loadPosts()"
+                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd"
+                    >
+                        <option value="">전체</option>
+                        <option value="SOLO">혼밥</option>
+                        <option value="DATE">데이트</option>
+                        <option value="WORK">회식</option>
+                        <option value="ETC">기타</option>
+                    </select>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>카테고리</th>
+                            <th>작성자</th>
+                            <th>제목</th>
+                            <th>작성일시</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="post-list"></tbody>
+                </table>
+            </section>
+        </div>
+
+        <div id="activityModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2 id="modal-title" style="color: var(--primary); margin-top: 0">사용자 활동 내역</h2>
+                <div id="modal-stats" style="font-weight: bold; margin-bottom: 20px; color: #666"></div>
+                <h3>📝 작성한 글</h3>
+                <div id="modal-posts"></div>
+                <h3>💬 작성한 댓글</h3>
+                <div id="modal-comments"></div>
+            </div>
+        </div>
+
+        <script>
+            // 🚨 섹션 전환 스크립트
+            function switchSection(id, el) {
+                document.querySelectorAll('.content-section').forEach((s) => s.classList.remove('active'));
+                document.querySelectorAll('.menu-item').forEach((m) => m.classList.remove('active'));
+                document.getElementById(id).classList.add('active');
+                el.classList.add('active');
+                document.getElementById('page-title').innerText =
+                    id === 'user-mgmt' ? '전체 회원 관리 (마스터 모드)' : '전체 게시글 관리';
+
+                // 탭에 따라 데이터 로드
+                if (id === 'user-mgmt') loadUsers();
+                else loadPosts();
+            }
+
+            // --- 1. 회원 관리 기능 ---
+            async function loadUsers() {
+                // 오늘 통계 API 연동
+                try {
+                    const statRes = await fetch('/api/admin/stats');
+                    if (statRes.ok) {
+                        const statData = await statRes.json();
+                        document.getElementById('stat-today-signup').innerText = statData.today_signup ?? 0;
+                        document.getElementById('stat-today-post').innerText = statData.today_post ?? 0;
+                        document.getElementById('stat-today-comment').innerText = statData.today_comment ?? 0;
+                    }
+                } catch (e) {
+                    document.getElementById('stat-today-signup').innerText = 0;
+                    document.getElementById('stat-today-post').innerText = 0;
+                    document.getElementById('stat-today-comment').innerText = 0;
+                }
+                try {
+                    const status = document.getElementById('user-status-filter').value;
+                    let url = '/api/admin/users';
+                    if (status && status !== '') url += `?status=${status}`;
+                    const res = await fetch(url);
+                    const users = await res.json();
+                    const list = document.getElementById('user-list');
+                    list.innerHTML = users
+                        .map((u) => {
+                            const stat = u.status || '정상';
+                            return `
+                        <tr>
+                            <td>${u.id}</td>
+                            <td><strong>${u.nickname}</strong><br><small style="color:#888;">${u.email}</small></td>
+                            <td>
+                                <select onchange="updateRole(${u.id}, this.value)">
+                                    <option value="0" ${u.is_admin === 0 ? 'selected' : ''}>일반 사용자</option>
+                                    <option value="1" ${u.is_admin === 1 ? 'selected' : ''}>부관리자</option>
+                                </select>
+                            </td>
+                            <td><span class="status-badge ${stat === '차단' ? 'status-banned' : 'status-normal'}">${stat}</span></td>
+                            <td>
+                                <button class="btn" style="background:var(--primary)" onclick="viewActivity(${u.id})">내역조회</button>
+                                <button class="btn" style="background:var(--warning)" onclick="updateStatus(${u.id}, '${stat === '정상' ? '차단' : '정상'}')">
+                                    ${stat === '정상' ? '활동금지' : '금지해제'}
+                                </button>
+                                <button class="btn" style="background:var(--danger)" onclick="kickUser(${u.id})">추방</button>
+                            </td>
+                        </tr>`;
+                        })
+                        .join('');
+                } catch (error) {
+                    console.error('데이터 로드 실패:', error);
+                }
+            }
+
+            async function updateRole(id, val) {
+                const fd = new FormData();
+                fd.append('is_admin', val);
+                const res = await fetch('/api/admin/users/' + id + '/role', { method: 'PATCH', body: fd });
+                if (res.ok) alert('권한이 변경되었습니다.');
+            }
+
+            async function updateStatus(id, stat) {
+                const msg = stat === '차단' ? '활동을 금지하시겠습니까?' : '금지를 해제하시겠습니까?';
+                if (!confirm(msg)) return;
+                const fd = new FormData();
+                fd.append('status', stat);
+                const res = await fetch('/api/admin/users/' + id + '/status', { method: 'PATCH', body: fd });
+                if (res.ok) loadUsers();
+            }
+
+            async function kickUser(id) {
+                if (confirm('사용자를 영구 추방하시겠습니까? (작성한 글/댓글도 모두 삭제됩니다)')) {
+                    const res = await fetch('/api/admin/users/' + id, { method: 'DELETE' });
+                    if (res.ok) loadUsers();
+                }
+            }
+
+            // --- 2. 회원 활동 내역 모달창 기능 ---
+            async function viewActivity(userId) {
+                const res = await fetch('/api/admin/users/' + userId + '/activity');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('modal-title').innerText = `${data.nickname}님의 활동 내역`;
+                    document.getElementById('modal-stats').innerText =
+                        `총 게시글: ${data.post_count}개 | 총 댓글: ${data.comment_count}개`;
+
+                    document.getElementById('modal-posts').innerHTML =
+                        data.posts.length > 0
+                            ? data.posts
+                                  .map(
+                                      (p) =>
+                                          `<div class="activity-box"><strong>[${p.category}] ${p.title}</strong><br><small style="color:#888;">${p.date}</small></div>`,
+                                  )
+                                  .join('')
+                            : '<p style="color:#999;">작성한 글이 없습니다.</p>';
+
+                    document.getElementById('modal-comments').innerHTML =
+                        data.comments.length > 0
+                            ? data.comments
+                                  .map(
+                                      (c) =>
+                                          `<div class="activity-box">${c.content}<br><small style="color:#888;">${c.date} (게시글 ID: ${c.post_id})</small></div>`,
+                                  )
+                                  .join('')
+                            : '<p style="color:#999;">작성한 댓글이 없습니다.</p>';
+
+                    document.getElementById('activityModal').style.display = 'block';
+                }
+            }
+            function closeModal() {
+                document.getElementById('activityModal').style.display = 'none';
+            }
+
+            // --- 3. 🚨 대망의 전체 게시글 관리 기능 ---
+            async function loadPosts() {
+                try {
+                    const category = document.getElementById('post-category-filter').value;
+                    let url = '/api/admin/posts';
+                    if (category && category !== '') url += `?category=${category}`;
+                    const res = await fetch(url);
+                    const posts = await res.json();
+                    const list = document.getElementById('post-list');
+
+                    if (posts.length === 0) {
+                        list.innerHTML =
+                            '<tr><td colspan="6" style="text-align:center; padding:40px; color:#999;">등록된 게시글이 없습니다.</td></tr>';
+                        return;
+                    }
+
+                    list.innerHTML = posts
+                        .map(
+                            (p) => `
+                    <tr>
+                            <td>${p.id}</td>
+                            <td><strong style="color:var(--primary)">[${p.category}]</strong></td>
+                            <td>
+                                ${p.author}
+                                ${p.is_admin === 1 ? '<span style="color:var(--primary); font-weight:bold; margin-left:4px;">(관리자)</span>' : ''}
+                            </td>
+                            <td>
+                                <a href="/post/${p.id}" target="_blank" style="color:#333; text-decoration:none; font-weight:bold;">
+                                    ${p.title} 🔗
+                                </a>
+                                ${p.is_notice === 1 ? '<span style="background:var(--primary); color:#fff; border-radius:6px; padding:3px 8px; margin-left:8px; font-size:12px; font-weight:bold;">공지</span>' : ''}
+                            </td>
+                            <td style="font-size:12px; color:#666;">${p.date}</td>
+                            <td>
+                                <button class="btn" style="background:var(--danger)" onclick="deletePost(${p.id})">강제 삭제</button>
+                            </td>
+                        </tr>`,
+                        )
+                        .join('');
+                } catch (error) {
+                    console.error('게시글 로드 실패:', error);
+                }
+            }
+
+            async function deletePost(id) {
+                if (confirm('이 게시글을 강제로 삭제하시겠습니까? (복구할 수 없습니다)')) {
+                    const res = await fetch('/api/admin/posts/' + id, { method: 'DELETE' });
+                    if (res.ok) {
+                        alert('삭제 완료');
+                        loadPosts(); // 목록 새로고침
+                    } else {
+                        alert('삭제 실패');
+                    }
+                }
+            }
 
         // 페이지 열릴 때 기본으로 회원 목록 로드
         loadUsers();
     </script>
 </body>
 </html>
-=======
 <!doctype html>
 <html lang="ko">
     <head>
@@ -714,4 +1001,3 @@
         </script>
     </body>
 </html>
->>>>>>> Community-junyoung
