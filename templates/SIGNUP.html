@@ -5,32 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 회원가입</title>
         <style>
-<<<<<<< HEAD
-            .menu-toggle-btn { background: none; border: none; font-size: 2.1rem; margin-left: 8px; cursor: pointer; border-radius: 8px; padding: 4px 12px; transition: background 0.18s; }
-            .menu-toggle-btn:hover { background: #ffe5e5; }
-            #mainNavMenu { min-width: 140px; animation: fadeInMenu 0.18s; position: absolute; top: 60px; left: 32px; background: #fff; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13); border-radius: 12px; padding: 18px 24px 14px 24px; z-index: 1000; display: none; }
-            @keyframes fadeInMenu { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-            body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: #fff; }
-            .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1); backdrop-filter: blur(12px); }
-            .header-left { display: flex; align-items: center; gap: 24px; }
-            .header-logo { display: flex; align-items: center; gap: 18px; font-size: 1.5rem; font-weight: bold; color: #dc2626; text-decoration: none; }
-            .header-right { display: flex; align-items: center; gap: 18px; }
-            .current-location { font-size: 1rem; color: #dc2626; background: #fff5f5; border: 1px solid #ffe5e5; border-radius: 4px; padding: 6px 16px; margin-left: 4px; font-weight: 600; }
-            .login-btn { padding: 8px 20px; background: #dc2626; color: #fff; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
-            .login-btn:hover { background: #b91c1c; }
-            .nav-emoji-btn { background: none; border: none; font-size: 1.7rem; margin: 0 2px; cursor: pointer; border-radius: 8px; padding: 4px 10px; transition: background 0.18s; }
-            .nav-emoji-btn:hover, .nav-emoji-btn.active { background: #ffe5e5; }
-            .signup-main { max-width: 420px; margin: 80px auto 0 auto; padding: 0 16px; }
-            .signup-title { font-size: 2rem; font-weight: 900; color: #dc2626; margin-bottom: 32px; letter-spacing: 1px; text-align: center; }
-            .signup-form { display: flex; flex-direction: column; gap: 18px; }
-            .signup-form label { font-size: 1.08rem; font-weight: 600; color: #b91c1c; margin-bottom: 6px; }
-            .signup-form input { font-size: 1.08rem; padding: 10px 14px; border: 1.5px solid #ffe5e5; border-radius: 6px; background: #fff8f8; width: 100%; box-sizing: border-box; }
-            .signup-btn-main { padding: 16px 0; background: #dc2626; color: #fff; border: none; border-radius: 8px; font-size: 1.25rem; font-weight: 800; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
-            .signup-btn-main:hover { background: #b91c1c; }
-            .cancel-btn { padding: 14px 0; background: #fff; color: #dc2626; border: 1.5px solid #dc2626; border-radius: 8px; font-size: 1.15rem; font-weight: 800; cursor: pointer; width: 100%; box-sizing: border-box; }
-            .signup-extra { margin-top: 18px; text-align: center; color: #b91c1c; font-size: 1rem; }
-            .signup-extra a { color: #dc2626; text-decoration: underline; margin-left: 8px; }
-=======
             .menu-toggle-btn {
                 background: none;
                 border: none;
@@ -212,40 +186,30 @@
                 text-decoration: underline;
                 margin-left: 8px;
             }
->>>>>>> Community-junyoung
         </style>
         <script>
             function toggleMenu() {
                 const menu = document.getElementById('mainNavMenu');
-<<<<<<< HEAD
-                menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
             }
         </script>
     </head>
     <body>
-=======
                 menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
             }
         </script>
     </head>
     <body class="fade-in">
->>>>>>> Community-junyoung
         <header class="header">
             <div class="header-left">
                 <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="main-nav" id="mainNavMenu">
                     <button class="nav-emoji-btn" onclick="location.href = '/main'" title="홈">🏠 홈</button><br />
-<<<<<<< HEAD
-                    <button class="nav-emoji-btn" onclick="location.href = '/aichat'" title="AI추천">🤖 AI추천</button><br />
-                    <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">🧑‍🤝‍🧑 커뮤니티</button><br />
-=======
                     <button class="nav-emoji-btn" onclick="location.href = '/aichat'" title="AI추천">🤖 AI추천</button
                     ><br />
                     <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">
                         🧑‍🤝‍🧑 커뮤니티</button
                     ><br />
->>>>>>> Community-junyoung
                 </nav>
             </div>
             <div class="header-right">
@@ -255,11 +219,7 @@
         </header>
         <main class="signup-main">
             <div class="signup-title">회원가입</div>
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> Community-junyoung
             <form id="signupForm" class="signup-form">
                 <div>
                     <label for="nickname">닉네임</label>
@@ -276,11 +236,7 @@
                 <button type="submit" class="signup-btn-main">회원가입</button>
                 <button type="button" class="cancel-btn" onclick="location.href = '/login'">취소</button>
             </form>
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> Community-junyoung
             <div class="signup-extra">
                 이미 계정이 있으신가요?
                 <a href="/login">로그인</a>
@@ -294,17 +250,14 @@
                 try {
                     const res = await fetch('/api/signup', { method: 'POST', body: new FormData(e.target) });
                     const data = await res.json();
-<<<<<<< HEAD
-                    
                     if (res.ok) {
-                        alert("회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.");
+                        alert('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
                         window.location.href = data.redirect;
                     } else {
-                        alert(data.detail || "회원가입에 실패했습니다.");
+                        alert(data.detail || '회원가입에 실패했습니다.');
                     }
                 } catch (err) {
                     alert("서버 통신 오류가 발생했습니다.");
-=======
 
                     if (res.ok) {
                         alert('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
@@ -314,13 +267,9 @@
                     }
                 } catch (err) {
                     alert('서버 통신 오류가 발생했습니다.');
->>>>>>> Community-junyoung
+
                 }
             };
         </script>
     </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> Community-junyoung
