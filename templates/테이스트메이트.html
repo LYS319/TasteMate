@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>테이스트메이트</title>
+        <style>
+            .game-btn {
+                margin-left: 8px;
+                padding: 6px 18px;
+                background: #fff5f5;
+                color: #dc2626;
+                border: 1.5px solid #dc2626;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: background 0.18s;
+            }
+            .game-btn:hover {
+                background: #ffe5e5;
+            }
+            #mainNavMenu {
+                min-width: 140px;
+                animation: fadeInMenu 0.18s;
+                position: absolute;
+                top: 60px;
+                left: 32px;
+                background: #fff;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+                border-radius: 12px;
+                padding: 18px 24px 14px 24px;
+                z-index: 1000;
+                display: none;
+            }
+            @keyframes fadeInMenu {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            body {
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: #fff;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 32px;
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08);
+                backdrop-filter: blur(15px);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+            }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 24px;
+            }
+
+            /* 🔍 추가된 검색창 스타일 시작 */
+            .header-center {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                padding: 0 20px;
+            }
+            .search-box {
+                position: relative;
+                width: 100%;
+                max-width: 400px;
+                display: flex;
+                align-items: center;
+            }
+            .search-box input {
+                width: 100%;
+                padding: 10px 45px 10px 18px;
+                border: 2px solid #ffe5e5;
+                border-radius: 20px;
+                font-size: 0.95rem;
+                outline: none;
+                transition: border-color 0.2s;
+            }
+            .search-box input:focus {
+                border-color: #dc2626;
+            }
+            .search-submit-btn {
+                position: absolute;
+                right: 5px;
+                background: #dc2626;
+                color: white;
+                border: none;
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.2s;
+            }
+            .search-submit-btn:hover {
+                background: #b91c1c;
+            }
+            /* 🔍 추가된 검색창 스타일 끝 */
+
+            .main-buttons {
+                display: flex;
+                justify-content: center;
+                gap: 24px;
+                margin-bottom: 40px;
+            }
+            .main-btn {
+                padding: 32px 72px;
+                font-size: 2.4rem;
+                font-weight: 700;
+                color: #fff;
+                background: #dc2626;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: background 0.2s;
+                box-shadow: 0 2px 8px rgba(220, 38, 38, 0.08);
+            }
+            .main-btn:hover {
+                background: #b91c1c;
+            }
+            .community-preview {
+                display: flex;
+                justify-content: center;
+                gap: 32px;
+                margin: 48px 0 0 0;
+            }
+            .community-card {
+                background: #fff;
+                border: 1.5px solid #ffe5e5;
+                border-radius: 18px;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.07);
+                padding: 28px 32px 22px 32px;
+                min-width: 260px;
+                max-width: 300px;
+                height: 150px;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                position: relative;
+            }
+            .community-card .card-title {
+                font-size: 1.25rem;
+                font-weight: 800;
+                color: #dc2626;
+                margin-bottom: 4px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .community-card .card-count {
+                font-size: 0.98rem;
+                color: #b91c1c;
+                font-weight: 600;
+            }
+            .community-card .card-recent {
+                font-size: 1.05rem;
+                color: #222;
+                font-weight: 500;
+                margin-bottom: 2px;
+            }
+            .community-card .card-tag {
+                font-size: 0.93rem;
+                background: #fff5f5;
+                color: #dc2626;
+                border-radius: 12px;
+                padding: 2px 14px;
+                font-weight: 700;
+                border: 1px solid #ffe5e5;
+            }
+            .header-logo {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 1.6rem;
+                font-weight: 900;
+                color: #dc2626;
+                text-decoration: none;
+                transition: transform 0.2s;
+            }
+            .header-logo:hover {
+                transform: scale(1.05);
+            }
+            .main-title {
+                text-align: center;
+                font-size: 3rem;
+                font-weight: 900;
+                color: #dc2626;
+                margin-top: 40px;
+                margin-bottom: 40px;
+                letter-spacing: 2px;
+                text-shadow:
+                    0 4px 16px rgba(220, 38, 38, 0.18),
+                    0 1px 0 #fff;
+            }
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .login-btn {
+                padding: 8px 16px;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.95rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: background 0.2s;
+                background: #dc2626;
+            }
+            .nav-emoji-btn {
+                background: none;
+                border: none;
+                font-size: 1.7rem;
+                margin: 0 2px;
+                cursor: pointer;
+                border-radius: 8px;
+                padding: 4px 10px;
+                transition: background 0.18s;
+            }
+            .nav-emoji-btn:hover {
+                background: #ffe5e5;
+            }
+            .current-location {
+                font-size: 0.95rem;
+                color: #dc2626;
+                background: #fff5f5;
+                border: 1px solid #ffe5e5;
+                border-radius: 6px;
+                padding: 8px 14px;
+                font-weight: 700;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .current-location:hover {
+                background: #ffe5e5;
+            }
+            .menu-bar {
+                display: flex;
+                gap: 18px;
+                align-items: center;
+                margin-left: 24px;
+            }
+            .menu-item {
+                font-size: 1.15rem;
+                font-weight: 700;
+                color: #dc2626;
+                text-decoration: none;
+                padding: 8px 18px;
+                border-radius: 8px;
+                background: none;
+                cursor: pointer;
+                transition: background 0.18s;
+            }
+            .menu-item:hover {
+                background: #fff5f5;
+            }
+            .game-dropdown {
+                position: relative;
+            }
+            .game-dropdown span {
+                cursor: pointer;
+            }
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                top: 36px;
+                left: 0;
+                background: #fff;
+                min-width: 140px;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+                border-radius: 12px;
+                padding: 12px 0;
+                z-index: 1000;
+                flex-direction: column;
+            }
+            .game-dropdown:hover .dropdown-content {
+                display: flex;
+            }
+            .dropdown-content a {
+                color: #dc2626;
+                padding: 10px 24px;
+                text-decoration: none;
+                font-size: 1.08rem;
+                font-weight: 600;
+                border-radius: 8px;
+                transition: background 0.18s;
+            }
+            .dropdown-content a:hover {
+                background: #ffe5e5;
+            }
+        </style>
+        <script>
+            function toggleMenu() {
+                const menu = document.getElementById('mainNavMenu');
+                menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+            }
+
+            // 🔍 검색 기능을 수행하는 함수 추가
+            function handleSearch() {
+                const searchInput = document.getElementById('mainSearchInput');
+                const query = searchInput.value.trim();
+
+                if (query === '') {
+                    alert('검색어를 입력해주세요.');
+                    return;
+                }
+
+                // 검색 결과 페이지로 이동 (쿼리 파라미터 전달)
+                // 실제 이동할 페이지 경로를 '/search' 혹은 원하는 경로로 수정하세요.
+                window.location.href = `/search?keyword=${encodeURIComponent(query)}`;
+            }
+        </script>
+    </head>
+    <body>
+        <header class="header">
+            <div class="header-left">
+                <a href="/main" class="header-logo">TasteMate</a>
+                <nav class="menu-bar">
+                    <a class="menu-item" href="/about">회사소개</a>
+                    <a class="menu-item" href="/aichat">AI추천</a>
+                    <a class="menu-item" href="/community">커뮤니티</a>
+                    <div class="menu-item game-dropdown">
+                        <span>게임 ▾</span>
+                        <div class="dropdown-content">
+                            <a href="/game/pinball">핀볼</a>
+                            <a href="/game/ladder">사다리타기</a>
+                            <a href="/game/random_amount">룰렛 게임</a>
+                            <a href="/game/worldcup">음식 월드컵</a>
+                            <a href="/game/calculator">계산기</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="header-center">
+                <div class="search-box">
+                    <input
+                        type="text"
+                        id="mainSearchInput"
+                        placeholder="맛집이나 메뉴를 검색해보세요!"
+                        onkeyup="
+                            if (window.event.keyCode == 13) {
+                                handleSearch();
+                            }
+                        "
+                    />
+                    <button class="search-submit-btn" onclick="handleSearch()">
+                        <span style="font-size: 1.2rem">🔍</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="header-right" id="headerRightArea">
+                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                <button
+                    class="login-btn"
+                    style="background: #fff; color: #dc2626; border: 1px solid #dc2626"
+                    onclick="location.href = '/signup'"
+                >
+                    회원가입
+                </button>
+            </div>
+        </header>
+
+        <main style="padding-top: 80px; padding-bottom: 80px; min-height: 60vh">
+            <div class="main-title">🍽️ 테이스트메이트</div>
+            <div class="main-buttons">
+                <button class="main-btn" onclick="location.href = '/aichat'">🤖 AI추천</button>
+                <button class="main-btn" onclick="location.href = '/community'">🧑‍🤝‍🧑 커뮤니티</button>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 32px; flex-wrap: nowrap; margin-bottom: 36px">
+                <div class="community-card">
+                    <div class="card-title" style="white-space: nowrap">
+                        🍽️ 오늘의 추천메뉴
+                        <span
+                            style="
+                                background: #ffe066;
+                                color: #b91c1c;
+                                font-size: 0.95rem;
+                                padding: 2px 10px;
+                                border-radius: 8px;
+                                margin-left: 6px;
+                                font-weight: 700;
+                                vertical-align: middle;
+                            "
+                            >추천</span
+                        >
+                    </div>
+                    <div class="card-count">글 12개</div>
+                    <div class="card-recent">최근: "오늘 점심 뭐 먹지?"</div>
+                    <div class="card-tag">#추천메뉴</div>
+                </div>
+                <div class="community-card">
+                    <div class="card-title">
+                        🍚 강남 혼밥 맛집 공유
+                        <span
+                            style="
+                                background: #ffe066;
+                                color: #b91c1c;
+                                font-size: 0.95rem;
+                                padding: 2px 10px;
+                                border-radius: 8px;
+                                margin-left: 6px;
+                                font-weight: 700;
+                                vertical-align: middle;
+                            "
+                            >강남 인기</span
+                        >
+                    </div>
+                    <div class="card-count">글 27개</div>
+                    <div class="card-recent">최근: "강남 혼밥 어디가 좋아요?"</div>
+                    <div class="card-tag">#강남혼밥</div>
+                </div>
+                <div class="community-card">
+                    <div class="card-title">
+                        🍜 라멘덕후모임
+                        <span
+                            style="
+                                background: #e0f7fa;
+                                color: #00796b;
+                                font-size: 0.95rem;
+                                padding: 2px 10px;
+                                border-radius: 8px;
+                                margin-left: 6px;
+                                font-weight: 700;
+                                vertical-align: middle;
+                            "
+                            >라멘 인기</span
+                        >
+                    </div>
+                    <div class="card-count">글 18개</div>
+                    <div class="card-recent">최근: "강남 라멘집 추천 부탁해요!"</div>
+                    <div class="card-tag">#라멘덕후</div>
+                </div>
+                <div class="community-card">
+                    <div class="card-title">
+                        🎲 근처 맛집 룰렛
+                        <span
+                            style="
+                                background: #e0e0e0;
+                                color: #333;
+                                font-size: 0.95rem;
+                                padding: 2px 10px;
+                                border-radius: 8px;
+                                margin-left: 6px;
+                                font-weight: 700;
+                                vertical-align: middle;
+                            "
+                            >랜덤 추천</span
+                        >
+                    </div>
+                    <div class="card-count">글 9개</div>
+                    <div class="card-recent">최근: "근처 맛집 룰렛 돌려봤어요!"</div>
+                    <div class="card-tag">#근처맛집룰렛</div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 32px; flex-wrap: nowrap; margin-top: 32px">
+                <a href="/category/solo" style="text-decoration: none; color: inherit">
+                    <div class="community-card">
+                        <div class="card-title" style="white-space: nowrap">
+                            🍚 혼밥 인기글
+                            <span
+                                style="
+                                    background: #ffe066;
+                                    color: #b91c1c;
+                                    font-size: 0.95rem;
+                                    padding: 2px 10px;
+                                    border-radius: 8px;
+                                    margin-left: 6px;
+                                    font-weight: 700;
+                                    vertical-align: middle;
+                                "
+                                >재방문율 90%</span
+                            >
+                        </div>
+                        <div class="card-count">글 27개</div>
+                        <div class="card-recent">최근: "오늘 점심 어디가 좋을까요?"</div>
+                        <div class="card-tag">#혼밥</div>
+                    </div>
+                </a>
+                <a href="/category/date" style="text-decoration: none; color: inherit">
+                    <div class="community-card">
+                        <div class="card-title">
+                            💑 커플 인기글
+                            <span
+                                style="
+                                    background: #e0f7fa;
+                                    color: #00796b;
+                                    font-size: 0.95rem;
+                                    padding: 2px 10px;
+                                    border-radius: 8px;
+                                    margin-left: 6px;
+                                    font-weight: 700;
+                                    vertical-align: middle;
+                                "
+                                >데이트 인기</span
+                            >
+                        </div>
+                        <div class="card-count">글 19개</div>
+                        <div class="card-recent">최근: "커플 맛집 추천 부탁해요!"</div>
+                        <div class="card-tag">#커플</div>
+                    </div>
+                </a>
+                <a href="/category/work" style="text-decoration: none; color: inherit">
+                    <div class="community-card">
+                        <div class="card-title">
+                            🍻 회식 인기글
+                            <span
+                                style="
+                                    background: #ffe5e5;
+                                    color: #dc2626;
+                                    font-size: 0.95rem;
+                                    padding: 2px 10px;
+                                    border-radius: 8px;
+                                    margin-left: 6px;
+                                    font-weight: 700;
+                                    vertical-align: middle;
+                                "
+                                >직장인 인기</span
+                            >
+                        </div>
+                        <div class="card-count">글 15개</div>
+                        <div class="card-recent">최근: "회식 장소 어디가 좋을까요?"</div>
+                        <div class="card-tag">#회식</div>
+                    </div>
+                </a>
+                <a href="/category/etc" style="text-decoration: none; color: inherit">
+                    <div class="community-card">
+                        <div class="card-title">
+                            🧩 기타 인기글
+                            <span
+                                style="
+                                    background: #e0e0e0;
+                                    color: #333;
+                                    font-size: 0.95rem;
+                                    padding: 2px 10px;
+                                    border-radius: 8px;
+                                    margin-left: 6px;
+                                    font-weight: 700;
+                                    vertical-align: middle;
+                                "
+                                >다양한 주제</span
+                            >
+                        </div>
+                        <div class="card-count">글 8개</div>
+                        <div class="card-recent">최근: "이색 맛집 공유해요!"</div>
+                        <div class="card-tag">#기타</div>
+                    </div>
+                </a>
+            </div>
+
+            <script>
+                // 기존 스크립트 유지 (날씨/시간 기반 추천, 룰렛 등)
+                // recommend-text ID가 있는 요소가 없어서 에러가 날 수 있으나, 요청대로 삭제하지 않았습니다.
+                // 필요한 경우 본문에 <div id="recommend-text"></div>를 추가하세요.
+                const recommendTextDiv = document.getElementById('recommend-text') || { innerHTML: '' };
+                const menuByWeather = {
+                    rain: ['비 오는 날엔 <b>김치전</b>!', '따뜻한 <b>파전+막걸리</b> 어때요?'],
+                    snow: ['눈 오는 날엔 <b>어묵탕</b>!', '따뜻한 <b>우동</b> 추천!'],
+                    hot: ['더운 날엔 <b>냉면</b>!', '시원한 <b>콩국수</b> 어때요?'],
+                    cold: ['추운 날엔 <b>순두부찌개</b>!', '따끈한 <b>부대찌개</b> 추천!'],
+                    clear: ['맑은 날엔 <b>돈까스</b>!', '든든한 <b>제육볶음</b>!'],
+                    default: ['오늘은 <b>파스타</b>도 좋아요!', '가볍게 <b>샐러드</b> 어떠세요?'],
+                };
+                const menuByTime = {
+                    morning: ['아침엔 <b>토스트</b>!', '든든한 <b>샌드위치</b> 추천!'],
+                    lunch: ['점심엔 <b>비빔밥</b>!', '든든한 <b>김치찌개</b>!'],
+                    dinner: ['저녁엔 <b>삼겹살</b>!', '따뜻한 <b>칼국수</b>!'],
+                };
+                const WEATHER_API_KEY = 'b1b15e88fa797225412429c1c50c122a1';
+                function getWeatherAndRecommend() {
+                    if (!navigator.geolocation) {
+                        showRandomRecommend();
+                        return;
+                    }
+                    navigator.geolocation.getCurrentPosition(async (pos) => {
+                        const lat = pos.coords.latitude;
+                        const lon = pos.coords.longitude;
+                        try {
+                            const res = await fetch(
+                                `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=kr`,
+                            );
+                            const data = await res.json();
+                            const weather = data.weather[0].main.toLowerCase();
+                            const temp = data.main.temp;
+                            let weatherType = 'default';
+                            if (weather.includes('rain')) weatherType = 'rain';
+                            else if (weather.includes('snow')) weatherType = 'snow';
+                            else if (temp >= 28) weatherType = 'hot';
+                            else if (temp <= 5) weatherType = 'cold';
+                            else if (weather.includes('clear')) weatherType = 'clear';
+                            const hour = new Date().getHours();
+                            let timeType = 'lunch';
+                            if (hour < 11) timeType = 'morning';
+                            else if (hour >= 17) timeType = 'dinner';
+                            let candidates = [];
+                            if (menuByWeather[weatherType]) candidates = candidates.concat(menuByWeather[weatherType]);
+                            if (menuByTime[timeType]) candidates = candidates.concat(menuByTime[timeType]);
+                            if (candidates.length === 0) candidates = menuByWeather['default'];
+                            const idx = Math.floor(Math.random() * candidates.length);
+                            recommendTextDiv.innerHTML =
+                                candidates[idx] +
+                                `<div style="margin-top: 8px; font-size: 1rem; color: #888">(${data.name} ${Math.round(temp)}°C, ${data.weather[0].description})</div>`;
+                        } catch (e) {
+                            showRandomRecommend();
+                        }
+                    }, showRandomRecommend);
+                }
+                function showRandomRecommend() {
+                    const menus = [
+                        '비 오는 날엔 <b>김치전</b> 어때요?',
+                        '따뜻한 <b>순두부찌개</b> 추천!',
+                        '오늘은 <b>돈까스</b>가 땡기네요!',
+                        '점심엔 <b>냉면</b> 한 그릇!',
+                        '매운 <b>떡볶이</b>로 스트레스 해소!',
+                        '든든한 <b>제육볶음</b> 추천!',
+                        '가볍게 <b>샐러드</b> 어떠세요?',
+                        '이 동네 직장인 인기 <b>김밥</b>!',
+                        '재방문율 90% <b>칼국수</b>!',
+                        '오늘은 <b>파스타</b>도 좋아요!',
+                    ];
+                    const idx = Math.floor(Math.random() * menus.length);
+                    recommendTextDiv.innerHTML = menus[idx];
+                }
+
+                // 룰렛 관련 (기존 코드 유지)
+                const sampleStores = [
+                    '강남 김치찌개집',
+                    '역삼 돈까스 맛집',
+                    '신논현 파스타',
+                    '강남역 샐러드바',
+                    '역삼동 쌀국수',
+                    '강남역 초밥',
+                    '논현동 라멘',
+                    '강남역 분식',
+                    '역삼동 삼겹살',
+                    '강남역 카페',
+                ];
+                // roulette-display 등의 ID가 실제 HTML에 없으므로 실제 사용시에는 요소를 추가해야 합니다.
+                document.addEventListener('DOMContentLoaded', getWeatherAndRecommend);
+            </script>
+        </main>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+
+                if (nickname && headerRightArea) {
+                    let adminButton = '';
+                    if (isAdmin === '1') {
+                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자 기능</button>`;
+                    }
+
+                    headerRightArea.innerHTML = `
+                        <span style="font-weight: 700; color: #dc2626; font-size: 1.05rem; margin-right: 5px;">👤 ${nickname}님</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="location.href='/mypage'" style="background: #f39c12;">회원정보</button>
+                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()" title="클릭하여 내 위치 찾기">📍 위치 탐색 (클릭)</span>
+                    `;
+                    getGPSLocation();
+                }
+            });
+
+            function getGPSLocation() {
+                const locSpan = document.getElementById('gps-location');
+                if (!locSpan) return;
+
+                if (navigator.geolocation) {
+                    locSpan.innerText = '📍 위치 찾는 중...';
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            try {
+                                const res = await fetch(
+                                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
+                                );
+                                const data = await res.json();
+                                let city = data.address.city || data.address.province || data.address.region || '';
+                                let borough = data.address.borough || data.address.suburb || data.address.town || '';
+                                let shortAddr = `${city} ${borough}`.trim();
+                                locSpan.innerText = `📍 ${shortAddr || '위치 확인됨'}`;
+                            } catch (e) {
+                                locSpan.innerText = '📍 위치 확인됨';
+                            }
+                        },
+                        (error) => {
+                            locSpan.innerText = '📍 위치 권한 거부됨';
+                        },
+                    );
+                } else {
+                    locSpan.innerText = '📍 GPS 지원 안됨';
+                }
+            }
+
+            function logout() {
+                localStorage.clear();
+                alert('안전하게 로그아웃 되었습니다.');
+                window.location.href = '/main';
+            }
+        </script>
+    </body>
+</html>

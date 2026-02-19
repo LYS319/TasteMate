@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>테이스트메이트 - 사다리타기 Pro</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            /* --- TasteMate 브랜드 스타일 변수 (예시 코드 규격) --- */
+            :root {
+                --primary-color: #dc2626;
+                --primary-hover: #b91c1c;
+                --bg-gradient: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
+                --glass-bg: rgba(255, 255, 255, 0.85);
+            }
+
+            body {
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: var(--bg-gradient);
+                color: #333;
+                min-height: 100vh;
+            }
+
+            /* --- TasteMate 공식 상단바 (예시 코드와 1:1 일치) --- */
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 32px;
+                background: var(--glass-bg);
+                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
+                backdrop-filter: blur(12px);
+                position: sticky;
+                top: 0;
+                z-index: 2000;
+                box-sizing: border-box;
+                width: 100%;
+            }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 24px;
+            }
+            .header-logo {
+                display: flex;
+                align-items: center;
+                gap: 10px; /* 예시 코드의 10px 적용 */
+                font-size: 1.5rem;
+                font-weight: 900; /* 두께 900으로 강화 */
+                color: var(--primary-color);
+                text-decoration: none;
+                transition: transform 0.2s;
+            }
+            .header-logo:hover {
+                transform: scale(1.05);
+            }
+            .menu-bar {
+                display: flex;
+                gap: 18px;
+                align-items: center;
+                margin-left: 24px;
+            }
+            .menu-item {
+                font-size: 1.1rem; /* 예시 코드 1.1rem 적용 */
+                font-weight: 700;
+                color: var(--primary-color);
+                text-decoration: none;
+                padding: 8px 18px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background 0.18s;
+            }
+            .menu-item:hover {
+                background: #fff5f5;
+            }
+
+            .game-dropdown {
+                position: relative;
+            }
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                top: 36px;
+                left: 0;
+                background: #fff;
+                min-width: 140px;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+                border-radius: 12px;
+                padding: 12px 0;
+                z-index: 1000;
+                flex-direction: column;
+            }
+            .game-dropdown:hover .dropdown-content {
+                display: flex;
+            }
+            .dropdown-content a {
+                color: var(--primary-color);
+                padding: 10px 24px;
+                text-decoration: none;
+                font-size: 1.05rem;
+                font-weight: 600;
+                border-radius: 8px;
+                transition: background 0.18s;
+            }
+            .dropdown-content a:hover {
+                background: #ffe5e5;
+            }
+
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .login-btn {
+                padding: 8px 16px;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.95rem;
+                font-weight: bold;
+                cursor: pointer;
+                background: var(--primary-color);
+                transition: background 0.2s;
+            }
+
+            /* --- 사다리타기 게임 영역 스타일 (핀볼 setup 스타일 적용) --- */
+            .game-container {
+                text-align: center;
+                padding: 40px 20px 80px;
+            }
+            .setup-box {
+                background: white;
+                padding: 40px;
+                border-radius: 32px;
+                display: inline-block;
+                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.15);
+                max-width: 700px;
+                border: 2px solid var(--primary-color);
+            }
+            .setup-box h2 {
+                font-size: 2.1rem;
+                color: var(--primary-color);
+                margin-bottom: 24px;
+                font-weight: 900;
+            }
+
+            canvas {
+                background: #fff;
+                border-radius: 24px;
+                cursor: pointer;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+                margin: 32px auto;
+                border: 6px solid #333; /* 핀볼 캔버스 테두리 스타일 적용 */
+                display: block;
+            }
+            input {
+                padding: 12px;
+                width: 110px;
+                border: 2px solid #ddd;
+                border-radius: 12px;
+                font-size: 1rem;
+                margin: 4px;
+                text-align: center;
+            }
+            input:focus {
+                border-color: var(--primary-color);
+                outline: none;
+            }
+
+            .action-btn {
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                padding: 14px 32px;
+                border-radius: 12px;
+                font-size: 1.1rem;
+                font-weight: 800;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+            .action-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+            }
+
+            #resultText {
+                font-size: 1.5rem;
+                font-weight: 900;
+                color: var(--primary-color);
+                margin-top: 20px;
+                min-height: 2rem;
+            }
+        </style>
+    </head>
+    <body>
+        <header class="header">
+            <div class="header-left">
+                <a href="/main" class="header-logo">TasteMate</a>
+                <nav class="menu-bar">
+                    <a class="menu-item" href="/aichat">AI추천</a>
+                    <a class="menu-item" href="/community">커뮤니티</a>
+                    <div class="menu-item game-dropdown">
+                        <span>게임 ▾</span>
+                        <div class="dropdown-content">
+                            <a href="/game/pinball">핀볼</a>
+                            <a href="/game/ladder">사다리타기</a>
+                            <a href="/game/random_amount">룰렛 게임</a>
+                            <a href="/game/worldcup">음식 월드컵</a>
+                            <a href="/game/calculator">계산기</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="header-right" id="headerRightArea">
+                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                <button
+                    class="login-btn"
+                    style="background: #fff; color: #dc2626; border: 1px solid #dc2626; margin-left: 5px;"
+                    onclick="location.href = '/signup'"
+                >
+                    회원가입
+                </button>
+            </div>
+        </header>
+
+        <main class="game-container">
+            <div class="setup-box">
+                <h2>🍻 사다리타기</h2>
+                <p style="color: #666; font-size: 0.95rem; margin-bottom: 15px;">오늘의 미식 운명은? 인원을 설정하고 이름을 클릭하세요.</p>
+                인원수: <input type="number" id="count" value="4" min="2" max="10" />
+                <button class="action-btn" onclick="initInputs()" style="padding: 10px 20px; font-size: 0.9rem">
+                    창 생성
+                </button>
+                <div id="inputs" style="margin-top: 20px"></div>
+                <button id="startBtn" class="action-btn" style="display: none" onclick="createLadder()">
+                    사다리 만들기
+                </button>
+                <button
+                    class="action-btn"
+                    style="background: #666; font-size: 0.9rem; padding: 10px 20px; margin-left: 5px;"
+                    onclick="location.reload()"
+                >
+                    새로고침
+                </button>
+            </div>
+
+            <div id="game-area" style="display: none">
+                <div id="resultText">이름을 클릭해서 결과를 확인하세요!</div>
+                <canvas id="canvas"></canvas>
+            </div>
+        </main>
+
+        <script>
+            /* --- 로직 및 기능구현 코드 (기존 유지) --- */
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+
+                if (nickname && headerRightArea) {
+                    let adminButton = '';
+                    if (isAdmin === '1') {
+                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자</button>`;
+                    }
+                    headerRightArea.innerHTML = `
+                        <span style="font-weight: 700; color: #dc2626; font-size: 1.05rem; margin-right: 8px;">👤 ${nickname}님</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="location.href='/mypage'" style="background: #f39c12; margin-left:4px;">정보</button>
+                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:4px;">로그아웃</button>
+                    `;
+                }
+            });
+
+            function logout() {
+                localStorage.clear();
+                alert('로그아웃 되었습니다.');
+                window.location.href = '/main';
+            }
+
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const resultTextDiv = document.getElementById('resultText');
+            let members = [], results = [], bridges = [];
+            const colWidth = 140, rowHeight = 400, padding = 80;
+            let isDrawing = false;
+            const pathColors = ['#dc2626', '#2563eb', '#059669', '#d97706', '#7c3aed', '#db2777'];
+
+            function initInputs() {
+                const n = document.getElementById('count').value;
+                const container = document.getElementById('inputs');
+                container.innerHTML = '';
+                for (let i = 0; i < n; i++) {
+                    container.innerHTML += `
+                        <div style="margin-bottom:5px;">
+                            <input type="text" class="name-in" placeholder="이름 ${i + 1}" value="사람${i + 1}">
+                            <input type="text" class="val-in" placeholder="벌칙 ${i + 1}" value="${i === 0 ? '당첨' : '통과'}">
+                        </div>`;
+                }
+                document.getElementById('startBtn').style.display = 'inline-block';
+            }
+
+            function createLadder() {
+                members = Array.from(document.querySelectorAll('.name-in')).map((i) => i.value || '미정');
+                results = Array.from(document.querySelectorAll('.val-in')).map((i) => i.value || '꽝');
+                canvas.width = (members.length - 1) * colWidth + padding * 2;
+                canvas.height = rowHeight + 150;
+                document.getElementById('game-area').style.display = 'block';
+                document.querySelector('.setup-box').style.display = 'none';
+                bridges = [];
+                for (let i = 0; i < members.length - 1; i++) {
+                    let lastY = 0;
+                    for (let j = 0; j < 5; j++) {
+                        let y = 100 + Math.random() * (rowHeight - 60);
+                        if (Math.abs(y - lastY) > 30) {
+                            bridges.push({ col: i, y: y });
+                            lastY = y;
+                        }
+                    }
+                }
+                bridges.sort((a, b) => a.y - b.y);
+                drawBase();
+            }
+
+            function drawBase() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = '#ddd';
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+                members.forEach((name, i) => {
+                    const x = padding + i * colWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(x, 70);
+                    ctx.lineTo(x, rowHeight + 70);
+                    ctx.stroke();
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 16px Noto Sans KR';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(name, x, 50);
+                    ctx.fillStyle = '#666';
+                    ctx.fillText(results[i], x, rowHeight + 100);
+                });
+                bridges.forEach((b) => {
+                    const x = padding + b.col * colWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(x, b.y);
+                    ctx.lineTo(x + colWidth, b.y);
+                    ctx.stroke();
+                });
+            }
+
+            canvas.onclick = function (e) {
+                if (isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const x = (e.clientX - rect.left) * scaleX;
+                for (let i = 0; i < members.length; i++) {
+                    const lineX = padding + i * colWidth;
+                    if (Math.abs(x - lineX) < 40) {
+                        const randomColor = pathColors[i % pathColors.length];
+                        startAnimation(i, randomColor);
+                        break;
+                    }
+                }
+            };
+
+            async function startAnimation(startCol, color) {
+                isDrawing = true;
+                resultTextDiv.innerText = `${members[startCol]}님 이동 중...`;
+                let currentCol = startCol;
+                let currentY = 70;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 6;
+                ctx.lineJoin = 'round';
+                while (currentY < rowHeight + 70) {
+                    let nextY = rowHeight + 70;
+                    let targetBridge = null;
+                    for (let b of bridges) {
+                        if (b.y > currentY && (b.col === currentCol || b.col === currentCol - 1)) {
+                            nextY = b.y;
+                            targetBridge = b;
+                            break;
+                        }
+                    }
+                    await animateLine(padding + currentCol * colWidth, currentY, padding + currentCol * colWidth, nextY);
+                    currentY = nextY;
+                    if (targetBridge) {
+                        let nextCol = targetBridge.col === currentCol ? currentCol + 1 : currentCol - 1;
+                        let nextX = padding + nextCol * colWidth;
+                        await animateLine(padding + currentCol * colWidth, currentY, nextX, currentY);
+                        currentCol = nextCol;
+                    }
+                }
+                resultTextDiv.innerHTML = `결과: <strong>${members[startCol]}</strong>님 → <span style="color:${color}">[ ${results[currentCol]} ]</span>`;
+                isDrawing = false;
+            }
+
+            function animateLine(x1, y1, x2, y2) {
+                return new Promise((resolve) => {
+                    let start = null;
+                    const duration = 120;
+                    function step(now) {
+                        if (!start) start = now;
+                        const t = Math.min((now - start) / duration, 1);
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t);
+                        ctx.stroke();
+                        if (t < 1) requestAnimationFrame(step);
+                        else resolve();
+                    }
+                    requestAnimationFrame(step);
+                });
+            }
+        </script>
+    </body>
+</html>
