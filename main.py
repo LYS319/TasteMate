@@ -1,195 +1,64 @@
-import os
-from dotenv import load_dotenv
-from fastapi import FastAPI, Depends, HTTPException, Form, Request
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile, Body
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, FileResponse
+from starlette.responses import JSONResponse
+from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, func
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, text, func
 from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
-
-
+from dotenv import load_dotenv
+import os
+import google.generativeai as genai
+from Database import Like, User, Post, Comment, get_db
 from config import settings
+from game_ideal_router import router as ideal_router
 
-# FastAPI 인스턴스 선언 (모든 import 바로 아래, 단 한 번만)
 app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+templates = Jinja2Templates(directory="templates")
 
-
-# --- Gemini 챗봇용 ---
-from pydantic import BaseModel
-from google import genai
-
+# --- Gemini AI 챗봇 엔드포인트 ---
 class ChatRequest(BaseModel):
     message: str
-
-# --- Top Places API용 모델 ---
-class TopPlacesRequest(BaseModel):
-    category: str
-    lat: float
-    lon: float
-
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
     try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=f"""
-                당신은 모바일 서비스 '테이스트메이트 AI'입니다.
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        prompt = f"""
+        당신은 모바일 서비스 '테이스트메이트 AI'입니다.
 
-                ⚠️ 반드시 아래 형식으로만 답변하세요.
-                - 블로그 스타일 금지
-                - 길게 설명 금지
-                - 한눈에 보이도록 간결하게 작성
-                - 모바일 화면에 맞게 줄 간격 유지
+        ⚠️ 반드시 아래 형식으로만 답변하세요.
+        - 블로그 스타일 금지
+        - 길게 설명 금지
+        - 한눈에 보이도록 간결하게 작성
+        - 모바일 화면에 맞게 줄 간격 유지
 
-                형식:
+        형식:
 
-                🍺 추천 주류:
-                - 한 줄 설명
+        🍺 추천 주류:
+        - 한 줄 설명
 
-                🌶 추천 안주 TOP3:
-                1. 안주명 – 한 줄 이유
-                2. 안주명 – 한 줄 이유
-                3. 안주명 – 한 줄 이유
+        🌶 추천 안주 TOP3:
+        1. 안주명 – 한 줄 이유
+        2. 안주명 – 한 줄 이유
+        3. 안주명 – 한 줄 이유
 
-                💡 페어링 포인트:
-                - 두 줄 이내 요약
+        💡 페어링 포인트:
+        - 두 줄 이내 요약
 
-                사용자 질문:
-                {request.message}
-            """
-        )
+        사용자 질문:
+        {request.message}
+        """
+        response = model.generate_content(prompt)
         return {"reply": response.text}
     except Exception as e:
         print("🔥 Gemini 에러:", e)
         return {"reply": "AI 연결에 문제가 발생했습니다."}
 
-
-# --- 위치 기반 인기 장소 추천 API ---
-@app.post("/api/top-places")
-async def top_places(request: TopPlacesRequest):
-    # 실제 구현에서는 외부 API 또는 DB에서 장소를 조회해야 함
-    # 여기서는 예시로 mock 데이터 반환
-    mock_places = [
-        {"name": f"{request.category} 맛집{i+1}", "address": f"서울시 어딘가 {i+1}", "map_url": f"https://map.example.com/{i+1}"}
-        for i in range(5)
-    ]
-    return {"places": mock_places}
-
-load_dotenv()
-
-# DB 설정
-engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
-# --- [데이터 모델 정의] ---
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(255), unique=True, index=True)
-    hashed_password = Column(String(255))
-    nickname = Column(String(100))
-    is_admin = Column(Integer, default=0) 
-    status = Column(String(50), default="정상") 
-    created_at = Column(DateTime, default=datetime.utcnow)
-    
-    posts = relationship("Post", back_populates="owner", cascade="all, delete-orphan")
-    comments = relationship("Comment", back_populates="owner", cascade="all, delete-orphan")
-    likes = relationship("Like", back_populates="user", cascade="all, delete-orphan")
-    chat_history = relationship("ChatHistory", back_populates="user")
-
-class Post(Base):
-    __tablename__ = "posts"
-    id = Column(Integer, primary_key=True, index=True)
-    category = Column(String(50), index=True)
-    title = Column(String(255))
-    content = Column(Text)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    is_notice = Column(Integer, default=0) 
-
-    owner = relationship("User", back_populates="posts")
-    comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
-    likes = relationship("Like", back_populates="post", cascade="all, delete-orphan")
-
-class Comment(Base):
-    __tablename__ = "comments"
-    id = Column(Integer, primary_key=True, index=True)
-    content = Column(Text)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    post_id = Column(Integer, ForeignKey("posts.id"))
-    
-    owner = relationship("User", back_populates="comments")
-    post = relationship("Post", back_populates="comments")
-
-class Like(Base):
-    __tablename__ = "likes"
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    post_id = Column(Integer, ForeignKey("posts.id"))
-    created_at = Column(DateTime, default=datetime.utcnow)
-    user = relationship("User", back_populates="likes")
-    post = relationship("Post", back_populates="likes")
-
-class ChatHistory(Base):
-    __tablename__ = "chat_history"
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    query = Column(Text)
-    response = Column(Text)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    user = relationship("User", back_populates="chat_history")
-
-Base.metadata.create_all(bind=engine)
-from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, FileResponse
-from starlette.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, text, func
-from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
-from dotenv import load_dotenv
-import os
-from Database import Like, User, Post, Comment, get_db
-from game_ideal_router import router as ideal_router
-
-script_dir = os.path.dirname(__file__)
-static_path = os.path.join(script_dir, "static")
-app.mount("/static", StaticFiles(directory=static_path), name="static")
-
-food_path = os.path.join(script_dir, "food")
-app.mount("/food", StaticFiles(directory=food_path), name="food")
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-templates = Jinja2Templates(directory="templates")
-
-# 회사소개 페이지 라우터
-
-from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, FileResponse
-from starlette.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, text, func
-from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
-from dotenv import load_dotenv
-import os
-from Database import Like, User, Post, Comment, get_db
-from game_ideal_router import router as ideal_router
-
-app = FastAPI(title="Taste Mate Final System")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
-
-templates = Jinja2Templates(directory="templates")
+## 중복 선언 제거 (위에서 이미 선언됨)
 
 # 회사소개 페이지 라우터
 @app.get("/about", response_class=HTMLResponse)
@@ -317,8 +186,8 @@ def upload_image(image: UploadFile = File(...)):
     file_location = os.path.join(upload_dir, image.filename)
     with open(file_location, "wb") as f:
         f.write(image.file.read())
-    image_url = f"/static/uploads/{image.filename}"
-    return {"image_url": image_url}
+    # image_url = f"/static/uploads/{image.filename}"
+    return {"image_url": None}
 
 
 # 회원 탈퇴(자기 계정 삭제) API
@@ -448,15 +317,15 @@ def create_post(
         return JSONResponse(status_code=400, content={"detail": "유효하지 않은 사용자입니다."})
     if getattr(user, 'status', None) == '차단':
         return JSONResponse(status_code=403, content={"detail": "차단되어 게시글을 쓸 수 없습니다."})
-    image_url = None
+    # image_url = None
     if image and image.filename:
         upload_dir = "static/uploads"
         os.makedirs(upload_dir, exist_ok=True)
         file_location = os.path.join(upload_dir, image.filename)
         with open(file_location, "wb") as f:
             f.write(image.file.read())
-        image_url = f"/static/uploads/{image.filename}"
-    new_post = Post(category=category.upper(), title=title, content=content, owner=user, is_notice=is_notice, image_url=image_url)
+        # image_url = f"/static/uploads/{image.filename}"
+    new_post = Post(category=category.upper(), title=title, content=content, owner=user, is_notice=is_notice)
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
@@ -536,7 +405,7 @@ def api_post_detail(post_id: int, db: Session = Depends(get_db)):
         "category": post.category,
         "is_notice": getattr(post, 'is_notice', 0),
         "date": post.created_at.strftime("%Y-%m-%d %H:%M"),
-        "image_url": getattr(post, 'image_url', None),
+        # "image_url": getattr(post, 'image_url', None),
         "comments": [
             {
                 "author": c.owner.nickname if c.owner else "",
