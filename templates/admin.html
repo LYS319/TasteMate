@@ -442,7 +442,7 @@
                     let url = '/api/admin/posts';
                     if (category && category !== '') url += `?category=${category}`;
                     const res = await fetch(url);
-                    let posts = await res.json();
+                    const posts = await res.json();
                     const list = document.getElementById('post-list');
 
                     if (posts.length === 0) {
@@ -451,35 +451,27 @@
                         return;
                     }
 
-                    // 최신순 정렬 (date 필드가 ISO 문자열 또는 숫자라면 내림차순)
-                    posts.sort((a, b) => {
-                        // date가 숫자(타임스탬프)면 바로 비교, 아니면 Date로 변환
-                        const dateA = typeof a.date === 'number' ? a.date : new Date(a.date).getTime();
-                        const dateB = typeof b.date === 'number' ? b.date : new Date(b.date).getTime();
-                        return dateB - dateA;
-                    });
-
                     list.innerHTML = posts
                         .map(
                             (p) => `
-                        <tr>
-                                <td>${p.id}</td>
-                                <td><strong style="color:var(--primary)">[${p.category}]</strong></td>
-                                <td>
-                                    ${p.author}
-                                    ${p.is_admin === 1 ? '<span style="color:var(--primary); font-weight:bold; margin-left:4px;">(관리자)</span>' : ''}
-                                </td>
-                                <td>
-                                    <a href="/post/${p.id}" target="_blank" style="color:#333; text-decoration:none; font-weight:bold;">
-                                        ${p.title} 🔗
-                                    </a>
-                                    ${p.is_notice === 1 ? '<span style="background:var(--primary); color:#fff; border-radius:6px; padding:3px 8px; margin-left:8px; font-size:12px; font-weight:bold;">공지</span>' : ''}
-                                </td>
-                                <td style="font-size:12px; color:#666;">${p.date}</td>
-                                <td>
-                                    <button class="btn" style="background:var(--danger)" onclick="deletePost(${p.id})">강제 삭제</button>
-                                </td>
-                            </tr>`,
+                    <tr>
+                            <td>${p.id}</td>
+                            <td><strong style="color:var(--primary)">[${p.category}]</strong></td>
+                            <td>
+                                ${p.author}
+                                ${p.is_admin === 1 ? '<span style="color:var(--primary); font-weight:bold; margin-left:4px;">(관리자)</span>' : ''}
+                            </td>
+                            <td>
+                                <a href="/post/${p.id}" target="_blank" style="color:#333; text-decoration:none; font-weight:bold;">
+                                    ${p.title} 🔗
+                                </a>
+                                ${p.is_notice === 1 ? '<span style="background:var(--primary); color:#fff; border-radius:6px; padding:3px 8px; margin-left:8px; font-size:12px; font-weight:bold;">공지</span>' : ''}
+                            </td>
+                            <td style="font-size:12px; color:#666;">${p.date}</td>
+                            <td>
+                                <button class="btn" style="background:var(--danger)" onclick="deletePost(${p.id})">강제 삭제</button>
+                            </td>
+                        </tr>`,
                         )
                         .join('');
                 } catch (error) {

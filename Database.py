@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 # 환경변수 로드
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+engine = create_engine(DATABASE_URL, pool_pre_ping=True, connect_args={"ssl": {"ssl_ca": ""}})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -32,7 +32,7 @@ class Post(Base):
     category = Column(String(50), index=True)
     title = Column(String(255))
     content = Column(Text)
-    image_url = Column(String(255), nullable=True)
+    # image_url = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     user_id = Column(Integer, ForeignKey("users.id"))
     is_notice = Column(Integer, default=0)  # 0: 일반글, 1: 공지글
@@ -71,6 +71,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 class ChatHistory(Base):
     __tablename__ = "chat_history"
     id = Column(Integer, primary_key=True, index=True)
@@ -89,4 +90,12 @@ class Store(Base):
     category = Column(String)
     lat = Column(Float)
     lon = Column(Float)
-    rating = Column(Float) #
+    rating = Column(Float)
+
+if __name__ == "__main__":
+    # posts 테이블의 title 값 20개만 출력 (최신순)
+    db = SessionLocal()
+    posts = db.query(Post).order_by(Post.created_at.desc()).limit(20).all()
+    for post in posts:
+        print(f"id={post.id}, category={post.category}, title={post.title}")
+    db.close()

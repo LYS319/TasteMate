@@ -1,40 +1,93 @@
-from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile
+
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile, Body
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
 from starlette.responses import JSONResponse
+from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, text, func
 from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
 from dotenv import load_dotenv
 import os
+import google.genai as genai
 from Database import Like, User, Post, Comment, get_db
+from config import settings
 from game_ideal_router import router as ideal_router
 
 app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
-
 templates = Jinja2Templates(directory="templates")
 
-# 회사소개 페이지 라우터
+# --- 카테고리별 직접 접근 라우터 추가 (/SOLO, /DATE, /WORK, /ETC) ---
 
-from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, FileResponse
-from starlette.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, text, func
-from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
-from dotenv import load_dotenv
-import os
-from Database import Like, User, Post, Comment, get_db
-from game_ideal_router import router as ideal_router
+@app.get("/SOLO", response_class=HTMLResponse)
+def solo_page(request: Request):
+    db = next(get_db())
+    post_count = db.query(Post).filter(func.lower(Post.category).in_(["혼밥", "solo"])) .count()
+    return templates.TemplateResponse("SOLO.html", {"request": request, "post_count": post_count})
 
-app = FastAPI(title="Taste Mate Final System")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-templates = Jinja2Templates(directory="templates")
+@app.get("/DATE", response_class=HTMLResponse)
+def date_page(request: Request):
+    db = next(get_db())
+    post_count = db.query(Post).filter(func.lower(Post.category).in_(["데이트", "date"])) .count()
+    return templates.TemplateResponse("DATE.html", {"request": request, "post_count": post_count})
+
+
+@app.get("/WORK", response_class=HTMLResponse)
+def work_page(request: Request):
+    db = next(get_db())
+    post_count = db.query(Post).filter(func.lower(Post.category).in_(["회식", "work"])) .count()
+    return templates.TemplateResponse("WORK.html", {"request": request, "post_count": post_count})
+
+
+@app.get("/ETC", response_class=HTMLResponse)
+def etc_page(request: Request):
+    db = next(get_db())
+    post_count = db.query(Post).filter(func.lower(Post.category).in_(["기타", "etc"])) .count()
+    return templates.TemplateResponse("ETC.html", {"request": request, "post_count": post_count})
+
+# --- Gemini AI 챗봇 엔드포인트 ---
+class ChatRequest(BaseModel):
+    message: str
+
+@app.post("/api/chat")
+async def chat(request: ChatRequest):
+    try:
+        client = genai.client.Client(api_key=settings.GEMINI_API_KEY)
+        prompt = f"""
+        당신은 모바일 서비스 '테이스트메이트 AI'입니다.
+
+        ⚠️ 반드시 아래 형식으로만 답변하세요.
+        - 블로그 스타일 금지
+        - 길게 설명 금지
+        - 한눈에 보이도록 간결하게 작성
+        - 모바일 화면에 맞게 줄 간격 유지
+
+        형식:
+
+        🍺 추천 주류:
+        - 한 줄 설명
+
+        🌶 추천 안주 TOP3:
+        1. 안주명 – 한 줄 이유
+        2. 안주명 – 한 줄 이유
+        3. 안주명 – 한 줄 이유
+
+        💡 페어링 포인트:
+        - 두 줄 이내 요약
+
+        사용자 질문:
+        {request.message}
+        """
+        response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
+        return {"reply": response.candidates[0].content.parts[0].text}
+    except Exception as e:
+        print("🔥 Gemini 에러:", e)
+        return {"reply": "AI 연결에 문제가 발생했습니다."}
+
+## 중복 선언 제거 (위에서 이미 선언됨)
 
 # 회사소개 페이지 라우터
 @app.get("/about", response_class=HTMLResponse)
@@ -52,7 +105,27 @@ def game_calculator(request: Request):
 
 @app.get("/", response_class=HTMLResponse)
 def root(request: Request):
-    return templates.TemplateResponse("테이스트메이트.html", {"request": request})
+    db = next(get_db())
+    def get_count(categories):
+        return db.query(Post).filter(func.lower(Post.category).in_([c.lower() for c in categories])).count()
+
+    post_count_solo = get_count(["혼밥", "SOLO"])
+    post_count_date = get_count(["데이트", "DATE"])
+    post_count_work = get_count(["회식", "WORK"])
+    post_count_etc = get_count(["기타", "ETC"])
+
+    context = {
+        "request": request,
+        "post_count_solo": post_count_solo,
+        "post_count_date": post_count_date,
+        "post_count_work": post_count_work,
+        "post_count_etc": post_count_etc,
+        "post_count_recommend": 0,
+        "post_count_ramen": 0,
+        "post_count_roulette": 0
+    }
+    print("[DEBUG] SOLO:", post_count_solo, "DATE:", post_count_date, "WORK:", post_count_work, "ETC:", post_count_etc)
+    return templates.TemplateResponse("테이스트메이트.html", context)
 # 회원정보 페이지 라우터
 @app.get("/mypage", response_class=HTMLResponse)
 def mypage(request: Request):
@@ -162,8 +235,8 @@ def upload_image(image: UploadFile = File(...)):
     file_location = os.path.join(upload_dir, image.filename)
     with open(file_location, "wb") as f:
         f.write(image.file.read())
-    image_url = f"/static/uploads/{image.filename}"
-    return {"image_url": image_url}
+    # image_url = f"/static/uploads/{image.filename}"
+    return {"image_url": None}
 
 
 # 회원 탈퇴(자기 계정 삭제) API
@@ -293,15 +366,15 @@ def create_post(
         return JSONResponse(status_code=400, content={"detail": "유효하지 않은 사용자입니다."})
     if getattr(user, 'status', None) == '차단':
         return JSONResponse(status_code=403, content={"detail": "차단되어 게시글을 쓸 수 없습니다."})
-    image_url = None
+    # image_url = None
     if image and image.filename:
         upload_dir = "static/uploads"
         os.makedirs(upload_dir, exist_ok=True)
         file_location = os.path.join(upload_dir, image.filename)
         with open(file_location, "wb") as f:
             f.write(image.file.read())
-        image_url = f"/static/uploads/{image.filename}"
-    new_post = Post(category=category.upper(), title=title, content=content, owner=user, is_notice=is_notice, image_url=image_url)
+        # image_url = f"/static/uploads/{image.filename}"
+    new_post = Post(category=category.upper(), title=title, content=content, owner=user, is_notice=is_notice)
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
@@ -344,7 +417,14 @@ def aichat_page(request: Request):
 
 @app.get("/api/posts/{category}")
 def get_posts_by_category(category: str, db: Session = Depends(get_db)):
-    posts = db.query(Post).filter(Post.category == category.upper()).all()
+    category_map = {
+        "SOLO": ["혼밥", "SOLO"],
+        "DATE": ["데이트", "DATE"],
+        "WORK": ["회식", "WORK"],
+        "ETC": ["기타", "ETC"]
+    }
+    categories = category_map.get(category.upper(), [category.upper()])
+    posts = db.query(Post).filter(func.lower(Post.category).in_([c.lower() for c in categories])).all()
     return [
         {
             "id": post.id,
@@ -381,7 +461,7 @@ def api_post_detail(post_id: int, db: Session = Depends(get_db)):
         "category": post.category,
         "is_notice": getattr(post, 'is_notice', 0),
         "date": post.created_at.strftime("%Y-%m-%d %H:%M"),
-        "image_url": getattr(post, 'image_url', None),
+        # "image_url": getattr(post, 'image_url', None),
         "comments": [
             {
                 "author": c.owner.nickname if c.owner else "",
@@ -478,8 +558,35 @@ def fix_etc_category(db: Session = Depends(get_db)):
     return {"updated": updated, "message": "ETC 카테고리 일괄 수정 완료"}
 
 
+
 from fastapi import Body
 from typing import Optional
+
+# --- 카테고리별 최신 댓글 API ---
+@app.get("/api/comments/latest")
+def get_latest_comment(category: str, db: Session = Depends(get_db)):
+    category_map = {
+        "SOLO": ["혼밥", "SOLO"],
+        "DATE": ["데이트", "DATE"],
+        "WORK": ["회식", "WORK"],
+        "ETC": ["기타", "ETC"]
+    }
+    categories = category_map.get(category.upper(), [category.upper()])
+    comment = (
+        db.query(Comment)
+        .join(Post, Comment.post_id == Post.id)
+        .filter(func.lower(Post.category).in_([c.lower() for c in categories]))
+        .order_by(Comment.created_at.desc())
+        .first()
+    )
+    if not comment:
+        return {}
+    return {
+        "content": comment.content,
+        "author": comment.owner.nickname if comment.owner else "",
+        "post_title": comment.post.title if comment.post else "",
+        "created_at": comment.created_at
+    }
 
 @app.post("/api/posts/{post_id}/delete")
 async def delete_post(post_id: int, request: Request, db: Session = Depends(get_db)):
@@ -659,3 +766,4 @@ def search(request: Request, db: Session = Depends(get_db)):
         "search.html",
         {"request": request, "keyword": keyword, "posts": post_list}
     )
+#test 0220

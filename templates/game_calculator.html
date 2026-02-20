@@ -8,12 +8,12 @@
             href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap"
             rel="stylesheet"
         />
+
         <style>
-            /* --- 예시 코드(핀볼)의 스타일 변수 및 규격 이식 --- */
             :root {
                 --primary-color: #dc2626;
                 --primary-hover: #b91c1c;
-                --bg-gradient: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
+                --bg-gradient: linear-gradient(135deg, #fdfdfd 0%, #f1f1f1 100%);
                 --glass-bg: rgba(255, 255, 255, 0.85);
             }
 
@@ -23,11 +23,9 @@
                 background: var(--bg-gradient);
                 color: #333;
                 min-height: 100vh;
-                display: flex;
-                flex-direction: column;
             }
 
-            /* --- 상단바: 예시 코드와 1:1 동일하게 수정 --- */
+            /* ===== Header (공통 스타일) ===== */
             .header {
                 display: flex;
                 justify-content: space-between;
@@ -48,22 +46,14 @@
                 gap: 24px;
             }
             .header-logo {
-                display: flex;
-                align-items: center;
-                gap: 10px;
                 font-size: 1.5rem;
-                font-weight: 900; /* 두께 900으로 상향 */
+                font-weight: 900;
                 color: var(--primary-color);
                 text-decoration: none;
-                transition: transform 0.2s;
-            }
-            .header-logo:hover {
-                transform: scale(1.05);
             }
             .menu-bar {
                 display: flex;
                 gap: 18px;
-                align-items: center;
                 margin-left: 24px;
             }
             .menu-item {
@@ -74,148 +64,145 @@
                 padding: 8px 18px;
                 border-radius: 8px;
                 cursor: pointer;
-                transition: background 0.18s;
             }
-            .menu-item:hover {
-                background: #fff5f5;
-            }
+            .menu-item:hover { background: #fff5f5; }
 
-            .game-dropdown {
-                position: relative;
-            }
+            .game-dropdown { position: relative; }
             .dropdown-content {
                 display: none;
                 position: absolute;
-                top: 36px;
+                top: 100%;
                 left: 0;
                 background: #fff;
                 min-width: 140px;
                 box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
                 border-radius: 12px;
                 padding: 12px 0;
-                z-index: 1000;
                 flex-direction: column;
+                z-index: 3000;
             }
-            .game-dropdown:hover .dropdown-content {
-                display: flex;
-            }
+            .game-dropdown:hover .dropdown-content { display: flex; }
             .dropdown-content a {
                 color: var(--primary-color);
                 padding: 10px 24px;
                 text-decoration: none;
-                font-size: 1.05rem;
                 font-weight: 600;
-                border-radius: 8px;
-                transition: background 0.18s;
             }
-            .dropdown-content a:hover {
-                background: #ffe5e5;
-            }
+            .dropdown-content a:hover { background: #ffe5e5; }
 
-            .header-right {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
             .login-btn {
                 padding: 8px 16px;
+                background: var(--primary-color);
                 color: #fff;
                 border: none;
                 border-radius: 6px;
-                font-size: 0.95rem;
                 font-weight: bold;
                 cursor: pointer;
-                background: var(--primary-color);
-                transition: background 0.2s;
             }
 
-            /* --- 계산기 컨텐츠 디자인 (핀볼 스타일 박스 적용) --- */
-            .main-content {
-                flex: 1;
+            /* ===== Layout & Containers ===== */
+            .game-main { padding: 60px 10px; }
+            .main-layout-container {
                 display: flex;
-                align-items: center;
                 justify-content: center;
-                padding: 40px 20px;
+                align-items: flex-start;
+                max-width: 1200px;
+                margin: 0 auto;
             }
+
             .calc-container {
+                flex: 1;
+                max-width: 500px;
+                text-align: center;
                 background: white;
                 padding: 40px;
-                border-radius: 32px; /* 핀볼 setup 박스 규격 */
-                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.15);
-                min-width: 360px;
-                max-width: 440px;
-                text-align: center;
+                border-radius: 32px;
                 border: 2px solid var(--primary-color);
+                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.15);
             }
-            .calc-title {
-                color: var(--primary-color);
-                margin-bottom: 25px;
-                font-size: 2.1rem;
+
+            /* ===== Setup Box (계산기 폼) ===== */
+            .setup-title {
                 font-weight: 900;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 12px;
+                font-size: 2rem;
+                color: var(--primary-color);
+                margin-top: 0;
+                margin-bottom: 10px;
             }
-            .calc-form {
-                display: flex;
-                flex-direction: column;
-                gap: 20px;
+            .setup-desc {
+                color: #666;
+                margin-bottom: 25px;
+                font-size: 1rem;
             }
-            .calc-label {
-                font-size: 1.1rem;
+
+            .form-group {
+                text-align: left;
+                margin-bottom: 20px;
+            }
+            .form-label {
                 font-weight: 800;
                 color: #444;
                 margin-bottom: 8px;
-                text-align: left;
-                border-left: 4px solid var(--primary-color);
-                padding-left: 10px;
+                display: block;
+                padding-left: 5px;
             }
-            .calc-input {
+
+            input {
                 padding: 14px;
-                border: 2px solid #ddd;
                 border-radius: 12px;
-                font-size: 1.1rem;
+                border: 1px solid #ddd;
                 width: 100%;
                 box-sizing: border-box;
                 text-align: center;
-                outline: none;
-                transition: border-color 0.2s;
+                font-family: inherit;
+                font-size: 1.1rem;
             }
-            .calc-input:focus {
+            input:focus {
                 border-color: var(--primary-color);
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.05);
             }
-            .calc-btn {
+
+            .action-btn {
                 background: var(--primary-color);
                 color: white;
                 border: none;
-                padding: 15px 0;
+                padding: 15px 40px;
                 border-radius: 12px;
-                font-size: 1.2rem;
-                font-weight: 800;
+                font-size: 1.1rem;
+                font-weight: 900;
                 cursor: pointer;
-                margin-top: 10px;
                 transition: 0.2s;
+                width: 100%;
+                margin-top: 10px;
             }
-            .calc-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+            .action-btn:hover {
+                transform: scale(1.02);
+                background: var(--primary-hover);
             }
-            .calc-result {
-                margin-top: 25px;
-                color: var(--primary-color);
+
+            /* ===== Result View ===== */
+            .result-banner {
                 background: #fff5f5;
-                border: 1.5px solid #ffebeb;
-                border-radius: 15px;
+                color: var(--primary-color);
                 padding: 20px;
+                border-radius: 15px;
+                font-size: 1.2rem;
+                font-weight: 900;
+                margin-top: 25px;
                 display: none;
                 flex-direction: column;
-                gap: 10px;
-                animation: slideIn 0.3s ease-out;
+                gap: 8px;
+                border: 1px solid #ffebeb;
+                animation: fadeIn 0.4s ease;
             }
-            @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
         </style>
     </head>
+
     <body>
         <header class="header">
             <div class="header-left">
@@ -235,66 +222,49 @@
                     </div>
                 </nav>
             </div>
-
-            <div class="header-right" id="headerRightArea">
-                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
-                <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626; margin-left:5px;" onclick="location.href = '/signup'">회원가입</button>
-            </div>
+            <button class="login-btn">로그인</button>
         </header>
 
-        <main class="main-content">
-            <div class="calc-container">
-                <div class="calc-title"><span>🧮</span> 1인당 계산기</div>
-                <form class="calc-form" onsubmit="event.preventDefault(); calculateAmount();">
-                    <div>
-                        <div class="calc-label">👥 인원수</div>
-                        <input id="calcPeople" class="calc-input" type="number" min="1" placeholder="몇 명인가요?" />
-                    </div>
-                    <div>
-                        <div class="calc-label">💰 총 금액</div>
-                        <input id="calcAmount" class="calc-input" type="text" placeholder="금액을 입력하세요" />
-                    </div>
-                    <button class="calc-btn" type="submit">정산하기</button>
-                </form>
-                <div id="calcResult" class="calc-result"></div>
+        <main class="game-main">
+            <div class="main-layout-container">
+                <div class="calc-container">
+                    <h2 class="setup-title">🧮 1인당 계산기</h2>
+                    <p class="setup-desc">정확하고 공평한 정산을 도와드립니다.</p>
+                    
+                    <form onsubmit="event.preventDefault(); calculateAmount();">
+                        <div class="form-group">
+                            <label class="form-label">👥 인원수</label>
+                            <input id="calcPeople" type="number" min="1" placeholder="몇 명인가요?" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">💰 총 금액</label>
+                            <input id="calcAmount" type="text" placeholder="금액을 입력하세요" />
+                        </div>
+                        
+                        <button class="action-btn" type="submit">정산하기</button>
+                    </form>
+
+                    <div id="calcResult" class="result-banner"></div>
+                    
+                    <button class="action-btn" style="background: #666; font-size: 0.9rem; margin-top: 20px;" onclick="location.reload()">초기화</button>
+                </div>
             </div>
         </main>
 
         <script>
-            /* --- 로직 유지: 로그인/로그아웃 --- */
-            document.addEventListener('DOMContentLoaded', () => {
-                const nickname = localStorage.getItem('nickname');
-                const isAdmin = localStorage.getItem('is_admin');
-                const headerRightArea = document.getElementById('headerRightArea');
-
-                if (nickname && headerRightArea) {
-                    let adminButton = '';
-                    if (isAdmin === '1') {
-                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자</button>`;
-                    }
-                    headerRightArea.innerHTML = `
-                        <span style="font-weight: 700; color: #dc2626; font-size: 1.05rem; margin-right: 8px;">👤 ${nickname}님</span>
-                        ${adminButton}
-                        <button class="login-btn" onclick="location.href='/mypage'" style="background: #f39c12; margin-left:4px;">정보</button>
-                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:4px;">로그아웃</button>
-                    `;
-                }
-            });
-
-            function logout() {
-                localStorage.clear();
-                alert('로그아웃 되었습니다.');
-                window.location.href = '/main';
-            }
-
-            /* --- 로직 유지: 계산기 수식 --- */
+            // 세 자릿수 콤마 로직
             const calcAmountInput = document.getElementById('calcAmount');
             calcAmountInput.addEventListener('input', function (e) {
                 let value = calcAmountInput.value.replace(/[^0-9]/g, '');
-                if (value) { calcAmountInput.value = Number(value).toLocaleString(); }
-                else { calcAmountInput.value = ''; }
+                if (value) {
+                    calcAmountInput.value = Number(value).toLocaleString();
+                } else {
+                    calcAmountInput.value = '';
+                }
             });
 
+            // 계산 로직
             function calculateAmount() {
                 const people = parseInt(document.getElementById('calcPeople').value);
                 const amountRaw = document.getElementById('calcAmount').value.replace(/,/g, '');
@@ -307,15 +277,25 @@
                     return;
                 }
 
+                // 100원 단위 절사 계산
                 const perPerson = Math.floor(amount / people / 100) * 100;
-                const remain = amount - perPerson * people;
+                const remain = amount - (perPerson * people);
 
                 resultDiv.style.display = 'flex';
                 resultDiv.innerHTML = `
-                    <div style="font-size: 1.3rem;">💸 1인당 <b>${perPerson.toLocaleString()}원</b></div>
-                    <div style="font-size: 1rem; color: #666;">🪙 남는 금액 <b>${remain.toLocaleString()}원</b></div>
+                    <div style="font-size: 1.4rem;">💸 1인당 <b>${perPerson.toLocaleString()}원</b></div>
+                    <div style="font-size: 0.95rem; color: #666; margin-top: 5px;">🪙 남는 금액 <b>${remain.toLocaleString()}원</b></div>
                 `;
             }
+
+            // 로그인 정보 연동 (있을 경우만 작동)
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                if (nickname) {
+                    const loginBtn = document.querySelector('.login-btn');
+                    if (loginBtn) loginBtn.innerText = `👤 ${nickname}님`;
+                }
+            });
         </script>
     </body>
 </html>

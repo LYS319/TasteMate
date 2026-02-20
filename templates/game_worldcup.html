@@ -20,7 +20,7 @@
             body {
                 margin: 0;
                 font-family: 'Noto Sans KR', sans-serif;
-                background: var(--bg-gradient);
+                background: #fff;
                 color: #333;
                 min-height: 100vh;
                 overflow-x: hidden;
@@ -136,7 +136,7 @@
                 max-width: 700px;
                 margin: 0 auto;
                 text-align: center;
-                background: white;
+                background: #fff;
                 padding: 40px;
                 border-radius: 32px;
                 border: 2px solid var(--primary-color);
@@ -250,16 +250,22 @@
 
             <div class="header-right" id="headerRightArea">
                 <button class="login-btn" onclick="location.href = '/login'">로그인</button>
-                <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626; margin-left: 5px;" onclick="location.href = '/signup'">회원가입</button>
+                <button
+                    class="login-btn"
+                    style="background: #fff; color: #dc2626; border: 1px solid #dc2626; margin-left: 5px"
+                    onclick="location.href = '/signup'"
+                >
+                    회원가입
+                </button>
             </div>
         </header>
 
         <main class="game-main">
             <div class="worldcup-container">
                 <div class="worldcup-title">🍗 메뉴 월드컵</div>
-                <div id="round-title" class="round-title">준비 중...</div>
-
-                <div class="choices">
+                <button id="start-btn" class="restart-btn" onclick="onStartClick()">시작하기</button>
+                <div id="round-title" class="round-title" style="display: none">준비 중...</div>
+                <div class="choices" style="display: none">
                     <div class="choice" id="choice1" onclick="selectChoice(0)">
                         <img class="choice-img" id="img1" src="" alt="음식1" />
                         <div class="choice-label" id="label1"></div>
@@ -269,7 +275,6 @@
                         <div class="choice-label" id="label2"></div>
                     </div>
                 </div>
-
                 <div id="result" class="result" style="display: none"></div>
                 <button id="restart-btn" class="restart-btn" style="display: none" onclick="restartWorldcup()">
                     다시 하기
@@ -306,10 +311,14 @@
 
             /* --- 월드컵 게임 로직 유지 --- */
             const menuList = [
-                { name: '짜장면', img: '/food/짜장면.webp' }, { name: '짬뽕', img: '/food/짬뽕.jpg' },
-                { name: '돈가스', img: '/food/돈가스.jpeg' }, { name: '제육볶음', img: '/food/제육볶음.webp' },
-                { name: '비빔밥', img: '/food/비빔밥.jpg' }, { name: '김치찌개', img: '/food/김치찌개.webp' },
-                { name: '파스타', img: '/food/파스타.jpeg' }, { name: '샐러드', img: '/food/샐러드.webp' },
+                { name: '짜장면', img: '/food/짜장면.webp' },
+                { name: '짬뽕', img: '/food/짬뽕.jpg' },
+                { name: '돈가스', img: '/food/돈가스.jpeg' },
+                { name: '제육볶음', img: '/food/제육볶음.webp' },
+                { name: '비빔밥', img: '/food/비빔밥.jpg' },
+                { name: '김치찌개', img: '/food/김치찌개.webp' },
+                { name: '파스타', img: '/food/파스타.jpeg' },
+                { name: '샐러드', img: '/food/샐러드.webp' },
             ];
 
             let roundMenus = [];
@@ -323,6 +332,13 @@
                 }
             }
 
+            function onStartClick() {
+                document.getElementById('start-btn').style.display = 'none';
+                document.getElementById('round-title').style.display = '';
+                document.querySelector('.choices').style.display = 'flex';
+                startWorldcup();
+            }
+
             function startWorldcup() {
                 roundMenus = [...menuList];
                 shuffle(roundMenus);
@@ -330,7 +346,6 @@
                 match = 0;
                 document.getElementById('result').style.display = 'none';
                 document.getElementById('restart-btn').style.display = 'none';
-                document.querySelector('.choices').style.display = 'flex';
                 showMatch();
             }
 
@@ -343,7 +358,8 @@
                     document.getElementById('restart-btn').style.display = 'inline-block';
                     return;
                 }
-                document.getElementById('round-title').textContent = `${roundMenus.length}강 (진행: ${match + 1}/${roundMenus.length / 2})`;
+                document.getElementById('round-title').textContent =
+                    `${roundMenus.length}강 (진행: ${match + 1}/${roundMenus.length / 2})`;
                 document.getElementById('img1').src = roundMenus[match * 2].img;
                 document.getElementById('label1').textContent = roundMenus[match * 2].name;
                 document.getElementById('img2').src = roundMenus[match * 2 + 1].img;
@@ -361,8 +377,21 @@
                 showMatch();
             }
 
-            function restartWorldcup() { startWorldcup(); }
-            window.onload = startWorldcup;
+            function restartWorldcup() {
+                document.getElementById('start-btn').style.display = '';
+                document.getElementById('round-title').style.display = 'none';
+                document.querySelector('.choices').style.display = 'none';
+                document.getElementById('result').style.display = 'none';
+                document.getElementById('restart-btn').style.display = 'none';
+            }
+            // 최초에는 아무것도 안 보이게
+            window.onload = function () {
+                document.getElementById('start-btn').style.display = '';
+                document.getElementById('round-title').style.display = 'none';
+                document.querySelector('.choices').style.display = 'none';
+                document.getElementById('result').style.display = 'none';
+                document.getElementById('restart-btn').style.display = 'none';
+            };
         </script>
     </body>
 </html>
