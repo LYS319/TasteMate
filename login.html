@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Taste Mate - 로그인</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f7f6; margin: 0; }
+        .box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; outline: none; }
+        button { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Taste Mate 로그인</h2>
+        <form id="loginForm">
+            <input type="email" name="email" placeholder="이메일" required>
+            <input type="password" name="password" placeholder="비밀번호" required>
+            <button type="submit">로그인</button>
+        </form>
+        <p style="margin-top:20px; font-size:14px; color:#666;">계정이 없으신가요? <a href="/signup" style="color:#3498db; font-weight:bold; text-decoration:none;">회원가입</a></p>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            try {
+                const res = await fetch('/api/login', { method: 'POST', body: new FormData(e.target) });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    // 로그인 성공 시 등급별 리다이렉트 (admin 또는 main)
+                    window.location.href = data.redirect;
+                } else {
+                    // 비밀번호 틀림, 활동 정지 등의 에러 메시지 출력
+                    alert(data.detail || "로그인에 실패했습니다.");
+                }
+            } catch (err) {
+                alert("서버 연결에 실패했습니다. 서버가 켜져 있는지 확인해주세요.");
+            }
+        };
+    </script>
+</body>
+</html>

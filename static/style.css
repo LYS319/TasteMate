@@ -1,0 +1,16 @@
+/* 병합: TasteMate에서 가져온 스타일 */
+:root {
+    --main-red: #dc2626;
+    --hover-red: #b91c1c;
+    --bg-light: #fff5f5;
+    --border-red: #ffe5e5;
+    --shadow-soft: rgba(220, 38, 38, 0.1);
+    --shadow-deep: rgba(220, 38, 38, 0.25);
+}
+body {
+    margin: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #fff;
+    overflow-x: hidden;
+}
+/* ...이하 생략... */

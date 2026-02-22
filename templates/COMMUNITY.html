@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>테이스트메이트 커뮤니티</title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+            body {
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: #fdfdfd;
+                color: #333;
+                word-break: keep-all;
+            }
+
+            /* --- Header Style (메인과 동일) --- */
+            .header {
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
+                align-items: center;
+                padding: 12px 40px;
+                background: rgba(255, 255, 255, 0.85);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                position: fixed;
+                top: 0; left: 0; right: 0;
+                z-index: 1000;
+                border-bottom: 1px solid rgba(220, 38, 38, 0.05);
+            }
+
+            .header-left { display: flex; align-items: center; gap: 30px; grid-column: 1; }
+            .header-logo {
+                display: flex; align-items: center; gap: 10px;
+                font-size: 1.7rem; font-weight: 900; color: #dc2626;
+                text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .header-logo:hover { transform: translateY(-1px); filter: brightness(1.2); }
+
+            .menu-bar { display: flex; gap: 5px; align-items: center; }
+            .menu-item {
+                font-size: 1.05rem; font-weight: 600; color: #444;
+                text-decoration: none; padding: 10px 14px; border-radius: 10px;
+                transition: all 0.2s;
+            }
+            .menu-item:hover { background: #fff1f1; color: #dc2626; }
+
+            .header-right { display: flex; align-items: center; gap: 10px; justify-content: flex-end; grid-column: 3; }
+            .login-btn {
+                padding: 10px 18px; color: #fff; border: none; border-radius: 10px;
+                font-size: 0.9rem; font-weight: 700; cursor: pointer;
+                background: #dc2626; transition: all 0.2s; white-space: nowrap;
+            }
+
+            .current-location {
+                font-size: 0.85rem; color: #dc2626; background: #fff1f1;
+                border: 1px solid rgba(220, 38, 38, 0.1); border-radius: 10px;
+                padding: 8px 14px; font-weight: 700; cursor: pointer;
+            }
+
+            /* --- Community Page Layout --- */
+            .community-main {
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 140px 20px 100px 20px;
+            }
+
+            .community-header { margin-bottom: 50px; }
+            .community-title {
+                font-size: 2.8rem; font-weight: 900; color: #1a1a1a;
+                margin: 0 0 12px 0; letter-spacing: -1px;
+            }
+            .community-title span { color: #dc2626; }
+            .community-desc {
+                font-size: 1.15rem; color: #666; font-weight: 400; line-height: 1.6;
+            }
+
+            /* --- Category Buttons --- */
+            .category-btn-group {
+                display: flex; gap: 15px; margin-bottom: 40px;
+            }
+            .category-btn {
+                flex: 1; padding: 20px 0; font-size: 1.1rem; font-weight: 800;
+                border: 1px solid rgba(220, 38, 38, 0.1); border-radius: 16px;
+                background: #fff; color: #444;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+                cursor: pointer; transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            }
+            .category-btn:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 20px rgba(220, 38, 38, 0.08);
+                border-color: #dc2626; color: #dc2626;
+            }
+            .category-btn.active {
+                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+                color: #fff; border: none;
+                box-shadow: 0 8px 16px rgba(220, 38, 38, 0.2);
+            }
+
+            /* --- Post List (Card Style) --- */
+            .post-list { display: flex; flex-direction: column; gap: 18px; }
+            .post-card {
+                background: linear-gradient(145deg, #ffffff, #fefefe);
+                border: 1px solid rgba(0, 0, 0, 0.05);
+                border-radius: 24px;
+                padding: 28px 32px;
+                display: flex; flex-direction: column; gap: 12px;
+                cursor: pointer; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+                position: relative;
+            }
+            .post-card:hover {
+                transform: scale(1.01);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.06);
+                border-color: rgba(220, 38, 38, 0.2);
+                background: linear-gradient(145deg, #ffffff, #fffafa);
+            }
+            .post-title {
+                font-size: 1.35rem; font-weight: 800; color: #222; margin: 0;
+            }
+            .post-meta {
+                font-size: 1rem; color: #64748b; line-height: 1.5; font-weight: 400;
+            }
+            .post-tag {
+                align-self: flex-start;
+                font-size: 0.8rem; font-weight: 800;
+                background: rgba(220, 38, 38, 0.05); color: #dc2626;
+                padding: 6px 16px; border-radius: 12px;
+                border: 1px solid rgba(220, 38, 38, 0.1);
+                text-transform: uppercase; letter-spacing: 0.5px;
+            }
+
+            /* --- Write Button --- */
+            .write-btn {
+                position: fixed; bottom: 40px; right: 40px;
+                padding: 16px 32px; font-size: 1.1rem; font-weight: 800;
+                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+                color: #fff; border: none; border-radius: 50px;
+                cursor: pointer; box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
+                transition: all 0.3s;
+                display: flex; align-items: center; gap: 8px;
+            }
+            .write-btn:hover {
+                transform: translateY(-5px) scale(1.05);
+                box-shadow: 0 15px 35px rgba(220, 38, 38, 0.4);
+            }
+
+            /* --- Dropdown Style --- */
+            .game-dropdown { position: relative; }
+            .dropdown-content {
+                display: none; position: absolute; top: 45px; left: 0;
+                background: #fff; min-width: 160px; border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 8px; z-index: 1000;
+            }
+            .game-dropdown:hover .dropdown-content { display: block; }
+            .dropdown-content a {
+                color: #444; padding: 12px 16px; text-decoration: none;
+                display: block; font-weight: 600; border-radius: 8px;
+            }
+            .dropdown-content a:hover { background: #fff1f1; color: #dc2626; }
+        </style>
+    </head>
+    <body>
+        <header class="header">
+            <div class="header-left">
+                <a href="/main" class="header-logo">TasteMate</a>
+                <nav class="menu-bar">
+                    <a class="menu-item" href="/aichat">AI추천</a>
+                    <a class="menu-item" href="/community">커뮤니티</a>
+                    <div class="menu-item game-dropdown">
+                        <span>게임 ▾</span>
+                        <div class="dropdown-content">
+                            <a href="/game/pinball">핀볼</a>
+                            <a href="/game/ladder">사다리타기</a>
+                            <a href="/game/random_amount">룰렛 게임</a>
+                            <a href="/game/worldcup">음식 월드컵</a>
+                            <a href="/game/calculator">계산기</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div class="header-center"></div>
+            <div class="header-right" id="headerRightArea">
+                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                <button
+                    class="login-btn"
+                    style="background: #fff; color: #dc2626; border: 1.5px solid #dc2626"
+                    onclick="location.href = '/signup'"
+                >
+                    회원가입
+                </button>
+            </div>
+        </header>
+
+        <main class="community-main">
+            <div class="community-header">
+                <div class="community-title">🧑‍🤝‍🧑 <span>커뮤니티</span></div>
+                <div class="community-desc">다양한 맛집, 모임, 질문을 자유롭게 공유하고 소통해보세요!</div>
+            </div>
+
+            <div class="category-btn-group">
+                <button class="category-btn" onclick="location.href = '/category/solo'">🍱 혼밥</button>
+                <button class="category-btn" onclick="location.href = '/category/date'">💑 데이트</button>
+                <button class="category-btn" onclick="location.href = '/category/work'">🍻 회식</button>
+                <button class="category-btn" onclick="location.href = '/category/etc'">✨ 기타</button>
+            </div>
+
+            <div class="post-list">
+                <div class="post-card" onclick="location.href = '/category/solo'">
+                    <div class="post-title">🍱 혼밥 게시판</div>
+                    <div class="post-meta">혼자서도 즐거운 식사, 나만의 숨은 혼밥 명소를 추천하고 공유하는 공간입니다.</div>
+                    <div class="post-tag">#SOLO</div>
+                </div>
+                <div class="post-card" onclick="location.href = '/category/date'">
+                    <div class="post-title">💑 데이트 맛집</div>
+                    <div class="post-meta">연인과 함께하기 좋은 분위기 좋은 곳, 실패 없는 데이트 코스를 이야기해 보세요.</div>
+                    <div class="post-tag">#DATE</div>
+                </div>
+                <div class="post-card" onclick="location.href = '/category/work'">
+                    <div class="post-title">🍻 회식/모임 공간</div>
+                    <div class="post-meta">단체 예약이 편한 곳부터 부장님께 칭찬받는 회식 장소까지, 모임 정보를 공유합니다.</div>
+                    <div class="post-tag">#WORK</div>
+                </div>
+                <div class="post-card" onclick="location.href = '/category/etc'">
+                    <div class="post-title">✨ 자유/기타 이야기</div>
+                    <div class="post-meta">다양한 미식 경험이나 맛집 질문 등 어떤 이야기든 자유롭게 나눌 수 있습니다.</div>
+                    <div class="post-tag">#ETC</div>
+                </div>
+            </div>
+
+            <button class="write-btn" onclick="location.href = '/write'">
+                <span>✏️</span> 새 글 쓰기
+            </button>
+        </main>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+
+                if (nickname && headerRightArea) {
+                    let adminButton = isAdmin === '1' ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자</button>` : '';
+
+                    headerRightArea.innerHTML = `
+                        <span style="font-weight: 800; color: #dc2626; font-size: 1rem; margin-right: 5px;">👤 ${nickname}님</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="location.href='/mypage'" style="background: #f39c12;">마이페이지</button>
+                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 위치 탐색</span>
+                    `;
+                    getGPSLocation();
+                }
+            });
+
+            function getGPSLocation() {
+                const locSpan = document.getElementById('gps-location');
+                if (!locSpan || !navigator.geolocation) return;
+                locSpan.innerText = '📍 위치 찾는 중...';
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    try {
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`);
+                        const data = await res.json();
+                        const addr = data.address.city || data.address.province || "";
+                        locSpan.innerText = `📍 ${addr} 확인됨`;
+                    } catch (e) { locSpan.innerText = '📍 위치 확인됨'; }
+                }, () => { locSpan.innerText = '📍 권한 거부됨'; });
+            }
+
+            function logout() {
+                localStorage.clear();
+                alert('로그아웃 되었습니다.');
+                window.location.href = '/main';
+            }
+        </script>
+    </body>
+</html>
