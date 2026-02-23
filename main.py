@@ -26,7 +26,6 @@ app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 templates = Jinja2Templates(directory="templates")
 
-<<<<<<< HEAD
 # --- 인기글 라우터 (AI 코드 건드리지 않음) ---
 @app.get("/SOLO", response_class=HTMLResponse)
 def solo_page(request: Request):
