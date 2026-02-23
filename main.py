@@ -15,17 +15,9 @@ from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, F
 from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
 from dotenv import load_dotenv
 import os
-<<<<<<< HEAD
-from google import genai
-=======
 import google.generativeai as genai
-<<<<<<< HEAD
->>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
-=======
-
+import logging
 logging.basicConfig(level=logging.INFO)
-
->>>>>>> feature/App_DB-LYS
 from Database import Like, User, Post, Comment, get_db
 from config import settings
 from game_ideal_router import router as ideal_router
@@ -52,8 +44,6 @@ def work_page(request: Request):
 def etc_page(request: Request):
     return templates.TemplateResponse("ETC.html", {"request": request})
 
-=======
->>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
 # --- Gemini AI 챗봇 엔드포인트 ---
 class ChatRequest(BaseModel):
     message: str
@@ -92,13 +82,9 @@ def top_places_by_category(db: Session = Depends(get_db)):
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
     try:
-<<<<<<< HEAD
-        client = genai.Client(api_key=settings.GEMINI_API_KEY)
-=======
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-        model = genai.GenerativeModel("gemini-2.5-flash")
->>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
-        prompt = f"""
+    genai.configure(api_key=settings.GEMINI_API_KEY)
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    prompt = f"""
         당신은 모바일 서비스 '테이스트메이트 AI'입니다.
 
         ⚠️ 반드시 아래 형식으로만 답변하세요.
@@ -123,17 +109,8 @@ async def chat(request: ChatRequest):
         사용자 질문:
         {request.message}
         """
-<<<<<<< HEAD
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
-        reply = response.text if hasattr(response, 'text') else "AI 답변을 생성하지 못했습니다."
-        return {"reply": reply}
-=======
-        response = model.generate_content(prompt)
-        return {"reply": response.text}
->>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+    response = model.generate_content(prompt)
+    return {"reply": response.text}
     except Exception as e:
         print("🔥 Gemini 에러:", e)
         return {"reply": "AI 연결에 문제가 발생했습니다."}
