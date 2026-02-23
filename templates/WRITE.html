@@ -291,123 +291,174 @@
             <form id="writeForm" class="write-form">
                 <div>
                     <label>위치 선택</label>
-                    <div style="margin-bottom:8px;">
-                        <button type="button" id="open-map-search" style="margin-bottom:8px;padding:6px 16px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">지도에서 선택하기</button>
-                        <div id="map-search-area" style="display:none;margin-bottom:8px;">
-                            <input type="text" id="place-search-input" placeholder="장소명 검색" style="width:70%;padding:8px;border:1px solid #ffe5e5;border-radius:6px;" />
-                            <button type="button" id="place-search-btn" style="padding:8px 14px;background:#f39c12;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">검색</button>
-                            <div id="search-results" style="background:#fff8f8;border:1px solid #ffe5e5;border-radius:6px;margin-top:6px;max-height:120px;overflow-y:auto;"></div>
+                    <div style="margin-bottom: 8px">
+                        <button
+                            type="button"
+                            id="open-map-search"
+                            style="
+                                margin-bottom: 8px;
+                                padding: 6px 16px;
+                                background: #dc2626;
+                                color: #fff;
+                                border: none;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                font-weight: 600;
+                            "
+                        >
+                            지도에서 선택하기
+                        </button>
+                        <div id="map-search-area" style="display: none; margin-bottom: 8px">
+                            <input
+                                type="text"
+                                id="place-search-input"
+                                placeholder="장소명 검색"
+                                style="width: 70%; padding: 8px; border: 1px solid #ffe5e5; border-radius: 6px"
+                            />
+                            <button
+                                type="button"
+                                id="place-search-btn"
+                                style="
+                                    padding: 8px 14px;
+                                    background: #f39c12;
+                                    color: #fff;
+                                    border: none;
+                                    border-radius: 6px;
+                                    cursor: pointer;
+                                    font-weight: 600;
+                                "
+                            >
+                                검색
+                            </button>
+                            <div
+                                id="search-results"
+                                style="
+                                    background: #fff8f8;
+                                    border: 1px solid #ffe5e5;
+                                    border-radius: 6px;
+                                    margin-top: 6px;
+                                    max-height: 120px;
+                                    overflow-y: auto;
+                                "
+                            ></div>
                         </div>
-                        <div id="write-map-area" style="width:100%;height:300px;border-radius:8px;overflow:hidden;"></div>
-                        <div id="selected-place-info" style="font-size:0.97rem;color:#b91c1c;margin-top:6px;"></div>
+                        <div
+                            id="write-map-area"
+                            style="width: 100%; height: 300px; border-radius: 8px; overflow: hidden"
+                        ></div>
+                        <div id="selected-place-info" style="font-size: 0.97rem; color: #b91c1c; margin-top: 6px"></div>
                     </div>
                     <input type="hidden" id="place_name" name="place_name" />
                     <input type="hidden" id="lat" name="lat" />
                     <input type="hidden" id="lon" name="lon" />
                 </div>
-                        <script>
-                        // 지도에서 위치 선택 + 장소 검색 기능
-                        document.addEventListener('DOMContentLoaded', () => {
-                            if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
-                                initWriteMap();
-                            } else {
-                                const script = document.createElement('script');
-                                script.src = `https://dapi.kakao.com/v2/maps/sdk.js?autoload=true&appkey=${window.KAKAO_MAP_APP_KEY}&libraries=services`;
-                                script.onload = initWriteMap;
-                                document.head.appendChild(script);
-                            }
-                        });
-                        function initWriteMap() {
-                            const container = document.getElementById('write-map-area');
-                            if (!container) return;
-                            const defaultLat = 37.5665;
-                            const defaultLon = 126.9780;
-                            const mapOption = {
-                                center: new kakao.maps.LatLng(defaultLat, defaultLon),
-                                level: 6,
-                            };
-                            const map = new kakao.maps.Map(container, mapOption);
-                            let marker = null;
-                            let selectedPlace = null;
-                            // 지도 클릭 시 마커 이동 및 reverse geocode
-                            kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
-                                const latlng = mouseEvent.latLng;
-                                if (!marker) {
-                                    marker = new kakao.maps.Marker({ position: latlng });
-                                    marker.setMap(map);
-                                } else {
-                                    marker.setPosition(latlng);
-                                }
-                                document.getElementById('lat').value = latlng.getLat();
-                                document.getElementById('lon').value = latlng.getLng();
-                                document.getElementById('place_name').value = '';
-                                fetch(`/api/reverse-geocode?lat=${latlng.getLat()}&lon=${latlng.getLng()}`)
-                                    .then(r => r.json())
-                                    .then(addrData => {
-                                        document.getElementById('selected-place-info').innerText = addrData.address || '주소 정보 없음';
-                                    })
-                                    .catch(() => {
-                                        document.getElementById('selected-place-info').innerText = '주소 정보 없음';
-                                    });
-                                selectedPlace = null;
-                            });
-
-                            // 지도에서 선택하기 버튼 로직
-                            document.getElementById('open-map-search').onclick = function() {
-                                const area = document.getElementById('map-search-area');
-                                area.style.display = area.style.display === 'none' ? 'block' : 'none';
-                            };
-
-                            // 장소 검색
-                            document.getElementById('place-search-btn').onclick = function() {
-                                const query = document.getElementById('place-search-input').value.trim();
-                                if (!query) return;
-                                const ps = new kakao.maps.services.Places();
-                                ps.keywordSearch(query, function(data, status) {
-                                    const resultsDiv = document.getElementById('search-results');
-                                    resultsDiv.innerHTML = '';
-                                    if (status === kakao.maps.services.Status.OK && data.length > 0) {
-                                        data.slice(0, 5).forEach(place => {
-                                            const div = document.createElement('div');
-                                            div.style.padding = '7px 10px';
-                                            div.style.cursor = 'pointer';
-                                            div.style.borderBottom = '1px solid #ffe5e5';
-                                            div.innerHTML = `<b>${place.place_name}</b><br><span style='font-size:0.93em;color:#b91c1c;'>${place.address_name}</span>`;
-                                            div.onclick = function() {
-                                                // 지도 이동 및 마커 표시
-                                                const latlng = new kakao.maps.LatLng(place.y, place.x);
-                                                map.setCenter(latlng);
-                                                map.setLevel(4);
-                                                if (!marker) {
-                                                    marker = new kakao.maps.Marker({ position: latlng });
-                                                    marker.setMap(map);
-                                                } else {
-                                                    marker.setPosition(latlng);
-                                                }
-                                                document.getElementById('lat').value = place.y;
-                                                document.getElementById('lon').value = place.x;
-                                                document.getElementById('place_name').value = place.place_name;
-                                                // 상세 정보 표시
-                                                let infoHtml = `<b>${place.place_name}</b><br>${place.address_name}`;
-                                                if (place.phone) infoHtml += `<br>☎️ ${place.phone}`;
-                                                if (place.category_name) infoHtml += `<br>분류: ${place.category_name}`;
-                                                if (place.place_url) infoHtml += `<br><a href='${place.place_url}' target='_blank' style='color:#0077cc;text-decoration:underline;'>카카오맵 상세보기</a>`;
-                                                document.getElementById('selected-place-info').innerHTML = infoHtml;
-                                                selectedPlace = place;
-                                                resultsDiv.innerHTML = '';
-                                                document.getElementById('map-search-area').style.display = 'none';
-                                            };
-                                            resultsDiv.appendChild(div);
-                                        });
-                                    } else {
-                                        resultsDiv.innerHTML = '<div style="padding:8px;color:#b91c1c;">검색 결과가 없습니다.</div>';
-                                    }
-                                });
-                            };
+                <script>
+                    // 지도에서 위치 선택 + 장소 검색 기능
+                    document.addEventListener('DOMContentLoaded', () => {
+                        if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
+                            initWriteMap();
+                        } else {
+                            const script = document.createElement('script');
+                            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?autoload=true&appkey=${window.KAKAO_MAP_APP_KEY}&libraries=services`;
+                            script.onload = initWriteMap;
+                            document.head.appendChild(script);
                         }
-                        // 환경설정에서 카카오맵 API키를 window에 노출 (템플릿 하단에 추가)
-                        window.KAKAO_MAP_APP_KEY = "{{ settings.KAKAO_JAVAS_API_KEY if settings and settings.KAKAO_JAVAS_API_KEY else '' }}";
-                        </script>
+                    });
+                    function initWriteMap() {
+                        const container = document.getElementById('write-map-area');
+                        if (!container) return;
+                        const defaultLat = 37.5665;
+                        const defaultLon = 126.978;
+                        const mapOption = {
+                            center: new kakao.maps.LatLng(defaultLat, defaultLon),
+                            level: 6,
+                        };
+                        const map = new kakao.maps.Map(container, mapOption);
+                        let marker = null;
+                        let selectedPlace = null;
+                        // 지도 클릭 시 마커 이동 및 reverse geocode
+                        kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
+                            const latlng = mouseEvent.latLng;
+                            if (!marker) {
+                                marker = new kakao.maps.Marker({ position: latlng });
+                                marker.setMap(map);
+                            } else {
+                                marker.setPosition(latlng);
+                            }
+                            document.getElementById('lat').value = latlng.getLat();
+                            document.getElementById('lon').value = latlng.getLng();
+                            document.getElementById('place_name').value = '';
+                            fetch(`/api/reverse-geocode?lat=${latlng.getLat()}&lon=${latlng.getLng()}`)
+                                .then((r) => r.json())
+                                .then((addrData) => {
+                                    document.getElementById('selected-place-info').innerText =
+                                        addrData.address || '주소 정보 없음';
+                                })
+                                .catch(() => {
+                                    document.getElementById('selected-place-info').innerText = '주소 정보 없음';
+                                });
+                            selectedPlace = null;
+                        });
+
+                        // 지도에서 선택하기 버튼 로직
+                        document.getElementById('open-map-search').onclick = function () {
+                            const area = document.getElementById('map-search-area');
+                            area.style.display = area.style.display === 'none' ? 'block' : 'none';
+                        };
+
+                        // 장소 검색
+                        document.getElementById('place-search-btn').onclick = function () {
+                            const query = document.getElementById('place-search-input').value.trim();
+                            if (!query) return;
+                            const ps = new kakao.maps.services.Places();
+                            ps.keywordSearch(query, function (data, status) {
+                                const resultsDiv = document.getElementById('search-results');
+                                resultsDiv.innerHTML = '';
+                                if (status === kakao.maps.services.Status.OK && data.length > 0) {
+                                    data.slice(0, 5).forEach((place) => {
+                                        const div = document.createElement('div');
+                                        div.style.padding = '7px 10px';
+                                        div.style.cursor = 'pointer';
+                                        div.style.borderBottom = '1px solid #ffe5e5';
+                                        div.innerHTML = `<b>${place.place_name}</b><br><span style='font-size:0.93em;color:#b91c1c;'>${place.address_name}</span>`;
+                                        div.onclick = function () {
+                                            // 지도 이동 및 마커 표시
+                                            const latlng = new kakao.maps.LatLng(place.y, place.x);
+                                            map.setCenter(latlng);
+                                            map.setLevel(4);
+                                            if (!marker) {
+                                                marker = new kakao.maps.Marker({ position: latlng });
+                                                marker.setMap(map);
+                                            } else {
+                                                marker.setPosition(latlng);
+                                            }
+                                            document.getElementById('lat').value = place.y;
+                                            document.getElementById('lon').value = place.x;
+                                            document.getElementById('place_name').value = place.place_name;
+                                            // 상세 정보 표시
+                                            let infoHtml = `<b>${place.place_name}</b><br>${place.address_name}`;
+                                            if (place.phone) infoHtml += `<br>☎️ ${place.phone}`;
+                                            if (place.category_name) infoHtml += `<br>분류: ${place.category_name}`;
+                                            if (place.place_url)
+                                                infoHtml += `<br><a href='${place.place_url}' target='_blank' style='color:#0077cc;text-decoration:underline;'>카카오맵 상세보기</a>`;
+                                            document.getElementById('selected-place-info').innerHTML = infoHtml;
+                                            selectedPlace = place;
+                                            resultsDiv.innerHTML = '';
+                                            document.getElementById('map-search-area').style.display = 'none';
+                                        };
+                                        resultsDiv.appendChild(div);
+                                    });
+                                } else {
+                                    resultsDiv.innerHTML =
+                                        '<div style="padding:8px;color:#b91c1c;">검색 결과가 없습니다.</div>';
+                                }
+                            });
+                        };
+                    }
+                    // 환경설정에서 카카오맵 API키를 window에 노출 (템플릿 하단에 추가)
+                    window.KAKAO_MAP_APP_KEY =
+                        "{{ settings.KAKAO_JAVAS_API_KEY if settings and settings.KAKAO_JAVAS_API_KEY else '' }}";
+                </script>
                 <div>
                     <label for="category">카테고리</label>
                     <select id="category" name="category" required>
