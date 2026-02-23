@@ -9,7 +9,11 @@ from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, F
 from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
 from dotenv import load_dotenv
 import os
+<<<<<<< HEAD
+from google import genai
+=======
 import google.generativeai as genai
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
 from Database import Like, User, Post, Comment, get_db
 from config import settings
 from game_ideal_router import router as ideal_router
@@ -18,6 +22,26 @@ app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 templates = Jinja2Templates(directory="templates")
 
+<<<<<<< HEAD
+# --- 인기글 라우터 (AI 코드 건드리지 않음) ---
+@app.get("/SOLO", response_class=HTMLResponse)
+def solo_page(request: Request):
+    return templates.TemplateResponse("SOLO.html", {"request": request})
+
+@app.get("/DATE", response_class=HTMLResponse)
+def date_page(request: Request):
+    return templates.TemplateResponse("DATE.html", {"request": request})
+
+@app.get("/WORK", response_class=HTMLResponse)
+def work_page(request: Request):
+    return templates.TemplateResponse("WORK.html", {"request": request})
+
+@app.get("/ETC", response_class=HTMLResponse)
+def etc_page(request: Request):
+    return templates.TemplateResponse("ETC.html", {"request": request})
+
+=======
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
 # --- Gemini AI 챗봇 엔드포인트 ---
 class ChatRequest(BaseModel):
     message: str
@@ -25,8 +49,12 @@ class ChatRequest(BaseModel):
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
     try:
+<<<<<<< HEAD
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+=======
         genai.configure(api_key=settings.GEMINI_API_KEY)
         model = genai.GenerativeModel("gemini-2.5-flash")
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
         prompt = f"""
         당신은 모바일 서비스 '테이스트메이트 AI'입니다.
 
@@ -52,8 +80,17 @@ async def chat(request: ChatRequest):
         사용자 질문:
         {request.message}
         """
+<<<<<<< HEAD
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+        reply = response.text if hasattr(response, 'text') else "AI 답변을 생성하지 못했습니다."
+        return {"reply": reply}
+=======
         response = model.generate_content(prompt)
         return {"reply": response.text}
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
     except Exception as e:
         print("🔥 Gemini 에러:", e)
         return {"reply": "AI 연결에 문제가 발생했습니다."}
