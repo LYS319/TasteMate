@@ -3,17 +3,30 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<<<<<<< HEAD
         <title>테이스트메이트 - 자동 배분 룰렛 Pro</title>
+=======
+        <title>테이스트메이트 - 자동 배분 룰렛</title>
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
         <link
             href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap"
             rel="stylesheet"
         />
+<<<<<<< HEAD
 
         <style>
             :root {
                 --primary-color: #dc2626;
                 --primary-hover: #b91c1c;
                 --bg-gradient: linear-gradient(135deg, #fdfdfd 0%, #f1f1f1 100%);
+=======
+        <style>
+            /* --- TasteMate 브랜드 스타일 변수 (예시 코드 규격) --- */
+            :root {
+                --primary-color: #dc2626;
+                --primary-hover: #b91c1c;
+                --bg-gradient: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                 --glass-bg: rgba(255, 255, 255, 0.85);
             }
 
@@ -23,6 +36,7 @@
                 background: var(--bg-gradient);
                 color: #333;
                 min-height: 100vh;
+<<<<<<< HEAD
             }
 
             /* --- 예시 코드와 100% 동일한 Header Style --- */
@@ -50,10 +64,36 @@
                 grid-column: 1;
             }
 
+=======
+                overflow-x: hidden;
+            }
+
+            /* --- TasteMate 공식 상단바 (완벽 복구) --- */
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 32px;
+                background: var(--glass-bg);
+                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
+                backdrop-filter: blur(12px);
+                position: sticky;
+                top: 0;
+                z-index: 2000;
+                box-sizing: border-box;
+                width: 100%;
+            }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 24px;
+            }
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             .header-logo {
                 display: flex;
                 align-items: center;
                 gap: 10px;
+<<<<<<< HEAD
                 font-size: 1.7rem;
                 font-weight: 900;
                 color: #dc2626;
@@ -141,12 +181,44 @@
             }
 
             /* --- Dropdown Style --- */
+=======
+                font-size: 1.5rem;
+                font-weight: 900;
+                color: var(--primary-color);
+                text-decoration: none;
+                transition: transform 0.2s;
+            }
+            .header-logo:hover {
+                transform: scale(1.05);
+            }
+            .menu-bar {
+                display: flex;
+                gap: 18px;
+                align-items: center;
+                margin-left: 24px;
+            }
+            .menu-item {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: var(--primary-color);
+                text-decoration: none;
+                padding: 8px 18px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background 0.18s;
+            }
+            .menu-item:hover {
+                background: #fff5f5;
+            }
+
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             .game-dropdown {
                 position: relative;
             }
             .dropdown-content {
                 display: none;
                 position: absolute;
+<<<<<<< HEAD
                 top: 45px;
                 left: 0;
                 background: #fff;
@@ -216,12 +288,95 @@
                 margin: 5px;
                 text-align: center;
                 font-family: inherit;
+=======
+                top: 36px;
+                left: 0;
+                background: #fff;
+                min-width: 140px;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+                border-radius: 12px;
+                padding: 12px 0;
+                z-index: 1000;
+                flex-direction: column;
+            }
+            .game-dropdown:hover .dropdown-content {
+                display: flex;
+            }
+            .dropdown-content a {
+                color: var(--primary-color);
+                padding: 10px 24px;
+                text-decoration: none;
+                font-size: 1.05rem;
+                font-weight: 600;
+                border-radius: 8px;
+                transition: background 0.18s;
+            }
+            .dropdown-content a:hover {
+                background: #ffe5e5;
+            }
+
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .login-btn {
+                padding: 8px 16px;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.95rem;
+                font-weight: bold;
+                cursor: pointer;
+                background: var(--primary-color);
+                transition: background 0.2s;
+            }
+
+            /* --- 룰렛 게임 컨텐츠 스타일 (핀볼 스타일 계승) --- */
+            .game-main {
+                padding: 40px 20px 80px;
+            }
+            .container {
+                background: #fff;
+                border-radius: 32px;
+                padding: 40px;
+                margin: 0 auto;
+                max-width: 700px;
+                border: 2px solid var(--primary-color);
+                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.15);
+                text-align: center;
+            }
+
+            .setup-section {
+                background: #fff5f5;
+                padding: 30px;
+                border-radius: 24px;
+                margin-bottom: 30px;
+                border: 1px dashed var(--primary-color);
+            }
+            .setup-section h2 {
+                color: var(--primary-color);
+                margin-top: 0;
+                font-weight: 900;
+                font-size: 2.1rem;
+            }
+            input {
+                padding: 12px;
+                border-radius: 12px;
+                border: 2px solid #ddd;
+                margin: 5px;
+                width: 180px;
+                font-size: 1rem;
+                text-align: center;
+                transition: border-color 0.2s;
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             }
             input:focus {
                 border-color: var(--primary-color);
                 outline: none;
             }
 
+<<<<<<< HEAD
             .action-btn {
                 background: var(--primary-color);
                 color: white;
@@ -245,11 +400,43 @@
                 position: relative;
                 width: 340px;
                 height: 340px;
+=======
+            .start-btn {
+                padding: 15px 50px;
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-weight: 900;
+                cursor: pointer;
+                font-size: 1.2rem;
+                transition: 0.2s;
+                margin: 10px;
+            }
+            .start-btn:hover {
+                background: var(--primary-hover);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+            }
+            .start-btn:disabled {
+                background: #ccc;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+
+            .wheel-outer {
+                margin: 40px auto;
+                position: relative;
+                width: 380px;
+                height: 380px;
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             }
             .wheel {
                 width: 100%;
                 height: 100%;
                 border-radius: 50%;
+<<<<<<< HEAD
                 border: 8px solid #2d2d3a;
                 transition: transform 3s cubic-bezier(0.1, 0.8, 0.2, 1);
                 overflow: hidden;
@@ -285,10 +472,53 @@
                 border-radius: 15px;
                 overflow: hidden;
                 border: 1px solid #eee;
+=======
+                border: 8px solid #333;
+                transition: transform 3s cubic-bezier(0.1, 0.8, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            }
+            .pointer {
+                position: absolute;
+                top: -25px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 10;
+                border-left: 20px solid transparent;
+                border-right: 20px solid transparent;
+                border-top: 40px solid var(--primary-color);
+                filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.2));
+            }
+
+            .winner-banner {
+                font-size: 1.4rem;
+                font-weight: 900;
+                color: var(--primary-color);
+                min-height: 40px;
+                margin: 20px 0;
+                background: #fff5f5;
+                padding: 10px;
+                border-radius: 12px;
+            }
+            table {
+                margin: 20px auto;
+                border-collapse: collapse;
+                width: 100%;
+                background: white;
+                border-radius: 15px;
+                overflow: hidden;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            }
+            th, td {
+                padding: 15px;
+                border-bottom: 1px solid #eee;
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             }
             th {
                 background: var(--primary-color);
                 color: white;
+<<<<<<< HEAD
                 padding: 15px;
                 font-weight: 800;
             }
@@ -306,12 +536,28 @@
         </style>
     </head>
 
+=======
+                font-weight: 900;
+            }
+            .current-row {
+                background: #fff5f5;
+                font-weight: bold;
+                color: var(--primary-color);
+                animation: popIn 0.3s ease-out;
+            }
+            @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        </style>
+    </head>
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
     <body>
         <header class="header">
             <div class="header-left">
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
+<<<<<<< HEAD
                     <a class="menu-item" href="/about">회사소개</a>
+=======
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                     <a class="menu-item" href="/aichat">AI추천</a>
                     <a class="menu-item" href="/community">커뮤니티</a>
                     <div class="menu-item game-dropdown">
@@ -326,6 +572,7 @@
                     </div>
                 </nav>
             </div>
+<<<<<<< HEAD
 
             <div class="header-center"></div>
 
@@ -338,10 +585,15 @@
                 >
                     회원가입
                 </button>
+=======
+            <div class="header-right">
+                <button class="login-btn" onclick="location.href='/login'">로그인</button>
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             </div>
         </header>
 
         <main class="game-main">
+<<<<<<< HEAD
             <div class="main-layout-container">
                 <div class="game-container">
                     <div id="inputView">
@@ -378,11 +630,49 @@
                         
                         <button class="action-btn" style="background: #666; font-size: 0.9rem; margin-top: 20px;" onclick="location.reload()">처음부터 다시</button>
                     </div>
+=======
+            <div class="container">
+                <div id="inputView">
+                    <div class="setup-section">
+                        <h2>🎯 배분 룰렛</h2>
+                        <p style="color: #666; margin-bottom: 20px;">총 금액을 입력하면 자동으로 차등 배분해 드립니다.</p>
+                        <input type="number" id="totalAmount" placeholder="총 금액 (원)" step="100" />
+                        <input type="number" id="peopleCount" placeholder="참여 인원 (명)" />
+                    </div>
+                    <button class="start-btn" onclick="setupGame()">설정 완료</button>
+                </div>
+
+                <div id="gameView" style="display: none">
+                    <div class="winner-banner" id="winnerBanner">🏁 버튼을 눌러 게임을 시작하세요!</div>
+
+                    <div class="wheel-outer">
+                        <div class="pointer"></div>
+                        <div id="wheel" class="wheel"></div>
+                        <div id="nameLabels" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></div>
+                    </div>
+
+                    <button class="start-btn" id="btnSpin" onclick="startAutoGame()">🏁 게임 시작</button>
+
+                    <table id="resultTable" style="margin-top: 30px">
+                        <thead>
+                            <tr>
+                                <th>순위</th>
+                                <th>이름</th>
+                                <th>지불액</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultBody"></tbody>
+                    </table>
+                    <button class="start-btn" onclick="location.reload()" style="background: #666; font-size: 0.95rem; padding: 10px 30px">
+                        처음부터 다시
+                    </button>
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                 </div>
             </div>
         </main>
 
         <script>
+<<<<<<< HEAD
             // --- 공통 기능: 로그아웃 및 위치 정보 ---
             function logout() {
                 localStorage.clear();
@@ -421,10 +711,19 @@
             let winnersOrder = [];
             let totalAngle = 0;
             const colorPalette = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F06292', '#AED581', '#FFD54F'];
+=======
+            /* --- 기능 로직 유지 (기존과 동일) --- */
+            let remainingNames = [];
+            let winnersOrder = [];
+            let calculatedPrizes = [];
+            let totalAngle = 0;
+            const colorPalette = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#82E0AA'];
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
 
             function calculateAutoPrizes(total, people) {
                 let step = Math.floor(total / (people * people) / 100) * 100;
                 if (step < 100) step = 100;
+<<<<<<< HEAD
                 let prizes = [], sum = 0;
                 let first = (total - ((people * (people - 1)) / 2) * step) / people;
                 first = Math.floor(first / 100) * 100;
@@ -434,10 +733,28 @@
                     sum += p;
                 }
                 prizes[prizes.length - 1] += total - sum;
+=======
+                let prizes = [];
+                let currentSum = 0;
+                let firstPrize = (total - ((people * (people - 1)) / 2) * step) / people;
+                firstPrize = Math.floor(firstPrize / 100) * 100;
+                if (firstPrize < 0) {
+                    firstPrize = 0;
+                    step = Math.floor(total / ((people * (people - 1)) / 2) / 100) * 100;
+                }
+                for (let i = 0; i < people; i++) {
+                    let p = firstPrize + i * step;
+                    prizes.push(p);
+                    currentSum += p;
+                }
+                let diff = total - currentSum;
+                prizes[prizes.length - 1] += diff;
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                 return prizes;
             }
 
             function setupGame() {
+<<<<<<< HEAD
                 const totalInput = document.getElementById('totalAmount');
                 const countInput = document.getElementById('peopleCount');
                 const total = parseInt(totalInput.value);
@@ -451,6 +768,19 @@
                     let n = prompt(`${i + 1}번째 사람 이름`);
                     remainingNames.push(n || `${i + 1}번`);
                 }
+=======
+                const total = parseInt(document.getElementById('totalAmount').value);
+                const count = parseInt(document.getElementById('peopleCount').value);
+                if (!total || !count || count < 2) return alert('금액과 인원수를 올바르게 입력하세요.');
+
+                calculatedPrizes = calculateAutoPrizes(total, count);
+                remainingNames = [];
+                for (let i = 0; i < count; i++) {
+                    let n = prompt(`${i + 1}번째 사람 이름을 입력하세요.`);
+                    remainingNames.push(n || `${i + 1}번`);
+                }
+
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                 document.getElementById('inputView').style.display = 'none';
                 document.getElementById('gameView').style.display = 'block';
                 drawWheel();
@@ -460,10 +790,19 @@
                 const wheel = document.getElementById('wheel');
                 const labelDiv = document.getElementById('nameLabels');
                 const n = remainingNames.length;
+<<<<<<< HEAD
                 if(n === 0) return;
                 const slice = 360 / n;
                 let conic = '';
                 labelDiv.innerHTML = '';
+=======
+                if (n === 0) return;
+
+                const slice = 360 / n;
+                let conic = '';
+                labelDiv.innerHTML = '';
+
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                 for (let i = 0; i < n; i++) {
                     conic += `${colorPalette[i % colorPalette.length]} ${i * slice}deg ${(i + 1) * slice}deg,`;
                     const lbl = document.createElement('div');
@@ -471,11 +810,21 @@
                     lbl.style.position = 'absolute';
                     lbl.style.left = '50%';
                     lbl.style.top = '50%';
+<<<<<<< HEAD
                     const angle = i * slice + slice / 2;
                     lbl.style.transform = `translate(-50%,-50%) rotate(${angle}deg) translateY(-110px) rotate(${-angle}deg)`;
                     lbl.style.fontWeight = '900';
                     lbl.style.color = '#fff';
                     lbl.style.textShadow = '0 1px 4px rgba(0,0,0,0.5)';
+=======
+                    lbl.style.width = '120px';
+                    lbl.style.textAlign = 'center';
+                    const angle = i * slice + slice / 2;
+                    lbl.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-120px) rotate(${-angle}deg)`;
+                    lbl.style.fontWeight = '900';
+                    lbl.style.color = '#333';
+                    lbl.style.fontSize = '16px';
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                     labelDiv.appendChild(lbl);
                 }
                 wheel.style.background = `conic-gradient(${conic.slice(0, -1)})`;
@@ -487,6 +836,7 @@
             }
 
             function nextTurn() {
+<<<<<<< HEAD
                 const winnerBanner = document.getElementById('winnerBanner');
                 const wheel = document.getElementById('wheel');
                 const nameLabels = document.getElementById('nameLabels');
@@ -495,12 +845,21 @@
                     winnersOrder.push(remainingNames[0]);
                     updateResult();
                     winnerBanner.innerHTML = '🎊 모든 추첨 완료!';
+=======
+                if (remainingNames.length === 1) {
+                    const lastOne = remainingNames[0];
+                    winnersOrder.push(lastOne);
+                    remainingNames = [];
+                    updateResult();
+                    document.getElementById('winnerBanner').innerHTML = '🎊 모든 추첨이 완료되었습니다!';
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                     return;
                 }
                 drawWheel();
                 const n = remainingNames.length;
                 const slice = 360 / n;
                 const winIdx = Math.floor(Math.random() * n);
+<<<<<<< HEAD
                 const target = 360 - (winIdx * slice + slice / 2);
                 
                 totalAngle += 1440 + target - (totalAngle % 360);
@@ -508,19 +867,36 @@
                 nameLabels.style.transform = `rotate(${totalAngle}deg)`;
                 winnerBanner.innerHTML = `🎡 ${winnersOrder.length + 1}등 추첨 중...`;
 
+=======
+                const targetAngle = 360 - (winIdx * slice + slice / 2);
+                totalAngle += 1440 + targetAngle - (totalAngle % 360);
+                const wheel = document.getElementById('wheel');
+                const labelDiv = document.getElementById('nameLabels');
+                wheel.style.transition = 'transform 3s cubic-bezier(0.1, 0.8, 0.2, 1)';
+                labelDiv.style.transition = 'transform 3s cubic-bezier(0.1, 0.8, 0.2, 1)';
+                wheel.style.transform = `rotate(${totalAngle}deg)`;
+                labelDiv.style.transform = `rotate(${totalAngle}deg)`;
+                document.getElementById('winnerBanner').innerHTML = `🎡 ${winnersOrder.length + 1}등 추첨 중...`;
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                 setTimeout(() => {
                     const winner = remainingNames[winIdx];
                     winnersOrder.push(winner);
                     remainingNames.splice(winIdx, 1);
                     updateResult();
+<<<<<<< HEAD
                     winnerBanner.innerHTML = `📢 ${winner}님 당첨! (${winnersOrder.length}등)`;
                     setTimeout(() => {
                         if (remainingNames.length > 0) nextTurn();
                     }, 1500);
+=======
+                    document.getElementById('winnerBanner').innerHTML = `📢 <strong>${winner}</strong>님 당첨! (${winnersOrder.length}등)`;
+                    setTimeout(() => { if (remainingNames.length > 0) nextTurn(); }, 1500);
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                 }, 3200);
             }
 
             function updateResult() {
+<<<<<<< HEAD
                 const resultBody = document.getElementById('resultBody');
                 let html = '';
                 for (let i = 0; i < winnersOrder.length; i++) {
@@ -547,6 +923,19 @@
                     getGPSLocation();
                 }
             });
+=======
+                const tbody = document.getElementById('resultBody');
+                let html = '';
+                for (let i = 0; i < winnersOrder.length; i++) {
+                    html += `<tr class="${i === winnersOrder.length - 1 ? 'current-row' : ''}">
+                <td>${i + 1}등</td>
+                <td>${winnersOrder[i]}</td>
+                <td>${calculatedPrizes[i].toLocaleString()}원</td>
+            </tr>`;
+                }
+                tbody.innerHTML = html;
+            }
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
         </script>
     </body>
 </html>

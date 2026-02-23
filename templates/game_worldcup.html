@@ -20,12 +20,17 @@
             body {
                 margin: 0;
                 font-family: 'Noto Sans KR', sans-serif;
+<<<<<<< HEAD
                 background: #fff;
+=======
+                background: var(--bg-gradient);
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                 color: #333;
                 min-height: 100vh;
                 overflow-x: hidden;
             }
 
+<<<<<<< HEAD
             /* --- 예시 코드와 100% 동일한 Header Style --- */
             .header {
                 display: grid;
@@ -51,10 +56,33 @@
                 grid-column: 1;
             }
 
+=======
+            /* --- 상단바 (예시 코드와 1:1 일치) --- */
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 32px;
+                background: var(--glass-bg);
+                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
+                backdrop-filter: blur(12px);
+                position: sticky;
+                top: 0;
+                z-index: 2000;
+                box-sizing: border-box;
+                width: 100%;
+            }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 24px;
+            }
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             .header-logo {
                 display: flex;
                 align-items: center;
                 gap: 10px;
+<<<<<<< HEAD
                 font-size: 1.7rem;
                 font-weight: 900;
                 color: #dc2626;
@@ -142,12 +170,44 @@
             }
 
             /* --- Dropdown Style --- */
+=======
+                font-size: 1.5rem;
+                font-weight: 900;
+                color: var(--primary-color);
+                text-decoration: none;
+                transition: transform 0.2s;
+            }
+            .header-logo:hover {
+                transform: scale(1.05);
+            }
+            .menu-bar {
+                display: flex;
+                gap: 18px;
+                align-items: center;
+                margin-left: 24px;
+            }
+            .menu-item {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: var(--primary-color);
+                text-decoration: none;
+                padding: 8px 18px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background 0.18s;
+            }
+            .menu-item:hover {
+                background: #fff5f5;
+            }
+
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             .game-dropdown {
                 position: relative;
             }
             .dropdown-content {
                 display: none;
                 position: absolute;
+<<<<<<< HEAD
                 top: 45px;
                 left: 0;
                 background: #fff;
@@ -177,12 +237,64 @@
             /* --- 월드컵 컨텐츠 (Fixed Header 대응) --- */
             .game-main {
                 padding: 160px 20px 80px;
+=======
+                top: 36px;
+                left: 0;
+                background: #fff;
+                min-width: 140px;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+                border-radius: 12px;
+                padding: 12px 0;
+                z-index: 1000;
+                flex-direction: column;
+            }
+            .game-dropdown:hover .dropdown-content {
+                display: flex;
+            }
+            .dropdown-content a {
+                color: var(--primary-color);
+                padding: 10px 24px;
+                text-decoration: none;
+                font-size: 1.05rem;
+                font-weight: 600;
+                border-radius: 8px;
+                transition: background 0.18s;
+            }
+            .dropdown-content a:hover {
+                background: #ffe5e5;
+            }
+
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .login-btn {
+                padding: 8px 16px;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.95rem;
+                font-weight: bold;
+                cursor: pointer;
+                background: var(--primary-color);
+                transition: background 0.2s;
+            }
+
+            /* --- 월드컵 컨텐츠 (카드 디자인 강화) --- */
+            .game-main {
+                padding: 40px 20px 80px;
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             }
             .worldcup-container {
                 max-width: 700px;
                 margin: 0 auto;
                 text-align: center;
+<<<<<<< HEAD
                 background: #fff;
+=======
+                background: white;
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                 padding: 40px;
                 border-radius: 32px;
                 border: 2px solid var(--primary-color);
@@ -279,7 +391,10 @@
             <div class="header-left">
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
+<<<<<<< HEAD
                     <a class="menu-item" href="/about">회사소개</a>
+=======
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                     <a class="menu-item" href="/aichat">AI추천</a>
                     <a class="menu-item" href="/community">커뮤니티</a>
                     <div class="menu-item game-dropdown">
@@ -295,6 +410,7 @@
                 </nav>
             </div>
 
+<<<<<<< HEAD
             <div class="header-center"></div>
 
             <div class="header-right" id="headerRightArea">
@@ -306,15 +422,26 @@
                 >
                     회원가입
                 </button>
+=======
+            <div class="header-right" id="headerRightArea">
+                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626; margin-left: 5px;" onclick="location.href = '/signup'">회원가입</button>
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             </div>
         </header>
 
         <main class="game-main">
             <div class="worldcup-container">
                 <div class="worldcup-title">🍗 메뉴 월드컵</div>
+<<<<<<< HEAD
                 <button id="start-btn" class="restart-btn" onclick="onStartClick()">시작하기</button>
                 <div id="round-title" class="round-title" style="display: none">준비 중...</div>
                 <div class="choices" style="display: none">
+=======
+                <div id="round-title" class="round-title">준비 중...</div>
+
+                <div class="choices">
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                     <div class="choice" id="choice1" onclick="selectChoice(0)">
                         <img class="choice-img" id="img1" src="" alt="음식1" />
                         <div class="choice-label" id="label1"></div>
@@ -324,6 +451,10 @@
                         <div class="choice-label" id="label2"></div>
                     </div>
                 </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                 <div id="result" class="result" style="display: none"></div>
                 <button id="restart-btn" class="restart-btn" style="display: none" onclick="restartWorldcup()">
                     다시 하기
@@ -332,6 +463,7 @@
         </main>
 
         <script>
+<<<<<<< HEAD
             // --- 공통 기능: 로그아웃 및 위치 정보 ---
             function logout() {
                 localStorage.clear();
@@ -374,6 +506,40 @@
                 { name: '김치찌개', img: '/food/김치찌개.webp' },
                 { name: '파스타', img: '/food/파스타.jpeg' },
                 { name: '샐러드', img: '/food/샐러드.webp' },
+=======
+            /* --- 로그인 세션 유지 로직 --- */
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+
+                if (nickname && headerRightArea) {
+                    let adminButton = '';
+                    if (isAdmin === '1') {
+                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자</button>`;
+                    }
+                    headerRightArea.innerHTML = `
+                        <span style="font-weight: 700; color: #dc2626; font-size: 1.05rem; margin-right: 8px;">👤 ${nickname}님</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="location.href='/mypage'" style="background: #f39c12; margin-left:4px;">정보</button>
+                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:4px;">로그아웃</button>
+                    `;
+                }
+            });
+
+            function logout() {
+                localStorage.clear();
+                alert('로그아웃 되었습니다.');
+                window.location.href = '/main';
+            }
+
+            /* --- 월드컵 게임 로직 유지 --- */
+            const menuList = [
+                { name: '짜장면', img: '/food/짜장면.webp' }, { name: '짬뽕', img: '/food/짬뽕.jpg' },
+                { name: '돈가스', img: '/food/돈가스.jpeg' }, { name: '제육볶음', img: '/food/제육볶음.webp' },
+                { name: '비빔밥', img: '/food/비빔밥.jpg' }, { name: '김치찌개', img: '/food/김치찌개.webp' },
+                { name: '파스타', img: '/food/파스타.jpeg' }, { name: '샐러드', img: '/food/샐러드.webp' },
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             ];
 
             let roundMenus = [];
@@ -387,6 +553,7 @@
                 }
             }
 
+<<<<<<< HEAD
             function onStartClick() {
                 document.getElementById('start-btn').style.display = 'none';
                 document.getElementById('round-title').style.display = '';
@@ -394,6 +561,8 @@
                 startWorldcup();
             }
 
+=======
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             function startWorldcup() {
                 roundMenus = [...menuList];
                 shuffle(roundMenus);
@@ -401,6 +570,10 @@
                 match = 0;
                 document.getElementById('result').style.display = 'none';
                 document.getElementById('restart-btn').style.display = 'none';
+<<<<<<< HEAD
+=======
+                document.querySelector('.choices').style.display = 'flex';
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                 showMatch();
             }
 
@@ -413,8 +586,12 @@
                     document.getElementById('restart-btn').style.display = 'inline-block';
                     return;
                 }
+<<<<<<< HEAD
                 document.getElementById('round-title').textContent =
                     `${roundMenus.length}강 (진행: ${match + 1}/${roundMenus.length / 2})`;
+=======
+                document.getElementById('round-title').textContent = `${roundMenus.length}강 (진행: ${match + 1}/${roundMenus.length / 2})`;
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
                 document.getElementById('img1').src = roundMenus[match * 2].img;
                 document.getElementById('label1').textContent = roundMenus[match * 2].name;
                 document.getElementById('img2').src = roundMenus[match * 2 + 1].img;
@@ -432,6 +609,7 @@
                 showMatch();
             }
 
+<<<<<<< HEAD
             function restartWorldcup() {
                 document.getElementById('start-btn').style.display = '';
                 document.getElementById('round-title').style.display = 'none';
@@ -464,6 +642,10 @@
                 // 최초에는 아무것도 안 보이게 초기화
                 restartWorldcup();
             });
+=======
+            function restartWorldcup() { startWorldcup(); }
+            window.onload = startWorldcup;
+>>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
         </script>
     </body>
 </html>
