@@ -406,8 +406,8 @@
                             area.style.display = area.style.display === 'none' ? 'block' : 'none';
                         };
 
-                        // 장소 검색
-                        document.getElementById('place-search-btn').onclick = function () {
+                        // 장소 검색 함수 (버튼/엔터 공용)
+                        function doPlaceSearch() {
                             const query = document.getElementById('place-search-input').value.trim();
                             if (!query) return;
                             const ps = new kakao.maps.services.Places();
@@ -453,7 +453,15 @@
                                         '<div style="padding:8px;color:#b91c1c;">검색 결과가 없습니다.</div>';
                                 }
                             });
-                        };
+                        }
+                        document.getElementById('place-search-btn').onclick = doPlaceSearch;
+                        // 엔터키로도 검색 실행
+                        document.getElementById('place-search-input').addEventListener('keydown', function (e) {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                doPlaceSearch();
+                            }
+                        });
                     }
                     // 환경설정에서 카카오맵 API키를 window에 노출 (템플릿 하단에 추가)
                     window.KAKAO_MAP_APP_KEY =
