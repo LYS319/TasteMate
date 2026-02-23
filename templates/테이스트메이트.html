@@ -155,15 +155,20 @@
             }
 
             .current-location {
-                font-size: 0.85rem;
+                font-size: 1.05rem;
                 color: #dc2626;
                 background: #fff1f1;
                 border: 1px solid rgba(220, 38, 38, 0.1);
                 border-radius: 10px;
-                padding: 8px 14px;
+                padding: 6px 10px;
                 font-weight: 700;
                 cursor: pointer;
                 white-space: nowrap;
+                max-width: 160px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                vertical-align: middle;
             }
 
             /* --- Main Content --- */
@@ -511,11 +516,10 @@
                         async (pos) => {
                             try {
                                 const res = await fetch(
-                                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                                    `/api/reverse-geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
                                 );
                                 const data = await res.json();
-                                const addr = data.address.city || data.address.province || '위치 확인됨';
-                                locSpan.innerText = `📍 ${addr}`;
+                                locSpan.innerText = `📍 ${data.address}`;
                             } catch (e) {
                                 locSpan.innerText = '📍 위치 확인됨';
                             }
@@ -574,15 +578,26 @@
 
             document.addEventListener('DOMContentLoaded', () => {
                 const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
                 const headerRightArea = document.getElementById('headerRightArea');
                 if (nickname && headerRightArea) {
                     let avatarText = nickname.slice(0, 2);
+                    let adminButton =
+                        isAdmin == '1'
+                            ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`
+                            : '';
                     headerRightArea.innerHTML = `
                         <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
-                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
+                        ${adminButton}
+                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button>
                         <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
                     `;
                     getGPSLocation();
+                } else if (headerRightArea) {
+                    headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                        <button class="login-btn" style="background: #fff; color: #dc2626; border: 1.5px solid #dc2626" onclick="location.href = '/signup'">회원가입</button>
+                    `;
                 }
 
                 updateCounts();
