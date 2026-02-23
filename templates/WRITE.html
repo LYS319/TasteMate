@@ -557,49 +557,53 @@
             }
 
             // 관리자만 공지글 체크박스 노출
-            document.addEventListener('DOMContentLoaded', () => {
-                const isAdmin = localStorage.getItem('is_admin');
-                if (isAdmin === '1') {
-                    document.getElementById('noticeDiv').style.display = 'block';
-                }
-            });
-
-            // 글쓰기 제출 로직
-            document.getElementById('writeForm').onsubmit = async (e) => {
-                e.preventDefault();
-                const userId = localStorage.getItem('user_id');
-                if (!userId) {
-                    alert('로그인이 필요한 서비스입니다.');
-                    sessionStorage.setItem('return_url', '/write');
-                    window.location.href = '/login';
-                    return;
-                }
-
-                const formData = new FormData(e.target);
-                formData.append('user_id', userId);
-                // 공지글 여부 추가
-                const isNotice = document.getElementById('is_notice');
-                if (isNotice && isNotice.checked) {
-                    formData.append('is_notice', '1');
-                }
-
-                try {
-                    const res = await fetch('/api/posts', { method: 'POST', body: formData });
-                    const data = await res.json();
-                    if (res.ok) {
-                        alert('게시글이 성공적으로 등록되었습니다!');
-                        window.location.href = data.redirect;
-                    } else {
-                        if (data.detail === '차단되어 게시글을 쓸 수 없습니다.') {
-                            alert('차단되어 게시글을 쓸 수 없습니다.');
-                        } else {
-                            alert('글 등록에 실패했습니다.');
-                        }
+                document.addEventListener('DOMContentLoaded', () => {
+                    const nickname = localStorage.getItem('nickname');
+                    const isAdmin = localStorage.getItem('is_admin');
+                    const headerRightArea = document.getElementById('headerRightArea');
+                    if (nickname && headerRightArea) {
+                        let avatarText = nickname.slice(0, 2);
+                        let adminButton = isAdmin == '1' ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>` : '';
+                        headerRightArea.innerHTML = `
+                            <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
+                            ${adminButton}
+                            <button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button>
+                            <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
+                        `;
+                        getGPSLocation && getGPSLocation();
+                    } else if(headerRightArea) {
+                        headerRightArea.innerHTML = `
+                            <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                            <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626" onclick="location.href = '/signup'">회원가입</button>
+                        `;
                     }
-                } catch (err) {
-                    alert('서버 연결에 실패했습니다.');
+                });
+                function logout() {
+                    localStorage.clear();
+                    alert('안전하게 로그아웃 되었습니다.');
+                    window.location.href = '/main';
                 }
-            };
-        </script>
-    </body>
-</html>
+                function getGPSLocation() {
+                    const locSpan = document.getElementById('gps-location');
+                    if (!locSpan) return;
+                    if (navigator.geolocation) {
+                        locSpan.innerText = '📍 위치 찾는 중...';
+                        navigator.geolocation.getCurrentPosition(
+                            async (pos) => {
+                                try {
+                                    const res = await fetch(
+                                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                                    );
+                                    const data = await res.json();
+                                    const addr = data.address.city || data.address.province || '위치 확인됨';
+                                    locSpan.innerText = `📍 ${addr}`;
+                                } catch (e) {
+                                    locSpan.innerText = '📍 위치 확인됨';
+                                }
+                            },
+                            () => {
+                                locSpan.innerText = '📍 위치 거부됨';
+                            },
+                        );
+                    }
+                }

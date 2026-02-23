@@ -174,7 +174,9 @@
             }
 
             /* ===== Layout & Containers (Fixed Header 대응) ===== */
-            .game-main { padding: 160px 10px 40px; }
+            .game-main {
+                padding: 160px 10px 40px;
+            }
             .main-layout-container {
                 display: flex;
                 justify-content: center;
@@ -253,7 +255,7 @@
                 border: 8px solid #2d2d3a;
                 transition: transform 3s cubic-bezier(0.1, 0.8, 0.2, 1);
                 overflow: hidden;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             }
             .pointer {
                 position: absolute;
@@ -347,20 +349,30 @@
                     <div id="inputView">
                         <h2 class="setup-title">🎯 배분 룰렛</h2>
                         <p class="setup-desc">총 금액을 입력하면 자동으로 차등 배분합니다.</p>
-                        <div style="margin-bottom: 20px;">
-                            <input type="number" id="totalAmount" placeholder="총 금액 (원)" style="width: 160px;" />
-                            <input type="number" id="peopleCount" placeholder="인원 (명)" style="width: 80px;" />
+                        <div style="margin-bottom: 20px">
+                            <input type="number" id="totalAmount" placeholder="총 금액 (원)" style="width: 160px" />
+                            <input type="number" id="peopleCount" placeholder="인원 (명)" style="width: 80px" />
                         </div>
                         <button class="action-btn" onclick="setupGame()">설정 완료</button>
                     </div>
 
                     <div id="gameView" style="display: none">
                         <div class="winner-banner" id="winnerBanner">🏁 게임 준비 완료!</div>
-                        
+
                         <div class="wheel-outer">
                             <div class="pointer"></div>
                             <div id="wheel" class="wheel"></div>
-                            <div id="nameLabels" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none;"></div>
+                            <div
+                                id="nameLabels"
+                                style="
+                                    position: absolute;
+                                    width: 100%;
+                                    height: 100%;
+                                    top: 0;
+                                    left: 0;
+                                    pointer-events: none;
+                                "
+                            ></div>
                         </div>
 
                         <button class="action-btn" id="btnSpin" onclick="startAutoGame()">🏁 게임 시작</button>
@@ -375,8 +387,14 @@
                             </thead>
                             <tbody id="resultBody"></tbody>
                         </table>
-                        
-                        <button class="action-btn" style="background: #666; font-size: 0.9rem; margin-top: 20px;" onclick="location.reload()">처음부터 다시</button>
+
+                        <button
+                            class="action-btn"
+                            style="background: #666; font-size: 0.9rem; margin-top: 20px"
+                            onclick="location.reload()"
+                        >
+                            처음부터 다시
+                        </button>
                     </div>
                 </div>
             </div>
@@ -420,12 +438,22 @@
             let remainingNames = [];
             let winnersOrder = [];
             let totalAngle = 0;
-            const colorPalette = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F06292', '#AED581', '#FFD54F'];
+            const colorPalette = [
+                '#FF6B6B',
+                '#4ECDC4',
+                '#45B7D1',
+                '#FFA07A',
+                '#98D8C8',
+                '#F06292',
+                '#AED581',
+                '#FFD54F',
+            ];
 
             function calculateAutoPrizes(total, people) {
                 let step = Math.floor(total / (people * people) / 100) * 100;
                 if (step < 100) step = 100;
-                let prizes = [], sum = 0;
+                let prizes = [],
+                    sum = 0;
                 let first = (total - ((people * (people - 1)) / 2) * step) / people;
                 first = Math.floor(first / 100) * 100;
                 for (let i = 0; i < people; i++) {
@@ -442,9 +470,9 @@
                 const countInput = document.getElementById('peopleCount');
                 const total = parseInt(totalInput.value);
                 const count = parseInt(countInput.value);
-                
+
                 if (!total || !count || count < 2) return alert('금액과 2명 이상의 인원을 입력하세요.');
-                
+
                 calculatedPrizes = calculateAutoPrizes(total, count);
                 remainingNames = [];
                 for (let i = 0; i < count; i++) {
@@ -460,7 +488,7 @@
                 const wheel = document.getElementById('wheel');
                 const labelDiv = document.getElementById('nameLabels');
                 const n = remainingNames.length;
-                if(n === 0) return;
+                if (n === 0) return;
                 const slice = 360 / n;
                 let conic = '';
                 labelDiv.innerHTML = '';
@@ -502,7 +530,7 @@
                 const slice = 360 / n;
                 const winIdx = Math.floor(Math.random() * n);
                 const target = 360 - (winIdx * slice + slice / 2);
-                
+
                 totalAngle += 1440 + target - (totalAngle % 360);
                 wheel.style.transform = `rotate(${totalAngle}deg)`;
                 nameLabels.style.transform = `rotate(${totalAngle}deg)`;
@@ -535,16 +563,26 @@
 
             // --- 로그인 상태 연동 로직 ---
             document.addEventListener('DOMContentLoaded', () => {
-                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
                 const headerRightArea = document.getElementById('headerRightArea');
                 if (nickname && headerRightArea) {
                     let avatarText = nickname.slice(0, 2);
+                    let adminButton =
+                        isAdmin == '1'
+                            ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`
+                            : '';
                     headerRightArea.innerHTML = `
                         <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
-                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
+                        ${adminButton}
+                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button>
                         <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
                     `;
-                    getGPSLocation();
+                    getGPSLocation && getGPSLocation();
+                } else if (headerRightArea) {
+                    headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                        <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626" onclick="location.href = '/signup'">회원가입</button>
+                    `;
                 }
             });
         </script>
