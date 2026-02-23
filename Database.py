@@ -36,6 +36,14 @@ class Post(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     user_id = Column(Integer, ForeignKey("users.id"))
     is_notice = Column(Integer, default=0)  # 0: 일반글, 1: 공지글
+    lat = Column(Float, nullable=True)  # 위도
+    lon = Column(Float, nullable=True)  # 경도
+    # 매장 상세정보(선택 시 저장)
+    place_name = Column(String(255), nullable=True)
+    place_address = Column(String(255), nullable=True)
+    place_phone = Column(String(50), nullable=True)
+    place_category = Column(String(255), nullable=True)
+    place_url = Column(String(255), nullable=True)
     owner = relationship("User", back_populates="posts")
     comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
     likes = relationship("Like", back_populates="post", cascade="all, delete-orphan")

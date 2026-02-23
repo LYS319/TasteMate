@@ -1,10 +1,13 @@
+
 # config.py
+import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     # .env 파일의 변수명과 동일하게 작성
-    KAKAO_REST_API_KEY: str
+    KAKAO_REST_API_KEY: str = os.getenv("KAKAO_REST_API_KEY")
+    KAKAO_JAVAS_API_KEY: str = os.getenv("KAKAO_JAVAS_API_KEY")
     DATABASE_URL: str
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
