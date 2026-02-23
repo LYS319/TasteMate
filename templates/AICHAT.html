@@ -12,6 +12,33 @@
         />
 
         <style>
+            .nickname-avatar {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: #222;
+                color: #fff;
+                font-weight: 700;
+                font-size: 1rem;
+                border: 2px solid #fff;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+            .current-location {
+                font-size: 0.85rem;
+                color: #dc2626;
+                background: #fff1f1;
+                border: 1px solid rgba(220, 38, 38, 0.1);
+                border-radius: 10px;
+                padding: 8px 14px;
+                font-weight: 700;
+                cursor: pointer;
+                white-space: nowrap;
+            }
             body {
                 font-family: 'Noto Sans KR', sans-serif;
                 background: #fafafa;
@@ -66,14 +93,11 @@
     <body class="max-w-2xl mx-auto bg-white shadow-xl">
         <!-- 🔥 HEADER (MAIN과 동일 구조) -->
         <header class="glass-header px-5 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3 relative">
+            <div class="flex items-center gap-3 relative" style="flex: 1">
                 <button class="text-xl" onclick="toggleMenu()">☰</button>
-
                 <span onclick="location.href = '/main'" class="text-red-600 font-black text-xl cursor-pointer">
                     TasteMate
                 </span>
-
-                <!-- 🔥 추가되는 메뉴 (기존 디자인 유지) -->
                 <nav
                     id="mainNavMenu"
                     style="
@@ -90,11 +114,9 @@
                     <button onclick="location.href = '/main'" style="display: block; margin: 8px 0; font-weight: 800">
                         🏠 홈
                     </button>
-
                     <button onclick="location.href = '/aichat'" style="display: block; margin: 8px 0; font-weight: 800">
                         🤖 AI추천
                     </button>
-
                     <button
                         onclick="location.href = '/community'"
                         style="display: block; margin: 8px 0; font-weight: 800"
@@ -102,6 +124,46 @@
                         🧑‍🤝‍🧑 커뮤니티
                     </button>
                 </nav>
+            </div>
+            <div class="flex items-center gap-2" style="margin-left: auto">
+                <div style="position: relative">
+                    <span
+                        class="nickname-avatar"
+                        id="nicknameAvatar"
+                        style="cursor: pointer"
+                        onclick="toggleProfileMenu(event)"
+                    ></span>
+                    <div
+                        id="profileDropdown"
+                        style="
+                            display: none;
+                            position: absolute;
+                            right: 0;
+                            top: 45px;
+                            background: #fff;
+                            border-radius: 12px;
+                            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+                            border: 1px solid #eee;
+                            min-width: 140px;
+                            z-index: 1000;
+                        "
+                    >
+                        <button
+                            class="login-btn"
+                            onclick="logout()"
+                            style="background: #666; width: 100%; border-radius: 10px; margin: 8px 0"
+                        >
+                            로그아웃
+                        </button>
+                        <span
+                            class="current-location"
+                            id="gps-location"
+                            onclick="getGPSLocation()"
+                            style="display: block; padding: 8px 0; cursor: pointer"
+                            >📍 내 위치</span
+                        >
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -207,6 +269,58 @@
         </div>
 
         <script>
+            // 프로필 아바타 표시 및 위치/로그아웃
+            function toggleProfileMenu(event) {
+                event.stopPropagation();
+                const dropdown = document.getElementById('profileDropdown');
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const avatar = document.getElementById('nicknameAvatar');
+                if (nickname && avatar) {
+                    avatar.textContent = nickname.slice(0, 2);
+                }
+                getGPSLocation();
+            });
+
+            // Hide dropdown when clicking outside
+            document.addEventListener('click', function (e) {
+                const dropdown = document.getElementById('profileDropdown');
+                if (dropdown && dropdown.style.display === 'block') {
+                    dropdown.style.display = 'none';
+                }
+            });
+            function logout() {
+                localStorage.clear();
+                alert('안전하게 로그아웃 되었습니다.');
+                window.location.href = '/main';
+            }
+            function getGPSLocation() {
+                const locSpan = document.getElementById('gps-location');
+                if (!locSpan) return;
+                if (navigator.geolocation) {
+                    locSpan.innerText = '📍 위치 찾는 중...';
+                    navigator.geolocation.getCurrentPosition(
+                        async (pos) => {
+                            try {
+                                const res = await fetch(
+                                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                                );
+                                const data = await res.json();
+                                const addr = data.address.city || data.address.province || '위치 확인됨';
+                                locSpan.innerText = `📍 ${addr}`;
+                            } catch (e) {
+                                locSpan.innerText = '📍 위치 확인됨';
+                            }
+                        },
+                        () => {
+                            locSpan.innerText = '📍 위치 거부됨';
+                        },
+                    );
+                }
+            }
             /* ===== 기존 JS 그대로 유지 ===== */
 
             const chatContainer = document.getElementById('chat-container');
