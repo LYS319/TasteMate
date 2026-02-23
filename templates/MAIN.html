@@ -42,8 +42,12 @@
     </head>
     <body>
         <header>
-            Taste Mate
-            <span class="user-nickname" id="userNickname"></span>
+            <div style="display: flex; justify-content: space-between; align-items: center">
+                <span style="font-size: 24px; font-weight: bold">Taste Mate</span>
+                <div class="header-right" id="headerRightArea">
+                    <!-- 프로필/관리자/로그아웃/위치: JS에서 동적으로 렌더링 -->
+                </div>
+            </div>
         </header>
         <div class="container">
             <div class="card">
@@ -116,15 +120,58 @@
             </div>
         </div>
         <script>
-            // localStorage에서 닉네임과 관리자 여부를 읽어와 오른쪽에 표시
-            const nickname = localStorage.getItem('nickname');
-            const isAdmin = localStorage.getItem('is_admin');
-            if (nickname) {
-                let adminText = '';
-                if (isAdmin === '1' || isAdmin === 1) {
-                    adminText = ' <span style="color:#ffd700; font-size:15px;">(관리자)</span>';
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+                if (nickname && headerRightArea) {
+                    let avatarText = nickname.slice(0, 2);
+                    let adminButton =
+                        isAdmin == '1'
+                            ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`
+                            : '';
+                    headerRightArea.innerHTML = `
+                        <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
+                    `;
+                    getGPSLocation && getGPSLocation();
+                } else if (headerRightArea) {
+                    headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                        <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626" onclick="location.href = '/signup'">회원가입</button>
+                    `;
                 }
-                document.getElementById('userNickname').innerHTML = `👤 ${nickname}님${adminText}`;
+            });
+            function logout() {
+                localStorage.clear();
+                alert('안전하게 로그아웃 되었습니다.');
+                window.location.href = '/main';
+            }
+            function getGPSLocation() {
+                const locSpan = document.getElementById('gps-location');
+                if (!locSpan) return;
+                if (navigator.geolocation) {
+                    locSpan.innerText = '📍 위치 찾는 중...';
+                    navigator.geolocation.getCurrentPosition(
+                        async (pos) => {
+                            try {
+                                const res = await fetch(
+                                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                                );
+                                const data = await res.json();
+                                const addr = data.address.city || data.address.province || '위치 확인됨';
+                                locSpan.innerText = `📍 ${addr}`;
+                            } catch (e) {
+                                locSpan.innerText = '📍 위치 확인됨';
+                            }
+                        },
+                        () => {
+                            locSpan.innerText = '📍 위치 거부됨';
+                        },
+                    );
+                }
             }
         </script>
     </body>

@@ -174,7 +174,9 @@
             }
 
             /* ===== Layout & Containers ===== */
-            .game-main { padding: 160px 10px 60px; }
+            .game-main {
+                padding: 160px 10px 60px;
+            }
             .main-layout-container {
                 display: flex;
                 justify-content: center;
@@ -270,8 +272,14 @@
                 animation: fadeIn 0.4s ease;
             }
             @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
         </style>
     </head>
@@ -316,24 +324,35 @@
                 <div class="calc-container">
                     <h2 class="setup-title">🧮 1인당 계산기</h2>
                     <p class="setup-desc">정확하고 공평한 정산을 도와드립니다.</p>
-                    
-                    <form onsubmit="event.preventDefault(); calculateAmount();">
+
+                    <form
+                        onsubmit="
+                            event.preventDefault();
+                            calculateAmount();
+                        "
+                    >
                         <div class="form-group">
                             <label class="form-label">👥 인원수</label>
                             <input id="calcPeople" type="number" min="1" placeholder="몇 명인가요?" />
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">💰 총 금액</label>
                             <input id="calcAmount" type="text" placeholder="금액을 입력하세요" />
                         </div>
-                        
+
                         <button class="action-btn" type="submit">정산하기</button>
                     </form>
 
                     <div id="calcResult" class="result-banner"></div>
-                    
-                    <button class="action-btn" style="background: #666; font-size: 0.9rem; margin-top: 20px;" onclick="location.reload()">초기화</button>
+
+                    <button
+                        class="action-btn"
+                        style="background: #666; font-size: 0.9rem; margin-top: 20px"
+                        onclick="location.reload()"
+                    >
+                        초기화
+                    </button>
                 </div>
             </div>
         </main>
@@ -396,7 +415,7 @@
                 }
 
                 const perPerson = Math.floor(amount / people / 100) * 100;
-                const remain = amount - (perPerson * people);
+                const remain = amount - perPerson * people;
 
                 resultDiv.style.display = 'flex';
                 resultDiv.innerHTML = `
@@ -407,16 +426,26 @@
 
             // --- 로그인 정보 연동 (예시 코드와 동일하게 복구) ---
             document.addEventListener('DOMContentLoaded', () => {
-                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
                 const headerRightArea = document.getElementById('headerRightArea');
                 if (nickname && headerRightArea) {
                     let avatarText = nickname.slice(0, 2);
+                    let adminButton =
+                        isAdmin == '1'
+                            ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`
+                            : '';
                     headerRightArea.innerHTML = `
                         <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
-                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
+                        ${adminButton}
+                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button>
                         <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
                     `;
-                    getGPSLocation();
+                    getGPSLocation && getGPSLocation();
+                } else if (headerRightArea) {
+                    headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                        <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626" onclick="location.href = '/signup'">회원가입</button>
+                    `;
                 }
             });
         </script>
