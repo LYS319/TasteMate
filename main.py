@@ -81,35 +81,35 @@ def top_places_by_category(db: Session = Depends(get_db)):
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
     try:
-    genai.configure(api_key=settings.GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-2.5-flash")
-    prompt = f"""
-        당신은 모바일 서비스 '테이스트메이트 AI'입니다.
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        prompt = f"""
+            당신은 모바일 서비스 '테이스트메이트 AI'입니다.
 
-        ⚠️ 반드시 아래 형식으로만 답변하세요.
-        - 블로그 스타일 금지
-        - 길게 설명 금지
-        - 한눈에 보이도록 간결하게 작성
-        - 모바일 화면에 맞게 줄 간격 유지
+            ⚠️ 반드시 아래 형식으로만 답변하세요.
+            - 블로그 스타일 금지
+            - 길게 설명 금지
+            - 한눈에 보이도록 간결하게 작성
+            - 모바일 화면에 맞게 줄 간격 유지
 
-        형식:
+            형식:
 
-        🍺 추천 주류:
-        - 한 줄 설명
+            🍺 추천 주류:
+            - 한 줄 설명
 
-        🌶 추천 안주 TOP3:
-        1. 안주명 – 한 줄 이유
-        2. 안주명 – 한 줄 이유
-        3. 안주명 – 한 줄 이유
+            🌶 추천 안주 TOP3:
+            1. 안주명 – 한 줄 이유
+            2. 안주명 – 한 줄 이유
+            3. 안주명 – 한 줄 이유
 
-        💡 페어링 포인트:
-        - 두 줄 이내 요약
+            💡 페어링 포인트:
+            - 두 줄 이내 요약
 
-        사용자 질문:
-        {request.message}
-        """
-    response = model.generate_content(prompt)
-    return {"reply": response.text}
+            사용자 질문:
+            {request.message}
+            """
+        response = model.generate_content(prompt)
+        return {"reply": response.text}
     except Exception as e:
         print("🔥 Gemini 에러:", e)
         return {"reply": "AI 연결에 문제가 발생했습니다."}
