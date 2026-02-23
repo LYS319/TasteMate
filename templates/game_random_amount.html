@@ -4,14 +4,19 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <<<<<<< HEAD
+<<<<<<< HEAD
         <title>테이스트메이트 - 자동 배분 룰렛 Pro</title>
 =======
         <title>테이스트메이트 - 자동 배분 룰렛</title>
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+        <title>테이스트메이트 - 자동 배분 룰렛 Pro</title>
+>>>>>>> feature/App_DB-LYS
         <link
             href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap"
             rel="stylesheet"
         />
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         <style>
@@ -20,13 +25,19 @@
                 --primary-hover: #b91c1c;
                 --bg-gradient: linear-gradient(135deg, #fdfdfd 0%, #f1f1f1 100%);
 =======
+=======
+
+>>>>>>> feature/App_DB-LYS
         <style>
-            /* --- TasteMate 브랜드 스타일 변수 (예시 코드 규격) --- */
             :root {
                 --primary-color: #dc2626;
                 --primary-hover: #b91c1c;
+<<<<<<< HEAD
                 --bg-gradient: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+                --bg-gradient: linear-gradient(135deg, #fdfdfd 0%, #f1f1f1 100%);
+>>>>>>> feature/App_DB-LYS
                 --glass-bg: rgba(255, 255, 255, 0.85);
             }
 
@@ -36,6 +47,7 @@
                 background: var(--bg-gradient);
                 color: #333;
                 min-height: 100vh;
+<<<<<<< HEAD
 <<<<<<< HEAD
             }
 
@@ -66,33 +78,44 @@
 
 =======
                 overflow-x: hidden;
+=======
+>>>>>>> feature/App_DB-LYS
             }
 
-            /* --- TasteMate 공식 상단바 (완벽 복구) --- */
+            /* --- 예시 코드와 100% 동일한 Header Style --- */
             .header {
-                display: flex;
-                justify-content: space-between;
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
                 align-items: center;
-                padding: 16px 32px;
-                background: var(--glass-bg);
-                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
-                backdrop-filter: blur(12px);
-                position: sticky;
+                padding: 12px 40px;
+                background: rgba(255, 255, 255, 0.85);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                position: fixed;
                 top: 0;
-                z-index: 2000;
-                box-sizing: border-box;
-                width: 100%;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+                border-bottom: 1px solid rgba(220, 38, 38, 0.05);
             }
+
             .header-left {
                 display: flex;
                 align-items: center;
-                gap: 24px;
+                gap: 30px;
+                grid-column: 1;
             }
+<<<<<<< HEAD
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+
+>>>>>>> feature/App_DB-LYS
             .header-logo {
                 display: flex;
                 align-items: center;
                 gap: 10px;
+<<<<<<< HEAD
 <<<<<<< HEAD
                 font-size: 1.7rem;
                 font-weight: 900;
@@ -183,34 +206,20 @@
             /* --- Dropdown Style --- */
 =======
                 font-size: 1.5rem;
+=======
+                font-size: 1.7rem;
+>>>>>>> feature/App_DB-LYS
                 font-weight: 900;
-                color: var(--primary-color);
+                color: #dc2626;
                 text-decoration: none;
-                transition: transform 0.2s;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
             .header-logo:hover {
-                transform: scale(1.05);
-            }
-            .menu-bar {
-                display: flex;
-                gap: 18px;
-                align-items: center;
-                margin-left: 24px;
-            }
-            .menu-item {
-                font-size: 1.1rem;
-                font-weight: 700;
-                color: var(--primary-color);
-                text-decoration: none;
-                padding: 8px 18px;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: background 0.18s;
-            }
-            .menu-item:hover {
-                background: #fff5f5;
+                transform: translateY(-1px);
+                filter: brightness(1.2);
             }
 
+<<<<<<< HEAD
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
             .game-dropdown {
                 position: relative;
@@ -300,82 +309,171 @@
                 flex-direction: column;
             }
             .game-dropdown:hover .dropdown-content {
+=======
+            .menu-bar {
+>>>>>>> feature/App_DB-LYS
                 display: flex;
+                gap: 5px;
+                align-items: center;
             }
-            .dropdown-content a {
-                color: var(--primary-color);
-                padding: 10px 24px;
-                text-decoration: none;
+            .menu-item {
                 font-size: 1.05rem;
                 font-weight: 600;
-                border-radius: 8px;
-                transition: background 0.18s;
+                color: #444;
+                text-decoration: none;
+                padding: 10px 14px;
+                border-radius: 10px;
+                transition: all 0.2s;
             }
-            .dropdown-content a:hover {
-                background: #ffe5e5;
+            .menu-item:hover {
+                background: #fff1f1;
+                color: #dc2626;
+            }
+
+            .header-center {
+                grid-column: 2;
+                width: 450px;
             }
 
             .header-right {
                 display: flex;
                 align-items: center;
                 gap: 10px;
+                justify-content: flex-end;
+                grid-column: 3;
             }
+
             .login-btn {
-                padding: 8px 16px;
+                padding: 10px 18px;
                 color: #fff;
                 border: none;
-                border-radius: 6px;
-                font-size: 0.95rem;
-                font-weight: bold;
+                border-radius: 10px;
+                font-size: 0.9rem;
+                font-weight: 700;
                 cursor: pointer;
-                background: var(--primary-color);
-                transition: background 0.2s;
+                background: #dc2626;
+                transition: all 0.2s;
+                white-space: nowrap;
             }
 
-            /* --- 룰렛 게임 컨텐츠 스타일 (핀볼 스타일 계승) --- */
-            .game-main {
-                padding: 40px 20px 80px;
+            /* --- 로그인 후 아바타 및 위치 스타일 --- */
+            .nickname-avatar {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: #222;
+                color: #fff;
+                font-weight: 700;
+                font-size: 1rem;
+                border: 2px solid #fff;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                cursor: pointer;
+                flex-shrink: 0;
             }
-            .container {
+
+            .current-location {
+                font-size: 0.85rem;
+                color: #dc2626;
+                background: #fff1f1;
+                border: 1px solid rgba(220, 38, 38, 0.1);
+                border-radius: 10px;
+                padding: 8px 14px;
+                font-weight: 700;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+
+            /* --- Dropdown Style --- */
+            .game-dropdown {
+                position: relative;
+            }
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                top: 45px;
+                left: 0;
                 background: #fff;
-                border-radius: 32px;
-                padding: 40px;
+                min-width: 160px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                border-radius: 12px;
+                padding: 8px;
+                z-index: 1000;
+                border: 1px solid rgba(0, 0, 0, 0.05);
+            }
+            .game-dropdown:hover .dropdown-content {
+                display: block;
+            }
+            .dropdown-content a {
+                color: #444;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                font-weight: 600;
+                border-radius: 8px;
+            }
+            .dropdown-content a:hover {
+                background: #fff1f1;
+                color: #dc2626;
+            }
+
+            /* ===== Layout & Containers (Fixed Header 대응) ===== */
+            .game-main { padding: 160px 10px 40px; }
+            .main-layout-container {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 20px;
+                max-width: 1200px;
                 margin: 0 auto;
+            }
+
+            .game-container {
+                flex: 1;
                 max-width: 700px;
+                text-align: center;
+                background: white;
+                padding: 40px;
+                border-radius: 32px;
                 border: 2px solid var(--primary-color);
                 box-shadow: 0 16px 64px rgba(220, 38, 38, 0.15);
-                text-align: center;
             }
 
-            .setup-section {
-                background: #fff5f5;
-                padding: 30px;
-                border-radius: 24px;
-                margin-bottom: 30px;
-                border: 1px dashed var(--primary-color);
-            }
-            .setup-section h2 {
+            /* ===== Setup Box ===== */
+            .setup-title {
+                font-weight: 900;
+                font-size: 2rem;
                 color: var(--primary-color);
                 margin-top: 0;
-                font-weight: 900;
-                font-size: 2.1rem;
+                margin-bottom: 10px;
             }
+            .setup-desc {
+                color: #666;
+                margin-bottom: 25px;
+                font-size: 1rem;
+            }
+
             input {
                 padding: 12px;
-                border-radius: 12px;
-                border: 2px solid #ddd;
+                border-radius: 10px;
+                border: 1px solid #ddd;
                 margin: 5px;
-                width: 180px;
-                font-size: 1rem;
                 text-align: center;
+<<<<<<< HEAD
                 transition: border-color 0.2s;
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+                font-family: inherit;
+>>>>>>> feature/App_DB-LYS
             }
             input:focus {
                 border-color: var(--primary-color);
                 outline: none;
             }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
             .action-btn {
                 background: var(--primary-color);
@@ -403,39 +501,43 @@
 =======
             .start-btn {
                 padding: 15px 50px;
+=======
+            .action-btn {
+>>>>>>> feature/App_DB-LYS
                 background: var(--primary-color);
                 color: white;
                 border: none;
+                padding: 14px 40px;
                 border-radius: 12px;
+                font-size: 1.1rem;
                 font-weight: 900;
                 cursor: pointer;
-                font-size: 1.2rem;
                 transition: 0.2s;
-                margin: 10px;
+                margin-top: 10px;
             }
-            .start-btn:hover {
+            .action-btn:hover {
+                transform: scale(1.05);
                 background: var(--primary-hover);
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
-            }
-            .start-btn:disabled {
-                background: #ccc;
-                cursor: not-allowed;
-                transform: none;
-                box-shadow: none;
             }
 
+            /* ===== Wheel & Table ===== */
             .wheel-outer {
-                margin: 40px auto;
+                margin: 30px auto;
                 position: relative;
+<<<<<<< HEAD
                 width: 380px;
                 height: 380px;
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+                width: 340px;
+                height: 340px;
+>>>>>>> feature/App_DB-LYS
             }
             .wheel {
                 width: 100%;
                 height: 100%;
                 border-radius: 50%;
+<<<<<<< HEAD
 <<<<<<< HEAD
                 border: 8px solid #2d2d3a;
                 transition: transform 3s cubic-bezier(0.1, 0.8, 0.2, 1);
@@ -474,51 +576,60 @@
                 border: 1px solid #eee;
 =======
                 border: 8px solid #333;
+=======
+                border: 8px solid #2d2d3a;
+>>>>>>> feature/App_DB-LYS
                 transition: transform 3s cubic-bezier(0.1, 0.8, 0.2, 1);
-                position: relative;
                 overflow: hidden;
-                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             }
             .pointer {
                 position: absolute;
-                top: -25px;
+                top: -20px;
                 left: 50%;
                 transform: translateX(-50%);
                 z-index: 10;
-                border-left: 20px solid transparent;
-                border-right: 20px solid transparent;
-                border-top: 40px solid var(--primary-color);
-                filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.2));
+                border-left: 15px solid transparent;
+                border-right: 15px solid transparent;
+                border-top: 30px solid var(--primary-color);
             }
 
             .winner-banner {
-                font-size: 1.4rem;
-                font-weight: 900;
-                color: var(--primary-color);
-                min-height: 40px;
-                margin: 20px 0;
-                background: #fff5f5;
-                padding: 10px;
+                background: var(--primary-color);
+                color: white;
+                padding: 8px 20px;
                 border-radius: 12px;
+                font-size: 1.2rem;
+                font-weight: 900;
+                display: inline-block;
+                margin-bottom: 15px;
             }
+
             table {
-                margin: 20px auto;
-                border-collapse: collapse;
+                margin-top: 25px;
                 width: 100%;
-                background: white;
+                border-collapse: separate;
+                border-spacing: 0;
                 border-radius: 15px;
                 overflow: hidden;
+<<<<<<< HEAD
                 box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             }
             th, td {
                 padding: 15px;
                 border-bottom: 1px solid #eee;
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+                border: 1px solid #eee;
+>>>>>>> feature/App_DB-LYS
             }
             th {
                 background: var(--primary-color);
                 color: white;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> feature/App_DB-LYS
                 padding: 15px;
                 font-weight: 800;
             }
@@ -527,6 +638,7 @@
                 border-bottom: 1px solid #eee;
                 background: #fff;
                 text-align: center;
+<<<<<<< HEAD
             }
             .current-row {
                 background: #fff5f5 !important;
@@ -538,26 +650,34 @@
 
 =======
                 font-weight: 900;
+=======
+>>>>>>> feature/App_DB-LYS
             }
             .current-row {
-                background: #fff5f5;
+                background: #fff5f5 !important;
                 font-weight: bold;
                 color: var(--primary-color);
-                animation: popIn 0.3s ease-out;
             }
-            @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         </style>
     </head>
+<<<<<<< HEAD
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+
+>>>>>>> feature/App_DB-LYS
     <body>
         <header class="header">
             <div class="header-left">
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
 <<<<<<< HEAD
+<<<<<<< HEAD
                     <a class="menu-item" href="/about">회사소개</a>
 =======
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+                    <a class="menu-item" href="/about">회사소개</a>
+>>>>>>> feature/App_DB-LYS
                     <a class="menu-item" href="/aichat">AI추천</a>
                     <a class="menu-item" href="/community">커뮤니티</a>
                     <div class="menu-item game-dropdown">
@@ -573,6 +693,9 @@
                 </nav>
             </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> feature/App_DB-LYS
 
             <div class="header-center"></div>
 
@@ -585,15 +708,21 @@
                 >
                     회원가입
                 </button>
+<<<<<<< HEAD
 =======
             <div class="header-right">
                 <button class="login-btn" onclick="location.href='/login'">로그인</button>
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+>>>>>>> feature/App_DB-LYS
             </div>
         </header>
 
         <main class="game-main">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> feature/App_DB-LYS
             <div class="main-layout-container">
                 <div class="game-container">
                     <div id="inputView">
@@ -604,6 +733,7 @@
                             <input type="number" id="peopleCount" placeholder="인원 (명)" style="width: 80px;" />
                         </div>
                         <button class="action-btn" onclick="setupGame()">설정 완료</button>
+<<<<<<< HEAD
                     </div>
 
                     <div id="gameView" style="display: none">
@@ -649,10 +779,20 @@
                         <div class="pointer"></div>
                         <div id="wheel" class="wheel"></div>
                         <div id="nameLabels" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></div>
+=======
+>>>>>>> feature/App_DB-LYS
                     </div>
 
-                    <button class="start-btn" id="btnSpin" onclick="startAutoGame()">🏁 게임 시작</button>
+                    <div id="gameView" style="display: none">
+                        <div class="winner-banner" id="winnerBanner">🏁 게임 준비 완료!</div>
+                        
+                        <div class="wheel-outer">
+                            <div class="pointer"></div>
+                            <div id="wheel" class="wheel"></div>
+                            <div id="nameLabels" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none;"></div>
+                        </div>
 
+<<<<<<< HEAD
                     <table id="resultTable" style="margin-top: 30px">
                         <thead>
                             <tr>
@@ -667,12 +807,32 @@
                         처음부터 다시
                     </button>
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+                        <button class="action-btn" id="btnSpin" onclick="startAutoGame()">🏁 게임 시작</button>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>순위</th>
+                                    <th>이름</th>
+                                    <th>지불액</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultBody"></tbody>
+                        </table>
+                        
+                        <button class="action-btn" style="background: #666; font-size: 0.9rem; margin-top: 20px;" onclick="location.reload()">처음부터 다시</button>
+                    </div>
+>>>>>>> feature/App_DB-LYS
                 </div>
             </div>
         </main>
 
         <script>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> feature/App_DB-LYS
             // --- 공통 기능: 로그아웃 및 위치 정보 ---
             function logout() {
                 localStorage.clear();
@@ -707,22 +867,29 @@
 
             // --- 룰렛 게임 로직 ---
             let calculatedPrizes = [];
+<<<<<<< HEAD
             let remainingNames = [];
             let winnersOrder = [];
             let totalAngle = 0;
             const colorPalette = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F06292', '#AED581', '#FFD54F'];
 =======
             /* --- 기능 로직 유지 (기존과 동일) --- */
+=======
+>>>>>>> feature/App_DB-LYS
             let remainingNames = [];
             let winnersOrder = [];
-            let calculatedPrizes = [];
             let totalAngle = 0;
+<<<<<<< HEAD
             const colorPalette = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#82E0AA'];
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+            const colorPalette = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F06292', '#AED581', '#FFD54F'];
+>>>>>>> feature/App_DB-LYS
 
             function calculateAutoPrizes(total, people) {
                 let step = Math.floor(total / (people * people) / 100) * 100;
                 if (step < 100) step = 100;
+<<<<<<< HEAD
 <<<<<<< HEAD
                 let prizes = [], sum = 0;
                 let first = (total - ((people * (people - 1)) / 2) * step) / people;
@@ -742,19 +909,31 @@
                     firstPrize = 0;
                     step = Math.floor(total / ((people * (people - 1)) / 2) / 100) * 100;
                 }
+=======
+                let prizes = [], sum = 0;
+                let first = (total - ((people * (people - 1)) / 2) * step) / people;
+                first = Math.floor(first / 100) * 100;
+>>>>>>> feature/App_DB-LYS
                 for (let i = 0; i < people; i++) {
-                    let p = firstPrize + i * step;
+                    let p = first + i * step;
                     prizes.push(p);
-                    currentSum += p;
+                    sum += p;
                 }
+<<<<<<< HEAD
                 let diff = total - currentSum;
                 prizes[prizes.length - 1] += diff;
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+                prizes[prizes.length - 1] += total - sum;
+>>>>>>> feature/App_DB-LYS
                 return prizes;
             }
 
             function setupGame() {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> feature/App_DB-LYS
                 const totalInput = document.getElementById('totalAmount');
                 const countInput = document.getElementById('peopleCount');
                 const total = parseInt(totalInput.value);
@@ -762,6 +941,7 @@
                 
                 if (!total || !count || count < 2) return alert('금액과 2명 이상의 인원을 입력하세요.');
                 
+<<<<<<< HEAD
                 calculatedPrizes = calculateAutoPrizes(total, count);
                 remainingNames = [];
                 for (let i = 0; i < count; i++) {
@@ -773,14 +953,19 @@
                 const count = parseInt(document.getElementById('peopleCount').value);
                 if (!total || !count || count < 2) return alert('금액과 인원수를 올바르게 입력하세요.');
 
+=======
+>>>>>>> feature/App_DB-LYS
                 calculatedPrizes = calculateAutoPrizes(total, count);
                 remainingNames = [];
                 for (let i = 0; i < count; i++) {
-                    let n = prompt(`${i + 1}번째 사람 이름을 입력하세요.`);
+                    let n = prompt(`${i + 1}번째 사람 이름`);
                     remainingNames.push(n || `${i + 1}번`);
                 }
+<<<<<<< HEAD
 
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+>>>>>>> feature/App_DB-LYS
                 document.getElementById('inputView').style.display = 'none';
                 document.getElementById('gameView').style.display = 'block';
                 drawWheel();
@@ -790,6 +975,7 @@
                 const wheel = document.getElementById('wheel');
                 const labelDiv = document.getElementById('nameLabels');
                 const n = remainingNames.length;
+<<<<<<< HEAD
 <<<<<<< HEAD
                 if(n === 0) return;
                 const slice = 360 / n;
@@ -803,6 +989,12 @@
                 labelDiv.innerHTML = '';
 
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+                if(n === 0) return;
+                const slice = 360 / n;
+                let conic = '';
+                labelDiv.innerHTML = '';
+>>>>>>> feature/App_DB-LYS
                 for (let i = 0; i < n; i++) {
                     conic += `${colorPalette[i % colorPalette.length]} ${i * slice}deg ${(i + 1) * slice}deg,`;
                     const lbl = document.createElement('div');
@@ -810,6 +1002,7 @@
                     lbl.style.position = 'absolute';
                     lbl.style.left = '50%';
                     lbl.style.top = '50%';
+<<<<<<< HEAD
 <<<<<<< HEAD
                     const angle = i * slice + slice / 2;
                     lbl.style.transform = `translate(-50%,-50%) rotate(${angle}deg) translateY(-110px) rotate(${-angle}deg)`;
@@ -819,12 +1012,19 @@
 =======
                     lbl.style.width = '120px';
                     lbl.style.textAlign = 'center';
+=======
+>>>>>>> feature/App_DB-LYS
                     const angle = i * slice + slice / 2;
-                    lbl.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-120px) rotate(${-angle}deg)`;
+                    lbl.style.transform = `translate(-50%,-50%) rotate(${angle}deg) translateY(-110px) rotate(${-angle}deg)`;
                     lbl.style.fontWeight = '900';
+<<<<<<< HEAD
                     lbl.style.color = '#333';
                     lbl.style.fontSize = '16px';
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+                    lbl.style.color = '#fff';
+                    lbl.style.textShadow = '0 1px 4px rgba(0,0,0,0.5)';
+>>>>>>> feature/App_DB-LYS
                     labelDiv.appendChild(lbl);
                 }
                 wheel.style.background = `conic-gradient(${conic.slice(0, -1)})`;
@@ -837,28 +1037,37 @@
 
             function nextTurn() {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> feature/App_DB-LYS
                 const winnerBanner = document.getElementById('winnerBanner');
                 const wheel = document.getElementById('wheel');
                 const nameLabels = document.getElementById('nameLabels');
 
+<<<<<<< HEAD
                 if (remainingNames.length === 1) {
                     winnersOrder.push(remainingNames[0]);
                     updateResult();
                     winnerBanner.innerHTML = '🎊 모든 추첨 완료!';
 =======
+=======
+>>>>>>> feature/App_DB-LYS
                 if (remainingNames.length === 1) {
-                    const lastOne = remainingNames[0];
-                    winnersOrder.push(lastOne);
-                    remainingNames = [];
+                    winnersOrder.push(remainingNames[0]);
                     updateResult();
+<<<<<<< HEAD
                     document.getElementById('winnerBanner').innerHTML = '🎊 모든 추첨이 완료되었습니다!';
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+                    winnerBanner.innerHTML = '🎊 모든 추첨 완료!';
+>>>>>>> feature/App_DB-LYS
                     return;
                 }
                 drawWheel();
                 const n = remainingNames.length;
                 const slice = 360 / n;
                 const winIdx = Math.floor(Math.random() * n);
+<<<<<<< HEAD
 <<<<<<< HEAD
                 const target = 360 - (winIdx * slice + slice / 2);
                 
@@ -878,24 +1087,40 @@
                 labelDiv.style.transform = `rotate(${totalAngle}deg)`;
                 document.getElementById('winnerBanner').innerHTML = `🎡 ${winnersOrder.length + 1}등 추첨 중...`;
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+                const target = 360 - (winIdx * slice + slice / 2);
+                
+                totalAngle += 1440 + target - (totalAngle % 360);
+                wheel.style.transform = `rotate(${totalAngle}deg)`;
+                nameLabels.style.transform = `rotate(${totalAngle}deg)`;
+                winnerBanner.innerHTML = `🎡 ${winnersOrder.length + 1}등 추첨 중...`;
+
+>>>>>>> feature/App_DB-LYS
                 setTimeout(() => {
                     const winner = remainingNames[winIdx];
                     winnersOrder.push(winner);
                     remainingNames.splice(winIdx, 1);
                     updateResult();
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> feature/App_DB-LYS
                     winnerBanner.innerHTML = `📢 ${winner}님 당첨! (${winnersOrder.length}등)`;
                     setTimeout(() => {
                         if (remainingNames.length > 0) nextTurn();
                     }, 1500);
+<<<<<<< HEAD
 =======
                     document.getElementById('winnerBanner').innerHTML = `📢 <strong>${winner}</strong>님 당첨! (${winnersOrder.length}등)`;
                     setTimeout(() => { if (remainingNames.length > 0) nextTurn(); }, 1500);
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+>>>>>>> feature/App_DB-LYS
                 }, 3200);
             }
 
             function updateResult() {
+<<<<<<< HEAD
 <<<<<<< HEAD
                 const resultBody = document.getElementById('resultBody');
                 let html = '';
@@ -925,17 +1150,38 @@
             });
 =======
                 const tbody = document.getElementById('resultBody');
+=======
+                const resultBody = document.getElementById('resultBody');
+>>>>>>> feature/App_DB-LYS
                 let html = '';
                 for (let i = 0; i < winnersOrder.length; i++) {
                     html += `<tr class="${i === winnersOrder.length - 1 ? 'current-row' : ''}">
-                <td>${i + 1}등</td>
-                <td>${winnersOrder[i]}</td>
-                <td>${calculatedPrizes[i].toLocaleString()}원</td>
-            </tr>`;
+                        <td>${i + 1}등</td>
+                        <td>${winnersOrder[i]}</td>
+                        <td>${calculatedPrizes[i].toLocaleString()}원</td>
+                    </tr>`;
                 }
-                tbody.innerHTML = html;
+                resultBody.innerHTML = html;
             }
+<<<<<<< HEAD
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+
+            // --- 로그인 상태 연동 로직 ---
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const headerRightArea = document.getElementById('headerRightArea');
+                if (nickname && headerRightArea) {
+                    let avatarText = nickname.slice(0, 2);
+                    headerRightArea.innerHTML = `
+                        <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
+                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
+                    `;
+                    getGPSLocation();
+                }
+            });
+>>>>>>> feature/App_DB-LYS
         </script>
     </body>
 </html>

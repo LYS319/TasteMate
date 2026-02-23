@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="ko">
     <head>
+            {% if settings and settings.KAKAO_JAVAS_API_KEY %}
+            <script src="https://dapi.kakao.com/v2/maps/sdk.js?autoload=true&appkey={{ settings.KAKAO_JAVAS_API_KEY }}"></script>
+            {% endif %}
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>상세보기</title>
@@ -108,9 +111,15 @@
             <div id="post-title" class="post-title">게시글 불러오는 중...</div>
             <div style="font-size: 0.95rem; color: #666; margin-bottom: 20px; font-weight: bold" id="post-date"></div>
             <div id="post-content" class="post-content"></div>
-            <div id="post-image-area"></div>
-            <div id="post-action-btns" style="display: flex; gap: 8px; margin-bottom: 18px"></div>
 
+            <div id="post-image-area"></div>
+                <!-- 위치/지도 영역 -->
+                <div id="post-location-area" style="margin-bottom: 18px"></div>
+                <div id="post-map-area" style="width: 100%; height: 300px; display: none; margin-bottom: 18px; border-radius: 8px; overflow: hidden;"></div>
+            <!-- 위치/지도 영역 추가 -->
+            <div id="post-location-area" style="margin-bottom: 18px"></div>
+            <div id="post-map-area" style="width: 100%; height: 300px; display: none; margin-bottom: 18px; border-radius: 8px; overflow: hidden;"></div>
+            <div id="post-action-btns" style="display: flex; gap: 8px; margin-bottom: 18px"></div>
             <div style="margin-bottom: 18px">
                 <button
                     id="likeBtn"
@@ -150,6 +159,7 @@
             const pathParts = window.location.pathname.split('/');
             const postId = pathParts[pathParts.length - 1];
 
+
             async function loadPostDetail() {
                 try {
                     const res = await fetch(`/api/posts/detail/${postId}`);
@@ -165,7 +175,80 @@
                     if (data.image_url) {
                         imgArea.innerHTML = `<img src="${data.image_url}" alt="게시글 이미지" style="max-width:100%;margin-bottom:18px;border-radius:8px;box-shadow:0 2px 12px rgba(220,38,38,0.13);" />`;
                     }
+                    // 위치/지도 표시
+                    const locArea = document.getElementById('post-location-area');
+                    const mapArea = document.getElementById('post-map-area');
+                    if (data.lat && data.lon) {
+                        let placeNameHtml = '';
+                        if (data.place_name) {
+                            placeNameHtml = `<div style="font-weight:bold;font-size:1.08rem;margin-bottom:2px;color:#222;">🏪 ${data.place_name}</div>`;
+                        }
+                        locArea.innerHTML = `${placeNameHtml}<span style="font-weight:bold;color:#b91c1c;">📍 등록 위치:</span> <span id="post-address">(주소 불러오는 중...)</span>`;
+                        mapArea.style.display = 'block';
+                        fetch(`/api/reverse-geocode?lat=${data.lat}&lon=${data.lon}`)
+                            .then((r) => r.json())
+                            .then((addrData) => {
+                                let address = addrData.address || null;
+                                document.getElementById('post-address').innerText = address || '주소 정보 없음';
+                                showKakaoMap(data.lat, data.lon, data.place_name || address || '등록 위치');
+                            })
+                            .catch(() => {
+                                document.getElementById('post-address').innerText = '주소 정보 없음';
+                                showKakaoMap(data.lat, data.lon, data.place_name || '등록 위치');
+                            });
+                    } else {
+                        locArea.innerHTML = '<span style="color:#888;">등록된 위치 없음</span>';
+                        mapArea.style.display = 'none';
+                    }
+                    // 위치/지도 표시
+                    const locArea = document.getElementById('post-location-area');
+                    const mapArea = document.getElementById('post-map-area');
+                    if (data.lat && data.lon) {
+                        let placeNameHtml = '';
+                        if (data.place_name) {
+                            placeNameHtml = `<div style="font-weight:bold;font-size:1.08rem;margin-bottom:2px;color:#222;">🏪 ${data.place_name}</div>`;
+                        }
+                        locArea.innerHTML = `${placeNameHtml}<span style="font-weight:bold;color:#b91c1c;">📍 등록 위치:</span> <span id="post-address">(주소 불러오는 중...)</span>`;
+                        mapArea.style.display = 'block';
+                        fetch(`/api/reverse-geocode?lat=${data.lat}&lon=${data.lon}`)
+                            .then((r) => r.json())
+                            .then((addrData) => {
+                                let address = addrData.address || null;
+                                document.getElementById('post-address').innerText = address || '주소 정보 없음';
+                                showKakaoMap(data.lat, data.lon, data.place_name || address || '등록 위치');
+                            })
+                            .catch(() => {
+                                document.getElementById('post-address').innerText = '주소 정보 없음';
+                                showKakaoMap(data.lat, data.lon, data.place_name || '등록 위치');
+                            });
+                    } else {
+                        locArea.innerHTML = '<span style="color:#888;">등록된 위치 없음</span>';
+                        mapArea.style.display = 'none';
+                    }
                     // 수정/삭제 버튼 노출 제어
+                    // KakaoMap 표시 함수 (지도 API)
+                    function showKakaoMap(lat, lon, infoText) {
+                        if (!window.kakao || !window.kakao.maps) {
+                            setTimeout(() => showKakaoMap(lat, lon, infoText), 200);
+                            return;
+                        }
+                        const container = document.getElementById('post-map-area');
+                        container.innerHTML = '';
+                        const mapOption = {
+                            center: new kakao.maps.LatLng(lat, lon),
+                            level: 3,
+                        };
+                        const map = new kakao.maps.Map(container, mapOption);
+                        const marker = new kakao.maps.Marker({ position: map.getCenter() });
+                        marker.setMap(map);
+                        const iwContent = `<div style="padding:6px 10px;font-size:0.95rem;">${infoText || '등록 위치'}</div>`;
+                        const infowindow = new kakao.maps.InfoWindow({ content: iwContent });
+                        infowindow.open(map, marker);
+                        setTimeout(() => { map.relayout && map.relayout(); }, 300);
+                    }
+
+                    // 환경설정에서 카카오맵 API키를 window에 노출 (템플릿 하단에 추가)
+                    window.KAKAO_MAP_APP_KEY = "{{ settings.KAKAO_MAP_APP_KEY if settings and settings.KAKAO_MAP_APP_KEY else '' }}";
                     const userNickname = localStorage.getItem('nickname');
                     const actionBtns = document.getElementById('post-action-btns');
                     if (userNickname && userNickname === data.author) {
@@ -209,7 +292,6 @@
                                 likeCount = data.like_count;
                             }
                             document.getElementById('likeCount').innerText = likeCount;
-                            // 좋아요 상태 확인
                             if (userId) {
                                 const checkRes = await fetch(`/api/posts/${postId}/is_liked?user_id=${userId}`);
                                 if (checkRes.ok) {
@@ -224,24 +306,45 @@
                             document.getElementById('likeIcon').innerText = liked ? '❤️' : '♡';
                         } catch {}
                     }
-
                     fetchLikeCount();
-                    const commentsHtml = data.comments
-                        .map(
-                            (c) => `
+                    const commentsHtml = (data.comments || []).map(
+                        (c) => `
                         <li>
                             <div style="font-size: 0.85rem; color: #dc2626; font-weight: bold; margin-bottom: 4px;">👤 ${c.author} <span style="color:#aaa; font-weight:normal;">| ${c.date}</span></div>
                             <div>${c.content}</div>
                         </li>
                     `,
-                        )
-                        .join('');
+                    ).join('');
                     document.getElementById('comment-list').innerHTML =
                         commentsHtml || '<li style="text-align:center; color:#888;">첫 댓글을 남겨보세요!</li>';
                 } catch (err) {
                     document.getElementById('post-title').innerText = '데이터를 불러올 수 없습니다.';
                 }
             }
+
+            // KakaoMap 표시 함수 (지도 API)
+            function showKakaoMap(lat, lon, infoText) {
+                if (!window.kakao || !window.kakao.maps) {
+                    setTimeout(() => showKakaoMap(lat, lon, infoText), 200);
+                    return;
+                }
+                const container = document.getElementById('post-map-area');
+                container.innerHTML = '';
+                const mapOption = {
+                    center: new kakao.maps.LatLng(lat, lon),
+                    level: 3,
+                };
+                const map = new kakao.maps.Map(container, mapOption);
+                const marker = new kakao.maps.Marker({ position: map.getCenter() });
+                marker.setMap(map);
+                const iwContent = `<div style="padding:6px 10px;font-size:0.95rem;">${infoText || '등록 위치'}</div>`;
+                const infowindow = new kakao.maps.InfoWindow({ content: iwContent });
+                infowindow.open(map, marker);
+                setTimeout(() => { map.relayout && map.relayout(); }, 300);
+            }
+
+            // 환경설정에서 카카오맵 API키를 window에 노출 (백엔드에서 템플릿에 삽입 필요)
+            window.KAKAO_MAP_APP_KEY = "{{ settings.KAKAO_MAP_APP_KEY if settings and settings.KAKAO_MAP_APP_KEY else '' }}";
 
             // 좋아요 버튼 클릭 이벤트
             document.getElementById('likeBtn').onclick = async () => {

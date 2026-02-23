@@ -1,4 +1,10 @@
-from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile, Body
+
+
+import requests
+import logging
+from pydantic import BaseModel
+from typing import List
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile, Body, Query
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
 from starlette.responses import JSONResponse
@@ -13,7 +19,13 @@ import os
 from google import genai
 =======
 import google.generativeai as genai
+<<<<<<< HEAD
 >>>>>>> 0e8fdff87bc4ee2c75553a61617be1c5dc771573
+=======
+
+logging.basicConfig(level=logging.INFO)
+
+>>>>>>> feature/App_DB-LYS
 from Database import Like, User, Post, Comment, get_db
 from config import settings
 from game_ideal_router import router as ideal_router
@@ -45,6 +57,37 @@ def etc_page(request: Request):
 # --- Gemini AI 챗봇 엔드포인트 ---
 class ChatRequest(BaseModel):
     message: str
+
+# --- 카테고리별 인기 장소 API ---
+from sqlalchemy import desc
+
+@app.post("/api/top-places")
+def top_places_by_category(db: Session = Depends(get_db)):
+    # 카테고리별 place_name, place_address, post count 집계
+    categories = db.query(Post.category).distinct().all()
+    result = {}
+    for (category,) in categories:
+        # place_name이 null이 아닌 것만 집계
+        rows = (
+            db.query(
+                Post.place_name,
+                Post.place_address,
+                func.count(Post.id).label("post_count")
+            )
+            .filter(Post.category == category, Post.place_name != None)
+            .group_by(Post.place_name, Post.place_address)
+            .order_by(desc("post_count"))
+            .limit(5)
+            .all()
+        )
+        result[category] = [
+            {
+                "place_name": r.place_name,
+                "place_address": r.place_address,
+                "post_count": r.post_count
+            } for r in rows
+        ]
+    return result
 
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
@@ -262,10 +305,17 @@ def get_posts_latest(category: str, db: Session = Depends(get_db)):
 @app.get("/api/posts/{category}/popular")
 def get_posts_popular(category: str, db: Session = Depends(get_db)):
     from Database import Like
-    posts = db.query(Post).filter(Post.category == category.upper()) \
+    # 1. 공지글 먼저
+    notice_posts = db.query(Post).filter(Post.category == category.upper(), Post.is_notice == 1) \
         .outerjoin(Post.likes) \
         .group_by(Post.id) \
         .order_by(func.count(Like.id).desc(), Post.created_at.desc()).all()
+    # 2. 일반글
+    normal_posts = db.query(Post).filter(Post.category == category.upper(), Post.is_notice == 0) \
+        .outerjoin(Post.likes) \
+        .group_by(Post.id) \
+        .order_by(func.count(Like.id).desc(), Post.created_at.desc()).all()
+    posts = notice_posts + normal_posts
     return [
         {
             "id": post.id,
@@ -274,7 +324,8 @@ def get_posts_popular(category: str, db: Session = Depends(get_db)):
             "nickname": post.owner.nickname if post.owner else "",
             "created_at": post.created_at,
             "comment_count": len(post.comments),
-            "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0
+            "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0,
+            "is_notice": getattr(post, 'is_notice', 0)
         }
         for post in posts
     ]
@@ -346,6 +397,13 @@ def create_post(
     content: str = Form(...),
     user_id: int = Form(...),
     is_notice: int = Form(0),
+    lat: float = Form(None),
+    lon: float = Form(None),
+    place_name: str = Form(None),
+    place_address: str = Form(None),
+    place_phone: str = Form(None),
+    place_category: str = Form(None),
+    place_url: str = Form(None),
     image: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
@@ -362,7 +420,20 @@ def create_post(
         with open(file_location, "wb") as f:
             f.write(image.file.read())
         # image_url = f"/static/uploads/{image.filename}"
-    new_post = Post(category=category.upper(), title=title, content=content, owner=user, is_notice=is_notice)
+    new_post = Post(
+        category=category.upper(),
+        title=title,
+        content=content,
+        owner=user,
+        is_notice=is_notice,
+        lat=lat,
+        lon=lon,
+        place_name=place_name,
+        place_address=place_address,
+        place_phone=place_phone,
+        place_category=place_category,
+        place_url=place_url
+    )
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
@@ -391,13 +462,15 @@ def category_work_page(request: Request):
 def category_etc_page(request: Request):
     return templates.TemplateResponse("ETC.html", {"request": request})
 
+
 @app.get("/community/write", response_class=HTMLResponse)
 def community_write_page(request: Request):
-    return templates.TemplateResponse("WRITE.html", {"request": request})
+    return templates.TemplateResponse("WRITE.html", {"request": request, "settings": settings})
+
 
 @app.get("/write", response_class=HTMLResponse)
 def write_page(request: Request):
-    return templates.TemplateResponse("WRITE.html", {"request": request})
+    return templates.TemplateResponse("WRITE.html", {"request": request, "settings": settings})
 
 @app.get("/aichat", response_class=HTMLResponse)
 def aichat_page(request: Request):
@@ -405,7 +478,7 @@ def aichat_page(request: Request):
 
 @app.get("/api/posts/{category}")
 def get_posts_by_category(category: str, db: Session = Depends(get_db)):
-    posts = db.query(Post).filter(Post.category == category.upper()).all()
+    posts = db.query(Post).filter(Post.category == category.upper()).order_by(Post.is_notice.desc(), Post.created_at.desc()).all()
     return [
         {
             "id": post.id,
@@ -425,7 +498,7 @@ def main_page(request: Request):
 
 @app.get("/post_detail/{post_id}", response_class=HTMLResponse)
 def post_detail_page(request: Request, post_id: int, db: Session = Depends(get_db)):
-    return templates.TemplateResponse("post_detail.html", {"request": request})
+    return templates.TemplateResponse("post_detail.html", {"request": request, "settings": settings})
 
 @app.get("/api/posts/detail/{post_id}")
 def api_post_detail(post_id: int, db: Session = Depends(get_db)):
@@ -441,6 +514,9 @@ def api_post_detail(post_id: int, db: Session = Depends(get_db)):
         "user_id": post.user_id,
         "category": post.category,
         "is_notice": getattr(post, 'is_notice', 0),
+        "lat": getattr(post, 'lat', None),
+        "lon": getattr(post, 'lon', None),
+        "place_name": getattr(post, 'place_name', None),
         "date": post.created_at.strftime("%Y-%m-%d %H:%M"),
         # "image_url": getattr(post, 'image_url', None),
         "comments": [
@@ -514,10 +590,17 @@ def is_post_liked(post_id: int, user_id: int, db: Session = Depends(get_db)):
 # 댓글순 게시글 리스트 (댓글 많은 순)
 @app.get("/api/posts/{category}/comment")
 def get_posts_comment(category: str, db: Session = Depends(get_db)):
-    posts = db.query(Post).filter(Post.category == category.upper()) \
+    # 1. 공지글 먼저
+    notice_posts = db.query(Post).filter(Post.category == category.upper(), Post.is_notice == 1) \
         .outerjoin(Post.comments) \
         .group_by(Post.id) \
         .order_by(func.count(Comment.id).desc(), Post.created_at.desc()).all()
+    # 2. 일반글
+    normal_posts = db.query(Post).filter(Post.category == category.upper(), Post.is_notice == 0) \
+        .outerjoin(Post.comments) \
+        .group_by(Post.id) \
+        .order_by(func.count(Comment.id).desc(), Post.created_at.desc()).all()
+    posts = notice_posts + normal_posts
     return [
         {
             "id": post.id,
@@ -526,7 +609,8 @@ def get_posts_comment(category: str, db: Session = Depends(get_db)):
             "nickname": post.owner.nickname if post.owner else "",
             "created_at": post.created_at,
             "comment_count": len(post.comments),
-            "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0
+            "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0,
+            "is_notice": getattr(post, 'is_notice', 0)
         }
         for post in posts
     ]
@@ -720,3 +804,32 @@ def search(request: Request, db: Session = Depends(get_db)):
         "search.html",
         {"request": request, "keyword": keyword, "posts": post_list}
     )
+
+from fastapi import Query
+
+@app.get("/api/reverse-geocode")
+def reverse_geocode(lat: float = Query(...), lon: float = Query(...)):
+    # Kakao REST API로 역지오코딩
+    KAKAO_REST_API_KEY = settings.KAKAO_REST_API_KEY
+    url = "https://dapi.kakao.com/v2/local/geo/coord2address.json"
+    headers = {"Authorization": f"KakaoAK {KAKAO_REST_API_KEY}"}
+    params = {"x": lon, "y": lat}
+    try:
+        resp = requests.get(url, headers=headers, params=params, timeout=5)
+        resp.raise_for_status()
+        data = resp.json()
+        logging.info(f'Kakao API 응답: {data}')
+        # 주소 정보 파싱
+        if data.get("documents"):
+            doc = data["documents"][0]
+            address = doc.get("address", {})
+            road_address = doc.get("road_address", {})
+            result = {
+                "address": road_address.get("address_name") or address.get("address_name") or None,
+                "building_name": road_address.get("building_name") or None
+            }
+            return result
+        return {"address": None}
+    except Exception as e:
+        logging.error(f'Kakao API 에러: {e}')
+        return {"error": str(e)}
