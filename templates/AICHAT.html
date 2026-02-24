@@ -309,8 +309,21 @@
                                     `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
                                 );
                                 const data = await res.json();
-                                const addr = data.address.city || data.address.province || '위치 확인됨';
-                                locSpan.innerText = `📍 ${addr}`;
+                                // 시(city)와 구(district) 조합
+                                const city = data.address.city || data.address.province || '';
+                                const district =
+                                    data.address.suburb ||
+                                    data.address.town ||
+                                    data.address.borough ||
+                                    data.address.county ||
+                                    '';
+                                let locationText = '위치 확인됨';
+                                if (city && district) {
+                                    locationText = `${city} ${district}`;
+                                } else if (city) {
+                                    locationText = city;
+                                }
+                                locSpan.innerText = `📍 ${locationText}`;
                             } catch (e) {
                                 locSpan.innerText = '📍 위치 확인됨';
                             }
