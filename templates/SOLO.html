@@ -317,14 +317,17 @@
             // 상단바 로그인 상태 유지 스크립트
             document.addEventListener('DOMContentLoaded', () => {
                 const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
                 const headerRightArea = document.getElementById('headerRightArea');
 
                 if (nickname && headerRightArea) {
                     const avatarText = nickname.slice(0, 2);
+                    let adminBtn = isAdmin === '1' ? `<button class=\"login-btn\" onclick=\"location.href='/admin'\" style=\"background: #222; margin-left:8px;\">관리자 기능</button>` : '';
                     headerRightArea.innerHTML = `
-                        <span class="nickname-avatar" onclick="location.href='/mypage'">${avatarText}</span>
-                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
-                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
+                        <span class=\"nickname-avatar\" onclick=\"location.href='/mypage'\">${avatarText}</span>
+                        ${adminBtn}
+                        <button class=\"login-btn\" onclick=\"logout()\" style=\"background: #666;\">로그아웃</button>
+                        <span class=\"current-location\" id=\"gps-location\" onclick=\"getGPSLocation()\">📍 내 위치</span>
                     `;
                     getGPSLocation();
                 }

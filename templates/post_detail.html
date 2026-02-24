@@ -96,8 +96,9 @@
     </head>
     <body>
         <script>
-        // 환경설정에서 카카오맵 API키를 window에 노출 (템플릿 상단에 추가)
-        window.KAKAO_MAP_APP_KEY = "{{ settings.KAKAO_JAVAS_API_KEY if settings and settings.KAKAO_JAVAS_API_KEY else '' }}";
+            // 환경설정에서 카카오맵 API키를 window에 노출 (템플릿 상단에 추가)
+            window.KAKAO_MAP_APP_KEY =
+                "{{ settings.KAKAO_JAVAS_API_KEY if settings and settings.KAKAO_JAVAS_API_KEY else '' }}";
         </script>
         <header class="header">
             <div class="header-left">
@@ -203,14 +204,16 @@
                             script.id = 'kakaoMapScript';
                             script.src = `https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${kakaoAppKey}&libraries=services`;
                             script.onload = callback;
-                            script.onerror = function() {
+                            script.onerror = function () {
                                 const mapContainer = document.getElementById('map-area');
-                                if (mapContainer) mapContainer.innerHTML = '<div style="color:#b91c1c; padding:12px;">지도 API 로드 실패 (appkey 확인 필요)</div>';
+                                if (mapContainer)
+                                    mapContainer.innerHTML =
+                                        '<div style="color:#b91c1c; padding:12px;">지도 API 로드 실패 (appkey 확인 필요)</div>';
                             };
                             document.head.appendChild(script);
                         }
                         loadKakaoMapScript(() => {
-                            kakao.maps.load(function() {
+                            kakao.maps.load(function () {
                                 const mapContainer = document.getElementById('map-area');
                                 if (!mapContainer) {
                                     console.warn('map-area div가 존재하지 않습니다.');
@@ -220,7 +223,8 @@
                                     const lat = parseFloat(data.lat);
                                     const lon = parseFloat(data.lon);
                                     if (isNaN(lat) || isNaN(lon)) {
-                                        mapContainer.innerHTML = '<div style="color:#b91c1c; padding:12px;">좌표 정보가 올바르지 않습니다.</div>';
+                                        mapContainer.innerHTML =
+                                            '<div style="color:#b91c1c; padding:12px;">좌표 정보가 올바르지 않습니다.</div>';
                                         return;
                                     }
                                     const mapOption = {
@@ -233,7 +237,8 @@
                                     });
                                     marker.setMap(map);
                                 } catch (err) {
-                                    mapContainer.innerHTML = '<div style="color:#b91c1c; padding:12px;">지도를 표시할 수 없습니다.</div>';
+                                    mapContainer.innerHTML =
+                                        '<div style="color:#b91c1c; padding:12px;">지도를 표시할 수 없습니다.</div>';
                                     console.error('지도 오류:', err);
                                 }
                             });

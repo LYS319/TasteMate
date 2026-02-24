@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko">
     <head>
-            <script src="https://dapi.kakao.com/v2/maps/sdk.js?autoload=true&appkey=404ef7ad32359a5bae46369ef85f2012&libraries=services"></script>
+        <script src="https://dapi.kakao.com/v2/maps/sdk.js?autoload=true&appkey=404ef7ad32359a5bae46369ef85f2012&libraries=services"></script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 글쓰기</title>
@@ -448,23 +448,23 @@
 
         <script>
             // 지도에서 위치 선택 + 장소 검색 기능 (TasteMate 스타일)
-                    document.addEventListener('DOMContentLoaded', () => {
-                        function tryInitMap() {
-                            if (window.kakao && window.kakao.maps && typeof window.kakao.maps.LatLng === 'function') {
-                                initWriteMap();
-                            } else {
-                                setTimeout(tryInitMap, 100);
-                            }
-                        }
-                        if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
-                            tryInitMap();
-                        } else {
-                            const script = document.createElement('script');
-                            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?autoload=true&appkey=${window.KAKAO_MAP_APP_KEY}&libraries=services`;
-                            script.onload = tryInitMap;
-                            document.head.appendChild(script);
-                        }
-                    });
+            document.addEventListener('DOMContentLoaded', () => {
+                function tryInitMap() {
+                    if (window.kakao && window.kakao.maps && typeof window.kakao.maps.LatLng === 'function') {
+                        initWriteMap();
+                    } else {
+                        setTimeout(tryInitMap, 100);
+                    }
+                }
+                if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
+                    tryInitMap();
+                } else {
+                    const script = document.createElement('script');
+                    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?autoload=true&appkey=${window.KAKAO_MAP_APP_KEY}&libraries=services`;
+                    script.onload = tryInitMap;
+                    document.head.appendChild(script);
+                }
+            });
             function initWriteMap() {
                 const container = document.getElementById('write-map-area');
                 if (!container) return;
@@ -611,7 +611,7 @@
                 try {
                     const res = await fetch('/api/posts', {
                         method: 'POST',
-                        body: formData
+                        body: formData,
                     });
                     const data = await res.json();
                     if (res.ok && data.redirect) {
