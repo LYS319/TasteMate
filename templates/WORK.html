@@ -319,7 +319,10 @@
 
                 if (nickname && headerRightArea) {
                     const avatarText = nickname.slice(0, 2);
-                    let adminBtn = isAdmin === '1' ? `<button class=\"login-btn\" onclick=\"location.href='/admin'\" style=\"background: #222; margin-left:8px;\">관리자 기능</button>` : '';
+                    let adminBtn =
+                        isAdmin === '1'
+                            ? `<button class=\"login-btn\" onclick=\"location.href='/admin'\" style=\"background: #222; margin-left:8px;\">관리자 기능</button>`
+                            : '';
                     headerRightArea.innerHTML = `
                         <span class=\"nickname-avatar\" onclick=\"location.href='/mypage'\">${avatarText}</span>
                         ${adminBtn}
