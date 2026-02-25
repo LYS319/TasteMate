@@ -371,7 +371,7 @@
                         async (pos) => {
                             try {
                                 const res = await fetch(
-                                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                                    `/api/reverse_geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
                                 );
                                 const data = await res.json();
                                 const addr = data.address.city || data.address.province || '위치 확인됨';

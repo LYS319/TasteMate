@@ -612,7 +612,7 @@
                     navigator.geolocation.getCurrentPosition(async (pos) => {
                         try {
                             const res = await fetch(
-                                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                                `/api/reverse_geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
                             );
                             const data = await res.json();
                             // 시(city)와 구(district) 조합
@@ -652,7 +652,7 @@
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(async (pos) => {
                         const res = await fetch(
-                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                            `/api/reverse_geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
                         );
                         const data = await res.json();
                         const neighborhood = data.address.suburb || data.address.neighbourhood || '내 주변';
@@ -741,7 +741,7 @@
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(async (pos) => {
                         const res = await fetch(
-                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                            `/api/reverse_geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
                         );
                         const data = await res.json();
                         const neighborhood = data.address.suburb || data.address.neighbourhood || '내 주변';
