@@ -245,7 +245,7 @@
             }
 
             .card-title {
-                font-size: 1.18rem;
+                font-size: 1.12rem;
                 font-weight: 800;
                 color: #222;
                 line-height: 1.4;
@@ -415,37 +415,64 @@
             </div>
 
             <div class="community-container" style="margin-bottom: 24px">
-                <div class="community-card">
-                    <div class="card-title">🍽️ 오늘의 추천메뉴 <span class="badge badge-yellow">HOT</span></div>
-                    <div class="card-info">
-                        <div class="card-count" id="count-recommend">0개</div>
-                        <div class="card-recent" id="recent-recommend">데이터가 없습니다.</div>
+                <div
+                    class="community-card"
+                    id="realtime-recommend-card"
+                    style="cursor: pointer"
+                    onclick="handleRealtimeRecommendClick()"
+                >
+                    <div class="card-title">
+                        🕒 <span id="time-title">추천 정보 로딩 중...</span>
+                        <span class="badge badge-yellow">LIVE</span>
                     </div>
-                    <div class="card-tag">#추천메뉴</div>
+                    <div class="card-info">
+                        <div class="card-count" id="count-recommend" style="color: #dc2626; font-weight: 800">
+                            데이터 로딩 중...
+                        </div>
+                        <div class="card-recent" id="recent-recommend">내 주변 맛집을 찾는 중입니다.</div>
+                    </div>
+                    <div class="card-tag" id="tag-recommend">#실시간추천</div>
                 </div>
-                <div class="community-card">
-                    <div class="card-title">🍚 강남 혼밥 맛집 <span class="badge badge-red">인기</span></div>
+
+                <div
+                    class="community-card"
+                    id="theme-recommend-card"
+                    style="cursor: pointer"
+                    onclick="handleThemeRecommendClick()"
+                >
+                    <div class="card-title">✨ <span id="theme-title">오늘의 테마</span></div>
                     <div class="card-info">
-                        <div class="card-count" id="count-gangnam">0개</div>
-                        <div class="card-recent" id="recent-gangnam">데이터가 없습니다.</div>
+                        <div class="card-count" id="theme-subtitle" style="color: #dc2626; font-weight: 800">
+                            분석 중...
+                        </div>
+                        <div class="card-recent" id="theme-desc">가장 잘 어울리는 장소</div>
                     </div>
-                    <div class="card-tag">#강남혼밥</div>
+                    <div class="card-tag" id="theme-tag">#테마맛집</div>
                 </div>
-                <div class="community-card">
-                    <div class="card-title">🍜 라멘덕후모임 <span class="badge badge-red">NEW</span></div>
+
+                <div
+                    class="community-card"
+                    id="worldcup-card"
+                    style="cursor: pointer"
+                    onclick="location.href = '/game/worldcup'"
+                >
+                    <div class="card-title">🏆 최애 메뉴 월드컵 <span class="badge badge-yellow">HOT</span></div>
                     <div class="card-info">
-                        <div class="card-count" id="count-ramen">0개</div>
-                        <div class="card-recent" id="recent-ramen">데이터가 없습니다.</div>
+                        <div class="card-count" style="color: #dc2626; font-weight: 800">당신의 소울푸드는?</div>
+                        <div class="card-recent">지금 1,402명이 결승전 진행 중!</div>
                     </div>
-                    <div class="card-tag">#라멘덕후</div>
+                    <div class="card-tag">#이상형월드컵</div>
                 </div>
-                <div class="community-card">
-                    <div class="card-title">🎲 근처 맛집 룰렛</div>
+
+                <div class="community-card" id="budget-recommend-card" style="cursor: pointer">
+                    <div class="card-title">💰 예산 맞춤 추천 <span class="badge badge-red">PRICE</span></div>
                     <div class="card-info">
-                        <div class="card-count" id="count-roulette">0개</div>
-                        <div class="card-recent" id="recent-roulette">데이터가 없습니다.</div>
+                        <div class="card-count" id="budget-title" style="color: #475569; font-weight: 800">
+                            오늘의 예산은?
+                        </div>
+                        <div class="card-recent" id="budget-desc">클릭하여 지갑 사정 맞춤 메뉴 보기</div>
                     </div>
-                    <div class="card-tag">#랜덤추천</div>
+                    <div class="card-tag">#가성비부터플렉스까지</div>
                 </div>
             </div>
 
@@ -486,107 +513,299 @@
         </main>
 
         <script>
-            function handleSearch() {
-                const searchInput = document.getElementById('mainSearchInput');
-                const query = searchInput.value.trim();
-                if (!query) {
-                    alert('검색어를 입력해주세요.');
-                    return;
+            // 카드 클릭 이벤트 함수
+            function handleRealtimeRecommendClick() {
+                const menu = document
+                    .getElementById('count-recommend')
+                    .innerText.replace(/'/g, '')
+                    .replace(/최고의/g, '')
+                    .trim();
+                if (menu && menu !== '데이터 로딩 중...') {
+                    window.location.href = `/search?keyword=${encodeURIComponent(menu)}`;
                 }
-                window.location.href = `/search?keyword=${encodeURIComponent(query)}`;
+            }
+            function handleThemeRecommendClick() {
+                const theme = document.getElementById('theme-subtitle').innerText;
+                if (theme && theme !== '분석 중...') {
+                    window.location.href = `/search?keyword=${encodeURIComponent(theme)}`;
+                }
             }
 
-            function logout() {
-                localStorage.clear();
-                alert('안전하게 로그아웃 되었습니다.');
-                window.location.href = '/main';
+            // [기능 4] 예산별 가성비 픽 메뉴 추천 로직 (검색 제외 인터렉션 버전)
+            function updateBudgetRecommendation() {
+                const budgetCard = document.getElementById('budget-recommend-card');
+                const budgetTitle = document.getElementById('budget-title');
+                const budgetDesc = document.getElementById('budget-desc');
+
+                const budgetOptions = [
+                    { emoji: '🪙', label: '5천원 초절약', text: '편의점·분식으로 가볍게 해결!' },
+                    { emoji: '💸', label: '1만원 가성비', text: '든든한 국밥이나 제육 어떠세요?' },
+                    { emoji: '💳', label: '3만원 기분전환', text: '파스타·초밥으로 기분 업!' },
+                    { emoji: '🍷', label: '5만원 특별한 날', text: '스테이크나 분위기 맛집 추천!' },
+                    { emoji: '💎', label: '10만원 프리미엄', text: '고급 한우나 코스요리 도전!' },
+                    { emoji: '👑', label: '20만원 럭셔리', text: '미슐랭 감성 레스토랑 가볼까?' },
+                    { emoji: '🏆', label: '30만원 플렉스', text: '오마카세 풀코스로 제대로 즐기자!' },
+                ];
+
+                let clickCount = 0;
+
+                budgetCard.onclick = () => {
+                    const option = budgetOptions[clickCount % budgetOptions.length];
+
+                    // 🔥 슬라이드 애니메이션 효과
+                    budgetCard.style.transition = 'none';
+                    budgetCard.style.transform = 'translateX(20px)';
+                    budgetCard.style.opacity = '0';
+
+                    setTimeout(() => {
+                        budgetTitle.innerText = `${option.emoji} ${option.label}`;
+                        budgetDesc.innerText = option.text;
+
+                        budgetCard.style.transition = 'all 0.2s ease';
+                        budgetCard.style.transform = 'translateX(0)';
+                        budgetCard.style.opacity = '1';
+
+                        // 기본 스타일 초기화
+                        budgetCard.style.borderColor = 'rgba(220, 38, 38, 0.08)';
+                        budgetCard.style.boxShadow = 'none';
+
+                        // 🏆 30만원 금색 효과
+                        if (option.label.includes('30만원')) {
+                            budgetCard.style.borderColor = 'gold';
+                            budgetCard.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.6)';
+                            budgetCard.style.transform = 'scale(1.03)';
+
+                            setTimeout(() => {
+                                budgetCard.style.transform = 'scale(1)';
+                            }, 200);
+                        }
+                    }, 50);
+
+                    clickCount++;
+                };
+            }
+
+            // 메뉴 데이터
+            const menuData = [
+                { display: '인생 파스타 맛집', search: '파스타' },
+                { display: '바삭한 돈카츠 전문점', search: '돈까스' },
+                { display: '깊은 맛 노포 국밥', search: '국밥' },
+                { display: '육즙 가득 수제버거', search: '수제버거' },
+                { display: '신선한 초밥', search: '초밥' },
+                { display: '든든한 제육볶음', search: '제육볶음' },
+                { display: '두툼한 삼겹살', search: '삼겹살' },
+                { display: '얼큰한 짬뽕', search: '짬뽕' },
+                { display: '부드러운 샤브샤브', search: '샤브샤브' },
+                { display: '중독적인 마라탕', search: '마라탕' },
+            ];
+
+            function handleSearch() {
+                const query = document.getElementById('mainSearchInput').value.trim();
+                if (!query) return;
+                window.location.href = `/search?keyword=${encodeURIComponent(query)}`;
             }
 
             function getGPSLocation() {
                 const locSpan = document.getElementById('gps-location');
                 if (!locSpan) return;
                 if (navigator.geolocation) {
-                    locSpan.innerText = '📍 위치 찾는 중...';
-                    navigator.geolocation.getCurrentPosition(
-                        async (pos) => {
-                            try {
-                                const res = await fetch(
-                                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
-                                );
-                                const data = await res.json();
-                                const addr = data.address.city || data.address.province || '위치 확인됨';
-                                locSpan.innerText = `📍 ${addr}`;
-                            } catch (e) {
-                                locSpan.innerText = '📍 위치 확인됨';
+                    navigator.geolocation.getCurrentPosition(async (pos) => {
+                        try {
+                            const res = await fetch(
+                                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                            );
+                            const data = await res.json();
+                            // 시(city)와 구(district) 조합
+                            const city = data.address.city || data.address.province || '';
+                            // 구(borough/county) 우선, 없으면 동(suburb/town)
+                            let district = '';
+                            if (data.address.borough) {
+                                district = data.address.borough;
+                            } else if (data.address.county) {
+                                district = data.address.county;
+                            } else if (data.address.city_district) {
+                                district = data.address.city_district;
+                            } else if (data.address.town) {
+                                district = data.address.town;
+                            } else if (data.address.suburb) {
+                                district = data.address.suburb;
                             }
-                        },
-                        () => {
-                            locSpan.innerText = '📍 위치 거부됨';
-                        },
-                    );
+                            let locationText = '위치 확인됨';
+                            if (city && district) {
+                                locationText = `${city} ${district}`;
+                            } else if (city) {
+                                locationText = city;
+                            }
+                            locSpan.innerText = `📍 ${locationText}`;
+                        } catch (e) {
+                            locSpan.innerText = '📍 위치 확인됨';
+                        }
+                    });
                 }
             }
 
-            function processTitle(title) {
-                return title && title.length > 20 ? title.substring(0, 20) + '...' : title;
+            async function updateRealtimeRecommendation() {
+                const titleEl = document.getElementById('time-title');
+                const menuEl = document.getElementById('count-recommend');
+                const recentEl = document.getElementById('recent-recommend');
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(async (pos) => {
+                        const res = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                        );
+                        const data = await res.json();
+                        const neighborhood = data.address.suburb || data.address.neighbourhood || '내 주변';
+
+                        const selected = menuData[Math.floor(Math.random() * menuData.length)];
+                        titleEl.innerText = `${neighborhood} 추천 메뉴`;
+                        menuEl.innerText = `'${selected.display}'`;
+                        recentEl.innerText = `${neighborhood} 근처 최고의 ${selected.search} 맛집`;
+
+                        document.getElementById('realtime-recommend-card').onclick = () => {
+                            window.open(
+                                `https://map.naver.com/v5/search/${encodeURIComponent(neighborhood + ' ' + selected.search)}`,
+                                '_blank',
+                            );
+                        };
+                    });
+                }
             }
 
-            // [핵심 수정] 실시간 데이터 업데이트 함수
+            async function updateThemeRecommendation() {
+                const themeTitle = document.getElementById('theme-title');
+                const themeSubtitle = document.getElementById('theme-subtitle');
+                const themeDesc = document.getElementById('theme-desc');
+                const themeTag = document.getElementById('theme-tag');
+
+                const now = new Date();
+                const hour = now.getHours();
+                const day = now.getDay();
+
+                let config = {
+                    title: '오늘의 테마',
+                    subtitle: '맛집 탐방',
+                    desc: '주변 맛집을 확인하세요',
+                    search: '맛집',
+                    tag: '#테마추천',
+                };
+
+                if (day === 0) {
+                    config = {
+                        title: '평화로운 일요일',
+                        subtitle: '여유로운 브런치',
+                        desc: '분위기 좋은 카페와 브런치',
+                        search: '브런치 카페',
+                        tag: '#일요일브런치',
+                    };
+                } else if ((day === 5 || day === 6) && hour >= 17) {
+                    config = {
+                        title: '신나는 불금/불토',
+                        subtitle: '분위기 끝판왕 맛집',
+                        desc: '데이트나 모임하기 좋은 곳',
+                        search: '분위기 맛집',
+                        tag: '#불금데이트',
+                    };
+                } else if (day >= 1 && day <= 5 && hour >= 11 && hour <= 15) {
+                    config = {
+                        title: '바쁜 평일 점심',
+                        subtitle: '빠르고 든든한 혼밥',
+                        desc: '직장인이 선호하는 식당',
+                        search: '혼밥 맛집',
+                        tag: '#직장인점심',
+                    };
+                } else if (hour >= 16 && hour <= 21) {
+                    const dinnerMenus = [
+                        '삼겹살',
+                        '파스타',
+                        '불고기',
+                        '치킨',
+                        '마라탕',
+                        '초밥',
+                        '돈카츠',
+                        '제육볶음',
+                        '수제버거',
+                        '짬뽕',
+                    ];
+                    const randomIdx = Math.floor(Math.random() * dinnerMenus.length);
+                    const dinnerMenu = dinnerMenus[randomIdx];
+                    config = {
+                        title: '고생한 하루 끝',
+                        subtitle: `맛있는 저녁 식사 (${dinnerMenu})`,
+                        desc: `든든하게 먹고 푹 쉬세요. 오늘은 '${dinnerMenu}' 어떠세요?`,
+                        search: dinnerMenu,
+                        tag: '#오늘의저녁',
+                    };
+                }
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(async (pos) => {
+                        const res = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                        );
+                        const data = await res.json();
+                        const neighborhood = data.address.suburb || data.address.neighbourhood || '내 주변';
+
+                        themeTitle.innerText = config.title;
+                        themeSubtitle.innerText = config.subtitle;
+                        themeDesc.innerText = `${neighborhood} ${config.desc}`;
+                        themeTag.innerText = config.tag;
+
+                        document.getElementById('theme-recommend-card').onclick = () => {
+                            window.open(
+                                `https://map.naver.com/v5/search/${encodeURIComponent(neighborhood + ' ' + config.search)}`,
+                                '_blank',
+                            );
+                        };
+                    });
+                }
+            }
+
             async function updateCounts() {
                 const categories = ['SOLO', 'DATE', 'WORK', 'ETC'];
-
                 for (const cat of categories) {
                     try {
                         const res = await fetch(`/api/posts/${cat}`);
                         if (res.ok) {
                             const posts = await res.json();
                             const lowCat = cat.toLowerCase();
-
-                            // 하단 메인 카드 업데이트
-                            const countEl = document.getElementById(`count-${lowCat}`);
-                            const recentEl = document.getElementById(`recent-${lowCat}`);
-
-                            if (countEl) countEl.innerText = `글 ${posts.length}개`;
-                            if (recentEl) {
-                                if (posts.length > 0) {
-                                    // posts[0].title을 사용하여 실제 제목 출력
-                                    recentEl.innerHTML = `최신 : ${processTitle(posts[0].title)}`;
-                                } else {
-                                    recentEl.innerText = '새로운 글이 없습니다.';
-                                }
-                            }
-
-                            // 상단 "강남 혼밥" 카드에 SOLO 데이터 연동
-                            if (cat === 'SOLO') {
-                                const gCount = document.getElementById('count-gangnam');
-                                const gRecent = document.getElementById('recent-gangnam');
-                                if (gCount) gCount.innerText = `글 ${posts.length}개`;
-                                if (gRecent && posts.length > 0) {
-                                    gRecent.innerHTML = `최신 : ${processTitle(posts[0].title)}`;
-                                }
+                            document.getElementById(`count-${lowCat}`).innerText = `글 ${posts.length}개`;
+                            if (posts.length > 0) {
+                                document.getElementById(`recent-${lowCat}`).innerText =
+                                    `최신 : ${posts[0].title.substring(0, 15)}...`;
+                            } else {
+                                document.getElementById(`recent-${lowCat}`).innerText = '최신 글 없음';
                             }
                         }
-                    } catch (e) {
-                        console.error(`${cat} 데이터 갱신 실패:`, e);
-                    }
+                    } catch (e) {}
                 }
             }
 
             document.addEventListener('DOMContentLoaded', () => {
                 const nickname = localStorage.getItem('nickname');
-                const headerRightArea = document.getElementById('headerRightArea');
-                if (nickname && headerRightArea) {
-                    let avatarText = nickname.slice(0, 2);
-                    headerRightArea.innerHTML = `
-                        <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
-                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
-                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
+                const isAdmin = localStorage.getItem('is_admin');
+                if (nickname) {
+                    let adminButton = '';
+                    if (isAdmin === '1') {
+                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`;
+                    }
+                    document.getElementById('headerRightArea').innerHTML = `
+                        <span class="nickname-avatar" onclick="location.href='/mypage'">${nickname.slice(0, 2)}</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="localStorage.clear(); location.reload();" style="background: #666; margin-left:8px;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 위치 로딩...</span>
                     `;
                     getGPSLocation();
                 }
 
+                updateRealtimeRecommendation();
+                updateThemeRecommendation();
+                updateBudgetRecommendation();
                 updateCounts();
-                setInterval(updateCounts, 60000); // 1분마다 업데이트
+
+                setInterval(updateRealtimeRecommendation, 30000);
+                setInterval(updateThemeRecommendation, 60000);
+                setInterval(updateCounts, 60000);
             });
         </script>
     </body>

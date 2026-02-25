@@ -1,5 +1,3 @@
-
-
 import requests
 import logging
 from pydantic import BaseModel
@@ -415,6 +413,26 @@ def create_post(
     db.refresh(new_post)
     return {"message": "게시글이 성공적으로 등록되었습니다!", "redirect": f"/post_detail/{new_post.id}", "post_id": new_post.id}
 
+# /SOLO 페이지 라우터 추가
+@app.get("/SOLO", response_class=HTMLResponse)
+def solo_page(request: Request):
+    return templates.TemplateResponse("SOLO.html", {"request": request})
+
+# /DATE 페이지 라우터 추가
+@app.get("/DATE", response_class=HTMLResponse)
+def date_page(request: Request):
+    return templates.TemplateResponse("DATE.html", {"request": request})
+
+# /WORK 페이지 라우터 추가
+@app.get("/WORK", response_class=HTMLResponse)
+def work_page(request: Request):
+    return templates.TemplateResponse("WORK.html", {"request": request})
+
+# /ETC 페이지 라우터 추가
+@app.get("/ETC", response_class=HTMLResponse)
+def etc_page(request: Request):
+    return templates.TemplateResponse("ETC.html", {"request": request})
+
 @app.get("/community", response_class=HTMLResponse)
 def community_page(request: Request):
     db = next(get_db())
@@ -796,13 +814,25 @@ def reverse_geocode(lat: float = Query(...), lon: float = Query(...)):
         data = resp.json()
         logging.info(f'Kakao API 응답: {data}')
         # 주소 정보 파싱
-        if data.get("documents"):
-            doc = data["documents"][0]
-            address = doc.get("address", {})
-            road_address = doc.get("road_address", {})
+        if data and isinstance(data, dict) and data.get("documents"):
+            doc = data["documents"][0] if data["documents"] else None
+            if not doc or not isinstance(doc, dict):
+                return {"address": None}
+            address = doc.get("address") if isinstance(doc.get("address"), dict) else {}
+            road_address = doc.get("road_address") if isinstance(doc.get("road_address"), dict) else {}
+            # 시/구만 추출
+            addr_name = road_address.get("address_name") or address.get("address_name") or None
+            city_raw = address.get("region_1depth_name") or road_address.get("region_1depth_name") or None
+            district_raw = address.get("region_2depth_name") or road_address.get("region_2depth_name") or None
+            city = city_raw
+            if city == "서울":
+                city = "서울특별시"
+            elif city and not city.endswith("시"):
+                city = city + "시"
+            summary = f"{city} {district_raw}" if city and district_raw else city or district_raw or addr_name or "위치 확인됨"
             result = {
-                "address": road_address.get("address_name") or address.get("address_name") or None,
-                "building_name": road_address.get("building_name") or None
+                "address": summary,
+                "building_name": road_address.get("building_name") if road_address else None
             }
             return result
         return {"address": None}
