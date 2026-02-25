@@ -49,8 +49,12 @@ def work_page(request: Request):
 def etc_page(request: Request):
     return templates.TemplateResponse("ETC.html", {"request": request})
 # --- Nominatim Reverse Geocoding Proxy (CORS 우회용) ---
+@app.middleware("http")
+async def add_ngrok_skip_header(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["ngrok-skip-browser-warning"] = "true"
+    return response
 
-# --- Nominatim Reverse Geocoding Proxy (CORS 우회용) ---
 from fastapi import Response
 @app.get("/api/reverse_geocode")
 def reverse_geocode_nominatim(lat: float = Query(...), lon: float = Query(...)):

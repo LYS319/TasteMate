@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="ko">
     <head>
+        <script>
+        // ngrok iframe 탈출
+            if (window.top !== window.self) {
+            window.top.location.href = window.self.location.href;
+        }
+</script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트</title>
@@ -337,7 +343,7 @@
                 height: 600px;
                 background: #f4f4f4;
                 border: 1px solid #ddd;
-                display: flex;
+                display: none;
                 align-items: center;
                 justify-content: center;
                 color: #999;
@@ -345,22 +351,150 @@
                 z-index: 500;
                 border-radius: 10px;
             }
+            .side-ad.visible {
+                display: flex;
+            }
             .ad-left {
                 left: 20px;
             }
             .ad-right {
                 right: 20px;
             }
-            @media (max-width: 1450px) {
-                .side-ad {
-                    display: none;
+
+
+            /* ===== 반응형 (태블릿/모바일) ===== */
+            @media (max-width: 900px) {
+                .header {
+                    grid-template-columns: 1fr auto;
+                    padding: 10px 16px;
+                    gap: 8px;
                 }
+                .header-center {
+                    grid-column: 1 / -1;
+                    grid-row: 2;
+                    width: 100%;
+                    order: 3;
+                }
+                .header-left { grid-column: 1; }
+                .header-right { grid-column: 2; }
+                .menu-bar { display: none; }
+                .header-logo { font-size: 1.3rem; }
+                .main-title { font-size: 2rem; margin-top: 30px; }
+                .main-buttons { flex-direction: column; align-items: center; gap: 12px; }
+                .main-btn { padding: 16px 40px; font-size: 1.1rem; width: 80%; }
+                .community-container { flex-direction: column; padding: 0 16px; }
+                .community-card { width: 100%; box-sizing: border-box; height: auto; min-height: 140px; }
+                .side-ad { display: none !important; }
+                .login-btn { padding: 8px 10px; font-size: 0.8rem; }
+                .current-location { padding: 6px 8px; font-size: 0.78rem; }
             }
+
+            @media (max-width: 480px) {
+                .header { padding: 8px 10px; }
+                .header-logo { font-size: 1.1rem; }
+                .main-title { font-size: 1.5rem; }
+                .main-btn { width: 95%; padding: 14px 20px; font-size: 1rem; }
+                .search-box input { font-size: 0.85rem; padding: 10px 42px 10px 14px; }
+                .nickname-avatar { width: 32px; height: 32px; font-size: 0.85rem; }
+            }
+        
+            /* ===== 햄버거 메뉴 ===== */
+            .hamburger-btn {
+                display: none;
+                background: none;
+                border: none;
+                font-size: 1.6rem;
+                cursor: pointer;
+                padding: 4px 8px;
+                border-radius: 8px;
+                color: #dc2626;
+                line-height: 1;
+            }
+            .hamburger-btn:hover { background: #fff1f1; }
+            .mobile-nav {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 2000;
+            }
+            .mobile-nav.open { display: block; }
+            .mobile-nav-panel {
+                position: absolute;
+                top: 0; left: 0;
+                width: 260px;
+                height: 100%;
+                max-height: 100vh;
+                background: #fff;
+                box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                box-sizing: border-box;
+            }
+            .mobile-nav-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 20px 20px 16px 20px;
+                border-bottom: 1px solid #f1f1f1;
+                flex-shrink: 0;
+            }
+            .mobile-nav-logo {
+                font-size: 1.4rem;
+                font-weight: 900;
+                color: #dc2626;
+                text-decoration: none;
+            }
+            .mobile-nav-close {
+                background: none;
+                border: none;
+                font-size: 1.6rem;
+                cursor: pointer;
+                color: #666;
+                padding: 4px;
+            }
+            .mobile-nav-links {
+                padding: 16px 0;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                overflow-y: auto;
+            }
+            .mobile-nav-links a, .mobile-nav-links button {
+                display: block;
+                padding: 14px 24px;
+                font-size: 1rem;
+                font-weight: 600;
+                color: #333;
+                text-decoration: none;
+                background: none;
+                border: none;
+                text-align: left;
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+            .mobile-nav-links a:hover, .mobile-nav-links button:hover {
+                background: #fff1f1;
+                color: #dc2626;
+            }
+            .mobile-nav-divider {
+                height: 1px;
+                background: #f1f1f1;
+                margin: 8px 0;
+            }
+
+            @media (max-width: 900px) {
+                .hamburger-btn { display: block; }
+                .menu-bar, nav.menu-bar { display: none !important; }
+            }
+
         </style>
     </head>
     <body>
         <header class="header">
             <div class="header-left">
+                <button class="hamburger-btn" id="hamburgerBtn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
                     <a class="menu-item" href="/about">회사소개</a>
@@ -806,7 +940,65 @@
                 setInterval(updateRealtimeRecommendation, 30000);
                 setInterval(updateThemeRecommendation, 60000);
                 setInterval(updateCounts, 60000);
+
+                // 광고 배너: CSS 미디어쿼리 대신 JS로 제어 (ngrok iframe 환경 대응)
+                function updateAdVisibility() {
+                    const realWidth = window.screen.width;
+                    const ads = document.querySelectorAll('.side-ad');
+                    ads.forEach(ad => {
+                        if (realWidth >= 1200) {
+                            ad.classList.add('visible');
+                        } else {
+                            ad.classList.remove('visible');
+                        }
+                    });
+                }
+                updateAdVisibility();
+                window.addEventListener('resize', updateAdVisibility);
             });
         </script>
-    </body>
+    
+    <!-- 모바일 햄버거 메뉴 -->
+    <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
+        <div class="mobile-nav-panel">
+            <div class="mobile-nav-header">
+                <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
+                <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="/main">🏠 홈</a>
+                <a href="/aichat">🤖 AI 맛집추천</a>
+                <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/SOLO">🍚 혼밥</a>
+                <a href="/DATE">💑 데이트</a>
+                <a href="/WORK">🍻 회식</a>
+                <a href="/ETC">🧩 기타</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/game/pinball">🎯 핀볼</a>
+                <a href="/game/ladder">🪜 사다리타기</a>
+                <a href="/game/random_amount">🎰 룰렛 게임</a>
+                <a href="/game/worldcup">🏆 음식 월드컵</a>
+                <a href="/game/calculator">🧮 계산기</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/about">ℹ️ 회사소개</a>
+            </div>
+        </div>
+    </div>
+
+        <script>
+            function openMobileNav() {
+                document.getElementById('mobileNav').classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeMobileNav() {
+                document.getElementById('mobileNav').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            function closeMobileNavOutside(e) {
+                if (e.target === document.getElementById('mobileNav')) closeMobileNav();
+            }
+        </script>
+
+</body>
 </html>

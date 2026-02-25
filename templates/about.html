@@ -364,11 +364,114 @@
                     transform: translateY(0);
                 }
             }
+
+            /* ===== 햄버거 메뉴 ===== */
+            .hamburger-btn {
+                display: none;
+                background: none;
+                border: none;
+                font-size: 1.6rem;
+                cursor: pointer;
+                padding: 4px 8px;
+                border-radius: 8px;
+                color: #dc2626;
+                line-height: 1;
+            }
+            .hamburger-btn:hover { background: #fff1f1; }
+            .mobile-nav {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 2000;
+            }
+            .mobile-nav.open { display: block; }
+            .mobile-nav-panel {
+                position: absolute;
+                top: 0; left: 0;
+                width: 260px;
+                height: 100%;
+                max-height: 100vh;
+                background: #fff;
+                box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+                display: flex;
+                flex-direction: column;
+                box-sizing: border-box;
+            }
+            .mobile-nav-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 20px 20px 16px 20px;
+                border-bottom: 1px solid #f1f1f1;
+                flex-shrink: 0;
+            }
+            .mobile-nav-logo {
+                font-size: 1.4rem;
+                font-weight: 900;
+                color: #dc2626;
+                text-decoration: none;
+            }
+            .mobile-nav-close {
+                background: none;
+                border: none;
+                font-size: 1.6rem;
+                cursor: pointer;
+                color: #666;
+                padding: 4px;
+            }
+            .mobile-nav-links {
+                padding: 16px 0;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                overflow-y: auto;
+            }
+            .mobile-nav-links a {
+                display: block;
+                padding: 14px 24px;
+                font-size: 1rem;
+                font-weight: 600;
+                color: #333;
+                text-decoration: none;
+                transition: background 0.15s;
+            }
+            .mobile-nav-links a:hover { background: #fff1f1; color: #dc2626; }
+            .mobile-nav-divider { height: 1px; background: #f1f1f1; margin: 8px 0; }
+
+            /* ===== 반응형 ===== */
+            @media (max-width: 900px) {
+                .hamburger-btn { display: block; }
+                .menu-bar { display: none !important; }
+                .header {
+                    padding: 10px 16px;
+                    flex-wrap: wrap;
+                    gap: 8px;
+                }
+                .header-center { display: none; }
+                .header-right { gap: 6px; }
+                .login-btn { padding: 8px 10px; font-size: 0.8rem; }
+                .nickname-avatar { width: 32px; height: 32px; font-size: 0.85rem; }
+                body { padding-top: 70px; }
+                .about-container {
+                    padding: 20px 16px;
+                    margin: 0 10px 30px 10px;
+                }
+                .about-title { font-size: 1.6rem; }
+                .about-desc { font-size: 0.95rem; }
+                .about-header-content { font-size: 1.4rem; }
+            }
+            @media (max-width: 480px) {
+                .header { padding: 8px 10px; }
+                .about-team { flex-wrap: wrap; gap: 8px; }
+                .feature-item { padding: 12px; }
+            }
         </style>
     </head>
     <body>
         <header class="header">
             <div class="header-left">
+                <button class="hamburger-btn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
                     <a class="menu-item" href="/about">회사소개</a>
@@ -496,7 +599,7 @@
                         async (pos) => {
                             try {
                                 const res = await fetch(
-                                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                                    `/api/reverse_geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
                                 );
                                 const data = await res.json();
                                 const addr = data.address.city || data.address.province || '위치 확인됨';
@@ -512,5 +615,45 @@
                 }
             }
         </script>
-    </body>
+    <!-- 모바일 햄버거 메뉴 -->
+    <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
+        <div class="mobile-nav-panel">
+            <div class="mobile-nav-header">
+                <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
+                <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="/main">🏠 홈</a>
+                <a href="/aichat">🤖 AI 맛집추천</a>
+                <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/SOLO">🍚 혼밥</a>
+                <a href="/DATE">💑 데이트</a>
+                <a href="/WORK">🍻 회식</a>
+                <a href="/ETC">🧩 기타</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/game/pinball">🎯 핀볼</a>
+                <a href="/game/ladder">🪜 사다리타기</a>
+                <a href="/game/random_amount">🎰 룰렛 게임</a>
+                <a href="/game/worldcup">🏆 음식 월드컵</a>
+                <a href="/game/calculator">🧮 계산기</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/about">ℹ️ 회사소개</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openMobileNav() {
+            document.getElementById('mobileNav').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeMobileNav() {
+            document.getElementById('mobileNav').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function closeMobileNavOutside(e) {
+            if (e.target === document.getElementById('mobileNav')) closeMobileNav();
+        }
+    </script>
+</body>
 </html>
