@@ -75,6 +75,43 @@
                 margin-top: 32px;
                 text-align: center;
             }
+        
+            /* ===== 반응형 (태블릿/모바일) ===== */
+            @media (max-width: 900px) {
+                .header {
+                    flex-direction: column;
+                    padding: 10px 16px;
+                    gap: 8px;
+                    position: sticky;
+                }
+                .header-left { width: 100%; justify-content: space-between; }
+                .header-center { width: 100%; }
+                .header-right { width: 100%; justify-content: flex-end; }
+                .menu-bar { display: none; }
+                .header-logo { font-size: 1.3rem; }
+                .login-btn { padding: 8px 10px; font-size: 0.8rem; }
+                .current-location { padding: 6px 8px; font-size: 0.78rem; }
+                .nickname-avatar { width: 32px; height: 32px; font-size: 0.85rem; }
+                .container, .write-container, .community-wrap {
+                    padding: 16px;
+                    margin: 10px auto;
+                }
+                .post-card, .board-card {
+                    padding: 14px 12px;
+                }
+                table { font-size: 0.85rem; }
+                th, td { padding: 8px 6px; }
+            }
+            @media (max-width: 480px) {
+                .header { padding: 8px 10px; }
+                .header-logo { font-size: 1.1rem; }
+                .search-box input { font-size: 0.85rem; }
+                body { font-size: 0.95rem; }
+                h1 { font-size: 1.4rem; }
+                h2 { font-size: 1.2rem; }
+                .btn, button[type=submit] { width: 100%; }
+            }
+
         </style>
     </head>
     <body>

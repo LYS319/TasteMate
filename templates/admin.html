@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="ko">
     <head>
-        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" />
         <title>Taste Mate - 마스터 관리자 센터</title>
         <style>
             :root {
@@ -162,6 +163,18 @@
                 border-radius: 8px;
                 background: #fafafa;
             }
+        
+            /* ===== 반응형 (태블릿/모바일) ===== */
+            @media (max-width: 900px) {
+                .admin-layout { flex-direction: column; }
+                .admin-sidebar { width: 100%; min-height: auto; padding: 10px; }
+                .admin-content { padding: 16px; }
+                table { font-size: 0.8rem; display: block; overflow-x: auto; }
+                th, td { padding: 6px 4px; white-space: nowrap; }
+                .stat-cards { flex-wrap: wrap; }
+                .stat-card { min-width: 140px; flex: 1; }
+            }
+
         </style>
     </head>
     <body>

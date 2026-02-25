@@ -242,12 +242,150 @@
                 padding-top: 15px;
                 border-top: 1px solid #f8f8f8;
             }
+        
+            /* ===== 반응형 (태블릿/모바일) ===== */
+            @media (max-width: 900px) {
+                .header {
+                    flex-direction: column;
+                    padding: 10px 16px;
+                    gap: 8px;
+                    position: sticky;
+                }
+                .header-left { width: 100%; justify-content: space-between; }
+                .header-center { width: 100%; }
+                .header-right { width: 100%; justify-content: flex-end; }
+                .menu-bar { display: none; }
+                .header-logo { font-size: 1.3rem; }
+                .login-btn { padding: 8px 10px; font-size: 0.8rem; }
+                .current-location { padding: 6px 8px; font-size: 0.78rem; }
+                .nickname-avatar { width: 32px; height: 32px; font-size: 0.85rem; }
+                .container, .write-container, .community-wrap {
+                    padding: 16px;
+                    margin: 10px auto;
+                }
+                .post-card, .board-card {
+                    padding: 14px 12px;
+                }
+                table { font-size: 0.85rem; }
+                th, td { padding: 8px 6px; }
+            }
+            @media (max-width: 480px) {
+                .header { padding: 8px 10px; }
+                .header-logo { font-size: 1.1rem; }
+                .search-box input { font-size: 0.85rem; }
+                body { font-size: 0.95rem; }
+                h1 { font-size: 1.4rem; }
+                h2 { font-size: 1.2rem; }
+                .btn, button[type=submit] { width: 100%; }
+            }
+
+        
+            /* ===== 햄버거 메뉴 ===== */
+            .hamburger-btn {
+                display: none;
+                background: none;
+                border: none;
+                font-size: 1.6rem;
+                cursor: pointer;
+                padding: 4px 8px;
+                border-radius: 8px;
+                color: #dc2626;
+                line-height: 1;
+            }
+            .hamburger-btn:hover { background: #fff1f1; }
+            .mobile-nav {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 2000;
+            }
+            .mobile-nav.open { display: block; }
+            .mobile-nav-panel {
+                position: absolute;
+                top: 0; left: 0;
+                width: 260px;
+                height: 100%;
+                max-height: 100vh;
+                background: #fff;
+                box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                box-sizing: border-box;
+            }
+            .mobile-nav-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 20px 20px 16px 20px;
+                border-bottom: 1px solid #f1f1f1;
+                flex-shrink: 0;
+            }
+            .mobile-nav-logo {
+                font-size: 1.4rem;
+                font-weight: 900;
+                color: #dc2626;
+                text-decoration: none;
+            }
+            .mobile-nav-close {
+                background: none;
+                border: none;
+                font-size: 1.6rem;
+                cursor: pointer;
+                color: #666;
+                padding: 4px;
+            }
+            .mobile-nav-links {
+                padding: 16px 0;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                overflow-y: auto;
+            }
+            .mobile-nav-links a, .mobile-nav-links button {
+                display: block;
+                padding: 14px 24px;
+                font-size: 1rem;
+                font-weight: 600;
+                color: #333;
+                text-decoration: none;
+                background: none;
+                border: none;
+                text-align: left;
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+            .mobile-nav-links a:hover, .mobile-nav-links button:hover {
+                background: #fff1f1;
+                color: #dc2626;
+            }
+            .mobile-nav-divider {
+                height: 1px;
+                background: #f1f1f1;
+                margin: 8px 0;
+            }
+
+        
+            @media (max-width: 600px) {
+                .search-write-row {
+                    flex-wrap: wrap !important;
+                }
+                .search-write-row input {
+                    width: 100% !important;
+                    flex: none !important;
+                }
+                .search-write-row button {
+                    flex: 1;
+                }
+            }
+
         </style>
     </head>
     <body>
         <header class="header">
             <div class="header-left">
-                <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>
+                <button class="menu-toggle-btn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav id="mainNavMenu">
                     <button class="nav-emoji-btn" onclick="location.href = '/main'">🏠 홈</button>
@@ -275,7 +413,7 @@
 
             <div
                 class="fade-in-card"
-                style="display: flex; gap: 10px; align-items: center; margin-bottom: 30px; animation-delay: 0.2s"
+                class="search-write-row" style="display: flex; gap: 10px; align-items: center; margin-bottom: 30px; animation-delay: 0.2s; flex-wrap: wrap"
             >
                 <input
                     id="searchInput"
@@ -290,6 +428,20 @@
                         outline: none;
                     "
                 />
+                <button
+                    id="searchBtn"
+                    style="
+                        padding: 12px 20px;
+                        border-radius: 12px;
+                        background: #222;
+                        color: #fff;
+                        border: none;
+                        font-weight: 700;
+                        cursor: pointer;
+                    "
+                >
+                    검색
+                </button>
                 <button
                     onclick="location.href = '/write'"
                     style="
@@ -407,5 +559,48 @@
                 location.href = '/main';
             }
         </script>
-    </body>
+    
+    <!-- 모바일 햄버거 메뉴 -->
+    <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
+        <div class="mobile-nav-panel">
+            <div class="mobile-nav-header">
+                <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
+                <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="/main">🏠 홈</a>
+                <a href="/aichat">🤖 AI 맛집추천</a>
+                <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/SOLO">🍚 혼밥</a>
+                <a href="/DATE">💑 데이트</a>
+                <a href="/WORK">🍻 회식</a>
+                <a href="/ETC">🧩 기타</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/game/pinball">🎯 핀볼</a>
+                <a href="/game/ladder">🪜 사다리타기</a>
+                <a href="/game/random_amount">🎰 룰렛 게임</a>
+                <a href="/game/worldcup">🏆 음식 월드컵</a>
+                <a href="/game/calculator">🧮 계산기</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/about">ℹ️ 회사소개</a>
+            </div>
+        </div>
+    </div>
+
+        <script>
+            function openMobileNav() {
+                document.getElementById('mobileNav').classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeMobileNav() {
+                document.getElementById('mobileNav').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            function closeMobileNavOutside(e) {
+                if (e.target === document.getElementById('mobileNav')) closeMobileNav();
+            }
+        </script>
+
+</body>
 </html>
