@@ -74,19 +74,25 @@
                 display: flex;
                 gap: 18px;
                 align-items: center;
+                background: #fff;
+                border-radius: 10px;
+                padding: 0 8px;
             }
 
             .menu-item {
                 font-size: 1.15rem;
                 font-weight: 700;
-                color: var(--primary-color);
+                color: #111;
                 text-decoration: none;
                 padding: 8px 18px;
                 border-radius: 8px;
-                transition: background 0.18s;
+                transition:
+                    background 0.18s,
+                    color 0.18s;
             }
             .menu-item:hover {
                 background: #fff5f5;
+                color: var(--primary-color);
             }
 
             /* [검색창 스타일: 메인 페이지와 100% 동일] */
@@ -398,11 +404,11 @@
                     navigator.geolocation.getCurrentPosition(async (position) => {
                         try {
                             const res = await fetch(
-                                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`,
+                                `/api/reverse_geocode?lat=${position.coords.latitude}&lon=${position.coords.longitude}`,
                             );
                             const data = await res.json();
-                            let city = data.address.city || data.address.province || '';
-                            let borough = data.address.borough || data.address.suburb || '';
+                            let city = data.address?.city || data.address?.province || '';
+                            let borough = data.address?.borough || data.address?.suburb || '';
                             locSpan.innerText = `📍 ${city} ${borough}`.trim();
                         } catch (e) {
                             locSpan.innerText = '📍 위치 확인됨';

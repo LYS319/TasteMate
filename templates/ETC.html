@@ -9,20 +9,33 @@
 
             /* --- Animations --- */
             @keyframes slideUp {
-                from { opacity: 0; transform: translateY(25px); }
-                to { opacity: 1; transform: translateY(0); }
+                from {
+                    opacity: 0;
+                    transform: translateY(25px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
             @keyframes noticeGlow {
-                0% { box-shadow: 0 4px 6px rgba(220, 38, 38, 0.05); }
-                50% { box-shadow: 0 4px 20px rgba(220, 38, 38, 0.15); border-color: #dc2626; }
-                100% { box-shadow: 0 4px 6px rgba(220, 38, 38, 0.05); }
+                0% {
+                    box-shadow: 0 4px 6px rgba(220, 38, 38, 0.05);
+                }
+                50% {
+                    box-shadow: 0 4px 20px rgba(220, 38, 38, 0.15);
+                    border-color: #dc2626;
+                }
+                100% {
+                    box-shadow: 0 4px 6px rgba(220, 38, 38, 0.05);
+                }
             }
 
-            .fade-in-card { 
+            .fade-in-card {
                 opacity: 0;
-                animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; 
+                animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
             }
-            
+
             body {
                 margin: 0;
                 font-family: 'Noto Sans KR', sans-serif;
@@ -41,48 +54,93 @@
                 box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08);
                 backdrop-filter: blur(15px);
                 position: fixed;
-                top: 0; left: 0; right: 0;
+                top: 0;
+                left: 0;
+                right: 0;
                 z-index: 1000;
             }
-            .header-left { display: flex; align-items: center; gap: 20px; }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
             .header-logo {
-                display: flex; align-items: center; gap: 10px;
-                font-size: 1.6rem; font-weight: 900;
-                color: #dc2626; text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 1.6rem;
+                font-weight: 900;
+                color: #dc2626;
+                text-decoration: none;
             }
             .menu-toggle-btn {
-                background: none; border: none; font-size: 1.8rem;
-                cursor: pointer; border-radius: 8px; padding: 4px 10px;
+                background: none;
+                border: none;
+                font-size: 1.8rem;
+                cursor: pointer;
+                border-radius: 8px;
+                padding: 4px 10px;
             }
             #mainNavMenu {
-                min-width: 140px; position: absolute;
-                top: 65px; left: 32px; background: #fff;
+                min-width: 140px;
+                position: absolute;
+                top: 65px;
+                left: 32px;
+                background: #fff;
                 box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
-                border-radius: 12px; padding: 15px; display: none;
+                border-radius: 12px;
+                padding: 15px;
+                display: none;
             }
             .nav-emoji-btn {
-                background: none; border: none; font-size: 1.1rem;
-                font-weight: 600; margin-bottom: 5px; cursor: pointer;
-                width: 100%; text-align: left; padding: 10px;
+                background: none;
+                border: none;
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin-bottom: 5px;
+                cursor: pointer;
+                width: 100%;
+                text-align: left;
+                padding: 10px;
             }
-            .header-right { display: flex; align-items: center; gap: 12px; }
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
 
             /* --- Avatar & Buttons --- */
             .nickname-avatar {
-                width: 38px; height: 38px; border-radius: 50%;
-                background: #222; color: #fff; display: inline-flex;
-                align-items: center; justify-content: center;
-                font-weight: 700; cursor: pointer;
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: #222;
+                color: #fff;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                cursor: pointer;
             }
             .current-location {
-                font-size: 0.85rem; color: #dc2626; background: #fff1f1;
-                border: 1px solid rgba(220, 38, 38, 0.1); border-radius: 10px;
-                padding: 8px 14px; font-weight: 700; cursor: pointer;
+                font-size: 0.85rem;
+                color: #dc2626;
+                background: #fff1f1;
+                border: 1px solid rgba(220, 38, 38, 0.1);
+                border-radius: 10px;
+                padding: 8px 14px;
+                font-weight: 700;
+                cursor: pointer;
             }
             .login-btn {
-                padding: 10px 18px; background: #dc2626; color: #fff;
-                border: none; border-radius: 10px; font-size: 0.9rem;
-                font-weight: 700; cursor: pointer;
+                padding: 10px 18px;
+                background: #dc2626;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                font-size: 0.9rem;
+                font-weight: 700;
+                cursor: pointer;
             }
 
             /* --- 카드 UI 디자인 --- */
@@ -94,7 +152,7 @@
                 margin-bottom: 20px;
                 list-style: none;
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
                 cursor: pointer;
                 position: relative;
             }
@@ -103,7 +161,7 @@
                 box-shadow: 0 15px 30px rgba(220, 38, 38, 0.1);
                 border-color: #ffe5e5;
             }
-            
+
             /* 공지글 전용 스타일 */
             .post-card.notice-card {
                 border: 2px solid #dc2626;
@@ -111,41 +169,79 @@
                 animation: noticeGlow 3s infinite;
             }
             .notice-badge {
-                background: #dc2626; color: #fff;
-                font-size: 0.75rem; font-weight: 900;
-                padding: 4px 10px; border-radius: 8px;
-                display: inline-block; margin-bottom: 12px;
+                background: #dc2626;
+                color: #fff;
+                font-size: 0.75rem;
+                font-weight: 900;
+                padding: 4px 10px;
+                border-radius: 8px;
+                display: inline-block;
+                margin-bottom: 12px;
             }
 
             .post-title {
-                font-size: 1.3rem; font-weight: 800; color: #1a1a1a;
-                text-decoration: none; margin-bottom: 12px; display: block;
+                font-size: 1.3rem;
+                font-weight: 800;
+                color: #1a1a1a;
+                text-decoration: none;
+                margin-bottom: 12px;
+                display: block;
             }
             .post-content-preview {
-                color: #555; font-size: 1rem; line-height: 1.6;
-                display: -webkit-box; -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 18px;
+                color: #555;
+                font-size: 1rem;
+                line-height: 1.6;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                margin-bottom: 18px;
             }
 
             .category-btn {
-                flex: 1; padding: 12px 0; border-radius: 12px;
-                text-align: center; text-decoration: none; font-weight: 700;
-                border: 1.5px solid #f0f0f0; transition: 0.3s;
-                background: #fff; color: #999;
+                flex: 1;
+                padding: 12px 0;
+                border-radius: 12px;
+                text-align: center;
+                text-decoration: none;
+                font-weight: 700;
+                border: 1.5px solid #f0f0f0;
+                transition: 0.3s;
+                background: #fff;
+                color: #999;
             }
-            .category-btn.active { background: #dc2626; color: #fff; border-color: #dc2626; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15); }
+            .category-btn.active {
+                background: #dc2626;
+                color: #fff;
+                border-color: #dc2626;
+                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+            }
 
             .sort-btn {
-                padding: 8px 20px; border-radius: 25px; border: none;
-                background: #f5f5f5; color: #777; font-weight: 700;
-                font-size: 0.85rem; cursor: pointer; transition: 0.2s;
+                padding: 8px 20px;
+                border-radius: 25px;
+                border: none;
+                background: #f5f5f5;
+                color: #777;
+                font-weight: 700;
+                font-size: 0.85rem;
+                cursor: pointer;
+                transition: 0.2s;
             }
-            .sort-btn.active { background: #222; color: #fff; }
+            .sort-btn.active {
+                background: #222;
+                color: #fff;
+            }
 
             .meta-footer {
-                display: flex; justify-content: flex-end; align-items: center;
-                gap: 12px; font-size: 0.85rem; color: #aaa;
-                padding-top: 15px; border-top: 1px solid #f8f8f8;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 12px;
+                font-size: 0.85rem;
+                color: #aaa;
+                padding-top: 15px;
+                border-top: 1px solid #f8f8f8;
             }
         </style>
     </head>
@@ -165,32 +261,64 @@
             </div>
         </header>
 
-        <main style="padding-top: 110px; max-width: 650px; margin: 0 auto; padding-left: 20px; padding-right: 20px;">
-            <div class="fade-in-card" style="display: flex; gap: 10px; margin-bottom: 40px;">
+        <main style="padding-top: 110px; max-width: 650px; margin: 0 auto; padding-left: 20px; padding-right: 20px">
+            <div class="fade-in-card" style="display: flex; gap: 10px; margin-bottom: 40px">
                 <a href="/category/solo" class="category-btn">혼밥</a>
                 <a href="/category/date" class="category-btn">데이트</a>
                 <a href="/category/work" class="category-btn">회식</a>
                 <a href="/category/etc" class="category-btn active">기타</a>
             </div>
 
-            <div class="fade-in-card" style="text-align: center; margin-bottom: 40px; animation-delay: 0.1s;">
-                <h1 style="font-size: 2.2rem; font-weight: 900; color: #dc2626; margin: 0;">🍽️ 기타 커뮤니티</h1>
-                <p style="color: #b91c1c; font-weight: 500; margin-top: 10px;">자유로운 미식 이야기와 다양한 정보를 나누세요</p>
+            <div class="fade-in-card" style="text-align: center; margin-bottom: 40px; animation-delay: 0.1s">
+                <h1 style="font-size: 2.2rem; font-weight: 900; color: #dc2626; margin: 0">🍽️ 기타 커뮤니티</h1>
+                <p style="color: #b91c1c; font-weight: 500; margin-top: 10px">
+                    자유로운 미식 이야기와 다양한 정보를 나누세요
+                </p>
             </div>
 
-            <div class="fade-in-card" style="display: flex; gap: 10px; align-items: center; margin-bottom: 30px; animation-delay: 0.2s;">
-                <input id="searchInput" type="text" placeholder="궁금한 정보를 검색해보세요" style="flex:1; padding:12px 18px; border-radius:12px; border:2px solid #f0f0f0; font-size:1rem; outline:none;" />
-                <button onclick="location.href = '/write'" style="padding:12px 20px; border-radius:12px; background:#dc2626; color:#fff; border:none; font-weight:700; cursor:pointer;">✏️ 글쓰기</button>
+            <div
+                class="fade-in-card"
+                style="display: flex; gap: 10px; align-items: center; margin-bottom: 30px; animation-delay: 0.2s"
+            >
+                <input
+                    id="searchInput"
+                    type="text"
+                    placeholder="궁금한 정보를 검색해보세요"
+                    style="
+                        flex: 1;
+                        padding: 12px 18px;
+                        border-radius: 12px;
+                        border: 2px solid #f0f0f0;
+                        font-size: 1rem;
+                        outline: none;
+                    "
+                />
+                <button
+                    onclick="location.href = '/write'"
+                    style="
+                        padding: 12px 20px;
+                        border-radius: 12px;
+                        background: #dc2626;
+                        color: #fff;
+                        border: none;
+                        font-weight: 700;
+                        cursor: pointer;
+                    "
+                >
+                    ✏️ 글쓰기
+                </button>
             </div>
 
-            <div class="fade-in-card" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; animation-delay: 0.3s;">
+            <div
+                class="fade-in-card"
+                style="display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; animation-delay: 0.3s"
+            >
                 <button id="popularBtn" class="sort-btn active">인기순</button>
                 <button id="latestBtn" class="sort-btn">최신순</button>
                 <button id="commentBtn" class="sort-btn">댓글순</button>
             </div>
 
-            <div id="post-container">
-                </div>
+            <div id="post-container"></div>
         </main>
 
         <script>
@@ -203,12 +331,15 @@
 
                 if (nickname && headerRightArea) {
                     const avatarText = nickname.slice(0, 2);
-                    let adminBtn = isAdmin === '1' ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자</button>` : '';
+                    let adminBtn =
+                        isAdmin === '1'
+                            ? `<button class=\"login-btn\" onclick=\"location.href='/admin'\" style=\"background: #222; margin-left:8px;\">관리자 기능</button>`
+                            : '';
                     headerRightArea.innerHTML = `
+                        <span class=\"nickname-avatar\" onclick=\"location.href='/mypage'\">${avatarText}</span>
                         ${adminBtn}
-                        <span class="nickname-avatar" onclick="location.href='/mypage'">${avatarText}</span>
-                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left: 8px;">로그아웃</button>
-                        <span class="current-location" id="gps-location" onclick="getGPSLocation()" style="margin-left: 8px;">📍 내 위치</span>
+                        <button class=\"login-btn\" onclick=\"logout()\" style=\"background: #666; margin-left: 8px;\">로그아웃</button>
+                        <span class=\"current-location\" id=\"gps-location\" onclick=\"getGPSLocation()\" style=\"margin-left: 8px;\">📍 내 위치</span>
                     `;
                     getGPSLocation();
                 }
@@ -217,21 +348,25 @@
 
             async function loadPosts() {
                 const container = document.getElementById('post-container');
-                container.innerHTML = '<div style="text-align: center; color: #bbb; padding: 40px;">다양한 이야기들을 불러오는 중...</div>';
-                
+                container.innerHTML =
+                    '<div style="text-align: center; color: #bbb; padding: 40px;">다양한 이야기들을 불러오는 중...</div>';
+
                 try {
                     const res = await fetch(`/api/posts/ETC/${currentSort}`);
                     let posts = await res.json();
 
                     if (!posts || posts.length === 0) {
-                        container.innerHTML = '<div style="text-align:center; padding:50px; border:2px dashed #eee; border-radius:20px; color:#999;">작성된 게시글이 없습니다.</div>';
+                        container.innerHTML =
+                            '<div style="text-align:center; padding:50px; border:2px dashed #eee; border-radius:20px; color:#999;">작성된 게시글이 없습니다.</div>';
                         return;
                     }
 
                     // [정렬] 공지사항을 항상 최상단으로 배치
                     posts.sort((a, b) => b.is_notice - a.is_notice);
 
-                    container.innerHTML = posts.map((post, idx) => `
+                    container.innerHTML = posts
+                        .map(
+                            (post, idx) => `
                         <li class="post-card fade-in-card ${post.is_notice == 1 ? 'notice-card' : ''}" 
                             style="animation-delay: ${0.05 * idx}s" 
                             onclick="location.href='/post_detail/${post.id}'">
@@ -248,29 +383,37 @@
                                 <span>${post.created_at || ''}</span>
                             </div>
                         </li>
-                    `).join('');
+                    `,
+                        )
+                        .join('');
                 } catch (e) {
-                    container.innerHTML = '<div style="text-align:center; color:red; padding:20px;">데이터를 불러오지 못했습니다.</div>';
+                    container.innerHTML =
+                        '<div style="text-align:center; color:red; padding:20px;">데이터를 불러오지 못했습니다.</div>';
                 }
             }
 
             function toggleMenu() {
                 const menu = document.getElementById('mainNavMenu');
-                menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
             }
 
             const sortBtns = document.querySelectorAll('.sort-btn');
-            sortBtns.forEach(btn => {
+            sortBtns.forEach((btn) => {
                 btn.onclick = () => {
-                    sortBtns.forEach(b => b.classList.remove('active'));
+                    sortBtns.forEach((b) => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentSort = btn.id.replace('Btn', '');
                     loadPosts();
-                }
+                };
             });
 
-            function logout() { localStorage.clear(); location.href = '/main'; }
-            function getGPSLocation() { /* GPS 로직 생략 */ }
+            function logout() {
+                localStorage.clear();
+                location.href = '/main';
+            }
+            function getGPSLocation() {
+                /* GPS 로직 생략 */
+            }
         </script>
     </body>
 </html>

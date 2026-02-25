@@ -1,29 +1,43 @@
-import requests
+
+# --- Standard Library Imports ---
+import os
 import logging
-from pydantic import BaseModel
-from typing import List
-from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile, Body, Query
+
+
+# --- Third Party Imports ---
+import requests
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile, Body, Query, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
 from starlette.responses import JSONResponse
-from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, text, func
 from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
 from dotenv import load_dotenv
-import os
+from typing import List, Optional
+from pydantic import BaseModel
 import google.generativeai as genai
+<<<<<<< HEAD
 import logging
 logging.basicConfig(level=logging.INFO)
+=======
+
+
+# --- Local App Imports ---
+>>>>>>> feature/App_DB-LYS
 from Database import Like, User, Post, Comment, get_db
 from config import settings
 from game_ideal_router import router as ideal_router
+
+logging.basicConfig(level=logging.INFO)
+
 
 app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 templates = Jinja2Templates(directory="templates")
 
+<<<<<<< HEAD
 # --- 인기글 라우터 (AI 코드 건드리지 않음) ---
 @app.get("/SOLO", response_class=HTMLResponse)
 def solo_page(request: Request):
@@ -40,13 +54,29 @@ def work_page(request: Request):
 @app.get("/ETC", response_class=HTMLResponse)
 def etc_page(request: Request):
     return templates.TemplateResponse("ETC.html", {"request": request})
+=======
+# --- Nominatim Reverse Geocoding Proxy (CORS 우회용) ---
+
+# --- Nominatim Reverse Geocoding Proxy (CORS 우회용) ---
+from fastapi import Response
+@app.get("/api/reverse_geocode")
+def reverse_geocode_nominatim(lat: float = Query(...), lon: float = Query(...)):
+    """Reverse geocoding using Nominatim (for CORS-safe frontend use)"""
+    url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}"
+    headers = {"User-Agent": "TasteMate/1.0"}
+    try:
+        resp = requests.get(url, headers=headers, timeout=5)
+        resp.raise_for_status()
+        return Response(content=resp.content, media_type="application/json")
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+>>>>>>> feature/App_DB-LYS
 
 # --- Gemini AI 챗봇 엔드포인트 ---
 class ChatRequest(BaseModel):
     message: str
 
-# --- 카테고리별 인기 장소 API ---
-from sqlalchemy import desc
+
 
 @app.post("/api/top-places")
 def top_places_by_category(db: Session = Depends(get_db)):
@@ -278,7 +308,6 @@ def get_posts_latest(category: str, db: Session = Depends(get_db)):
 # 인기순 게시글 리스트 (댓글 수 기준)
 @app.get("/api/posts/{category}/popular")
 def get_posts_popular(category: str, db: Session = Depends(get_db)):
-    from Database import Like
     # 1. 공지글 먼저
     notice_posts = db.query(Post).filter(Post.category == category.upper(), Post.is_notice == 1) \
         .outerjoin(Post.likes) \
@@ -799,11 +828,11 @@ def search(request: Request, db: Session = Depends(get_db)):
         {"request": request, "keyword": keyword, "posts": post_list}
     )
 
-from fastapi import Query
 
+# --- Kakao REST API 역지오코딩 (별도 엔드포인트, 필요시 사용) ---
 @app.get("/api/reverse-geocode")
-def reverse_geocode(lat: float = Query(...), lon: float = Query(...)):
-    # Kakao REST API로 역지오코딩
+def reverse_geocode_kakao(lat: float = Query(...), lon: float = Query(...)):
+    """Reverse geocoding using Kakao REST API (for Korean addresses)"""
     KAKAO_REST_API_KEY = settings.KAKAO_REST_API_KEY
     url = "https://dapi.kakao.com/v2/local/geo/coord2address.json"
     headers = {"Authorization": f"KakaoAK {KAKAO_REST_API_KEY}"}
