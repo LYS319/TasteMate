@@ -18,14 +18,9 @@ from dotenv import load_dotenv
 from typing import List, Optional
 from pydantic import BaseModel
 import google.generativeai as genai
-<<<<<<< HEAD
-import logging
-logging.basicConfig(level=logging.INFO)
-=======
 
 
 # --- Local App Imports ---
->>>>>>> feature/App_DB-LYS
 from Database import Like, User, Post, Comment, get_db
 from config import settings
 from game_ideal_router import router as ideal_router
@@ -37,7 +32,6 @@ app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 templates = Jinja2Templates(directory="templates")
 
-<<<<<<< HEAD
 # --- 인기글 라우터 (AI 코드 건드리지 않음) ---
 @app.get("/SOLO", response_class=HTMLResponse)
 def solo_page(request: Request):
@@ -54,7 +48,6 @@ def work_page(request: Request):
 @app.get("/ETC", response_class=HTMLResponse)
 def etc_page(request: Request):
     return templates.TemplateResponse("ETC.html", {"request": request})
-=======
 # --- Nominatim Reverse Geocoding Proxy (CORS 우회용) ---
 
 # --- Nominatim Reverse Geocoding Proxy (CORS 우회용) ---
@@ -70,7 +63,6 @@ def reverse_geocode_nominatim(lat: float = Query(...), lon: float = Query(...)):
         return Response(content=resp.content, media_type="application/json")
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
->>>>>>> feature/App_DB-LYS
 
 # --- Gemini AI 챗봇 엔드포인트 ---
 class ChatRequest(BaseModel):
