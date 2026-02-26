@@ -336,30 +336,6 @@
             }
 
             /* --- Side Ad --- */
-            .side-ad {
-                position: fixed;
-                top: 150px;
-                width: 160px;
-                height: 600px;
-                background: #f4f4f4;
-                border: 1px solid #ddd;
-                display: none;
-                align-items: center;
-                justify-content: center;
-                color: #999;
-                font-weight: bold;
-                z-index: 500;
-                border-radius: 10px;
-            }
-            .side-ad.visible {
-                display: flex;
-            }
-            .ad-left {
-                left: 20px;
-            }
-            .ad-right {
-                right: 20px;
-            }
 
             /* 모바일 헤더 우측 버튼 영역 */
 
@@ -378,27 +354,8 @@
             }
             .mobile-location-btn:hover { background: #ffe0e0; }
 
-            /* --- Mobile Top Ad (헤더 아래 고정) --- */
-            .mobile-top-ad {
-                display: none;
-                position: fixed;
-                top: 100px;
-                left: 0;
-                right: 0;
-                height: 55px;
-                background: #f4f4f4;
-                border-bottom: 1px solid #ddd;
-                align-items: center;
-                justify-content: center;
-                color: #999;
-                font-weight: bold;
-                font-size: 0.9rem;
-                z-index: 499;
-            }
-
             /* ===== 반응형 (태블릿/모바일) ===== */
             @media (max-width: 900px) {
-                .mobile-top-ad { display: flex; }
                 main { padding-top: 130px !important; }
 
                 /* 헤더: 2행 그리드
@@ -593,9 +550,30 @@
         </header>
 
         <main style="padding-top: 120px; padding-bottom: 100px; position: relative">
-            <div class="side-ad ad-left">광고 영역 (좌)</div>
-            <div class="side-ad ad-right">광고 영역 (우)</div>
-            <div class="mobile-top-ad" id="mobileTopAd">📢 광고 영역 (모바일)</div>
+    <!-- 광고 배너 -->
+    <style>
+        .side-ad {
+            position: fixed; top: 150px; width: 160px; height: 600px;
+            background: #f4f4f4; border: 1px solid #ddd; display: flex;
+            align-items: center; justify-content: center; color: #999;
+            font-weight: bold; z-index: 100; border-radius: 10px;
+            font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box;
+        }
+        .ad-left  { left: 20px; }
+        .ad-right { right: 20px; }
+        .mobile-top-ad {
+            display: none; position: fixed; top: 100px; left: 0; right: 0;
+            height: 55px; background: #f4f4f4; border-bottom: 1px solid #ddd;
+            align-items: center; justify-content: center; color: #999;
+            font-weight: bold; font-size: 0.9rem; z-index: 100;
+            pointer-events: none;
+        }
+        @media (max-width: 1200px) { .side-ad { display: none; } }
+        @media (max-width: 900px)  { .mobile-top-ad { display: flex; } }
+    </style>
+    <div class="side-ad ad-left">광고 영역 (좌)</div>
+    <div class="side-ad ad-right">광고 영역 (우)</div>
+    <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
 
             <div class="main-title">🍽️ <span>테이스트메이트</span></div>
 
@@ -961,23 +939,6 @@
                 setInterval(updateCounts, 60000);
 
                 // 광고 배너: CSS 미디어쿼리 대신 JS로 제어 (ngrok iframe 환경 대응)
-                function updateAdVisibility() {
-                    const realWidth = window.screen.width;
-                    const sideAds = document.querySelectorAll('.side-ad');
-                    const topAd = document.getElementById('mobileTopAd');
-
-                    if (realWidth >= 1200) {
-                        // 데스크탑: 좌우 배너 표시, 상단 배너 숨김
-                        sideAds.forEach(ad => ad.classList.add('visible'));
-                        if (topAd) topAd.style.display = 'none';
-                    } else {
-                        // 모바일/태블릿: 좌우 배너 숨기고, 헤더 아래 가로 배너 표시
-                        sideAds.forEach(ad => ad.classList.remove('visible'));
-                        if (topAd) topAd.style.display = 'flex';
-                    }
-                }
-                updateAdVisibility();
-                window.addEventListener('resize', updateAdVisibility);
             });
         </script>
     
