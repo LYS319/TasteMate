@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="ko">
     <head>
+    <script>
+        // ngrok iframe 탈출 - 경고 페이지 없이 직접 접속
+        if (window.top !== window.self) {
+            window.top.location.href = window.self.location.href;
+        }
+    </script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 커뮤니티</title>

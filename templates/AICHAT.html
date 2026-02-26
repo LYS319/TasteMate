@@ -1,3 +1,1292 @@
-Access to fetch at 'https://nominatim.openstreetmap.org/reverse?format=json&lat=37.48819729803367&lon=126.98316422693456' from origin 'https://noncohesive-deshawn-nonserviceably.ngrok-free.dev' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-worldcup:463   GET https://nominatim.openstreetmap.org/reverse?format=json&lat=37.48819729803367&lon=126.98316422693456 net::ERR_FAILED 425 (Too Early)
-navigator.geolocation.getCurrentPosition.locSpan.innerText @ worldcup:463
+<!doctype html>
+<html lang="ko">
+<head>
+    <script>
+        if (window.top !== window.self) { window.top.location.href = window.self.location.href; }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>TasteMate AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --red: #e53e3e; --red-dark: #c53030;
+            --red-light: #fff5f5; --red-glow: rgba(229,62,62,0.15);
+            --bg: #f4f4f6; --text: #1a1a2e; --muted: #718096; --border: #edf2f7;
+            --header-h: 80px; --cat-h: 68px; --input-h: 92px; --nav-h: 80px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Noto Sans KR', sans-serif; background: var(--bg); font-size: 18px; }
+
+        /* ── HEADER ── */
+        .site-header {
+            position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+            background: rgba(255,255,255,0.97); backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(229,62,62,0.1);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.05); z-index: 200;
+            display: flex; align-items: center;
+        }
+        .header-inner {
+            width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 40px;
+            display: flex; align-items: center; gap: 20px;
+        }
+        /* 좌측 고정 영역 */
+        .header-left { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+        /* 중앙 검색창 */
+        .header-center { flex: 1; display: flex; justify-content: center; padding: 0 24px; }
+        /* 우측 고정 영역 */
+        .header-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+
+        .logo { font-size: 28px; font-weight: 900; color: var(--red); cursor: pointer; letter-spacing: -0.5px; white-space: nowrap; }
+        .icon-btn {
+            width: 48px; height: 48px; border-radius: 14px; border: none;
+            background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: #666; transition: background 0.18s, color 0.18s; flex-shrink: 0;
+        }
+        .icon-btn:hover { background: #fff0f0; color: var(--red); }
+        .icon-btn svg { width: 26px; height: 26px; }
+
+        /* 검색창 */
+        .search-wrap { width: 100%; max-width: 600px; position: relative; }
+        .search-wrap input {
+            width: 100%; background: #f3f3f5; border: none; border-radius: 50px;
+            padding: 14px 56px 14px 26px; font-size: 16px; font-family: inherit; outline: none;
+            transition: box-shadow 0.2s;
+        }
+        .search-wrap input:focus { box-shadow: 0 0 0 3px var(--red-glow); background: white; }
+        .search-wrap button {
+            position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+            width: 42px; height: 42px; border-radius: 50%; border: none;
+            background: var(--red); color: white; cursor: pointer; font-size: 17px;
+        }
+        .loc-btn {
+            font-size: 14px; font-weight: 700; font-family: inherit; color: var(--red);
+            background: var(--red-light); border: none; border-radius: 50px;
+            padding: 11px 20px; cursor: pointer; white-space: nowrap;
+            max-width: 260px; overflow: hidden; text-overflow: ellipsis; transition: background 0.18s;
+        }
+        .loc-btn:hover { background: #fed7d7; }
+        .profile-avatar {
+            width: 48px; height: 48px; background: #1a1a2e; color: white;
+            border-radius: 14px; border: none; cursor: pointer; font-size: 16px; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.18s; flex-shrink: 0;
+        }
+        .profile-avatar:hover { transform: scale(1.06); }
+
+        /* ── CATEGORY BAR ── */
+        .cat-bar {
+            position: fixed; top: var(--header-h); left: 0; right: 0; height: var(--cat-h);
+            background: white; border-bottom: 1px solid var(--border); z-index: 190;
+            display: flex; align-items: center;
+        }
+        .cat-inner {
+            width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 40px;
+            display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none;
+        }
+        .cat-inner::-webkit-scrollbar { display: none; }
+        .cat-btn {
+            white-space: nowrap; padding: 11px 24px; border-radius: 50px;
+            border: 1.5px solid #fed7d7; background: var(--red-light); color: var(--red);
+            font-size: 15px; font-weight: 700; font-family: inherit;
+            cursor: pointer; transition: all 0.18s; flex-shrink: 0;
+        }
+        .cat-btn:hover, .cat-btn.active { background: var(--red); color: white; border-color: var(--red); }
+        .cat-btn:active { transform: scale(0.95); }
+
+        /* ── SITUATION MODE BADGES ── */
+        .mode-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 700;
+            border: none; cursor: pointer; transition: all 0.18s; font-family: inherit;
+        }
+        .mode-badge.selected { background: var(--red); color: white; box-shadow: 0 2px 8px var(--red-glow); }
+        .mode-badge:not(.selected) { background: #f3f3f5; color: #888; }
+        .mode-badge:hover:not(.selected) { background: #fed7d7; color: var(--red); }
+
+        /* ── CHAT PANEL ── */
+        .chat-panel {
+            position: fixed;
+            top: calc(var(--header-h) + var(--cat-h));
+            bottom: calc(var(--input-h) + var(--nav-h));
+            left: 0; right: 0; overflow-y: auto; background: var(--bg);
+        }
+        .chat-panel::-webkit-scrollbar { width: 5px; }
+        .chat-panel::-webkit-scrollbar-thumb { background: #fecaca; border-radius: 10px; }
+        .chat-inner {
+            width: 100%; max-width: 1400px; margin: 0 auto; padding: 28px 40px;
+            display: flex; flex-direction: column; gap: 22px;
+        }
+
+        /* ── BUBBLES ── */
+        .msg-row {
+            display: flex; gap: 14px;
+            animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards; opacity: 0;
+        }
+        .msg-row.user-row { flex-direction: row-reverse; }
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(8px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .ai-avatar {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: linear-gradient(135deg, #e53e3e, #fc8181);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0; margin-top: 2px;
+            box-shadow: 0 3px 10px var(--red-glow);
+        }
+        .bubble {
+            max-width: 68%; padding: 18px 24px; border-radius: 22px;
+            font-size: 17px; line-height: 1.85; white-space: pre-wrap; word-break: break-word;
+        }
+        .bubble-ai {
+            background: white; border: 1px solid rgba(229,62,62,0.1);
+            color: var(--text); border-top-left-radius: 5px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .bubble-user {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            color: white; border-top-right-radius: 5px;
+            box-shadow: 0 4px 14px var(--red-glow);
+        }
+
+        /* ── PLACE CARD ── */
+        .place-card {
+            background: white; border: 1px solid rgba(229,62,62,0.1);
+            border-radius: 18px; padding: 22px 26px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05); max-width: 68%;
+            margin-left: 64px;
+            animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards; opacity: 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .place-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(229,62,62,0.12); }
+        .place-name { font-weight: 800; color: var(--red); font-size: 17px; margin-bottom: 5px; }
+        .place-addr { font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+        .place-link {
+            display: inline-flex; align-items: center; font-size: 14px; font-weight: 700;
+            color: white; background: linear-gradient(135deg, #e53e3e, #c53030);
+            padding: 9px 20px; border-radius: 50px; text-decoration: none;
+            box-shadow: 0 2px 8px var(--red-glow); transition: opacity 0.18s, transform 0.18s;
+        }
+        .place-link:hover { opacity: 0.9; transform: scale(1.03); }
+        .fav-btn { border: none; background: none; cursor: pointer; font-size: 22px; margin-left: 10px; transition: transform 0.2s; }
+        .fav-btn:hover { transform: scale(1.2); }
+
+        /* ── TYPING ── */
+        .typing-row { display: flex; gap: 14px; align-items: flex-end; }
+        .typing-dots {
+            display: inline-flex; align-items: center; gap: 7px; background: white;
+            border: 1px solid rgba(229,62,62,0.1); padding: 16px 24px;
+            border-radius: 22px; border-top-left-radius: 5px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .typing-dots span {
+            width: 10px; height: 10px; background: var(--red); border-radius: 50%;
+            animation: dot 1.3s infinite ease-in-out; opacity: 0.6;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes dot {
+            0%,60%,100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        /* ── TASTE TAG ── */
+        .taste-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: linear-gradient(135deg, #fff5f5, #fff);
+            border: 1px solid #fca5a5; border-radius: 50px;
+            padding: 8px 20px; font-size: 14px; font-weight: 700; color: var(--red);
+            margin-left: 64px;
+            animation: popIn 0.3s ease forwards; opacity: 0;
+        }
+
+        /* ── INPUT BAR ── */
+        .input-bar-bg {
+            position: fixed; bottom: var(--nav-h); left: 0; right: 0;
+            height: var(--input-h); background: white; border-top: 1px solid var(--border); z-index: 190;
+        }
+        .input-bar {
+            position: fixed; bottom: var(--nav-h); left: 0; right: 0;
+            height: var(--input-h); z-index: 191; display: flex; align-items: center;
+        }
+        .input-inner {
+            width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 40px;
+            display: flex; align-items: center; gap: 14px;
+        }
+        .situation-select {
+            height: 62px; padding: 0 18px; border-radius: 16px;
+            border: 1.5px solid var(--border); background: #f4f4f6;
+            font-family: inherit; font-size: 16px; font-weight: 700; color: #666;
+            cursor: pointer; outline: none; flex-shrink: 0; transition: border-color 0.2s;
+        }
+        .situation-select:focus { border-color: var(--red); }
+        .input-field {
+            flex: 1; background: #f4f4f6; border: 1.5px solid var(--border); border-radius: 18px;
+            padding: 14px 24px; font-size: 17px; font-family: inherit; outline: none; height: 62px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-field:focus { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-glow); background: white; }
+        .input-field::placeholder { color: #a0aec0; }
+        .send-btn {
+            width: 62px; height: 62px; flex-shrink: 0;
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            border: none; border-radius: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 14px var(--red-glow); transition: opacity 0.18s, transform 0.15s;
+        }
+        .send-btn:hover { opacity: 0.88; }
+        .send-btn:active { transform: scale(0.92); }
+        .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .send-btn svg { width: 26px; height: 26px; fill: white; }
+
+        /* ── BOTTOM NAV ── */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h);
+            background: rgba(255,255,255,0.97); backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            display: flex; justify-content: space-around; align-items: center; z-index: 200;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            font-size: 14px; font-weight: 700; color: #cbd5e0; cursor: pointer;
+            padding: 6px 28px; transition: color 0.18s, transform 0.18s;
+        }
+        .nav-item:hover { transform: translateY(-1px); }
+        .nav-item.active { color: var(--red); }
+        .nav-item svg { width: 28px; height: 28px; }
+
+        /* ── SIDE MENU ── */
+        #sideMenu {
+            position: fixed; top: 0; left: 0; height: 100%; width: 320px;
+            background: white; box-shadow: 8px 0 32px rgba(0,0,0,0.1);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+            z-index: 300; padding: 32px 28px;
+        }
+        .side-link {
+            display: block; padding: 15px 16px; border-radius: 14px;
+            font-weight: 600; font-size: 17px; color: #333; text-decoration: none;
+            transition: background 0.18s, color 0.18s; cursor: pointer; font-family: inherit;
+        }
+        .side-link:hover, .side-link.active-link { background: #fff0f0; color: var(--red); }
+        #overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); z-index: 250;
+        }
+
+        /* ── ONBOARDING MODAL ── */
+        .modal-backdrop {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px); z-index: 500;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-box {
+            background: white; border-radius: 32px; padding: 42px;
+            width: 90%; max-width: 600px; max-height: 88vh; overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-title { font-size: 26px; font-weight: 900; color: var(--text); margin-bottom: 10px; }
+        .modal-sub { font-size: 16px; color: var(--muted); margin-bottom: 32px; line-height: 1.65; }
+        .modal-label { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 12px; margin-top: 24px; }
+        .option-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+        .opt-btn {
+            padding: 11px 22px; border-radius: 50px; border: 1.5px solid var(--border);
+            background: #f8f8f8; color: #555; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: all 0.18s; font-family: inherit;
+        }
+        .opt-btn.selected { background: var(--red); color: white; border-color: var(--red); }
+        .opt-btn:hover:not(.selected) { border-color: var(--red); color: var(--red); }
+        .modal-input {
+            width: 100%; padding: 14px 18px; border-radius: 16px;
+            border: 1.5px solid var(--border); font-family: inherit; font-size: 16px;
+            outline: none; transition: border-color 0.2s;
+        }
+        .modal-input:focus { border-color: var(--red); }
+        .modal-submit {
+            width: 100%; margin-top: 32px; padding: 18px;
+            background: linear-gradient(135deg, #e53e3e, #c53030); color: white;
+            border: none; border-radius: 18px; font-size: 18px; font-weight: 800;
+            cursor: pointer; font-family: inherit;
+            box-shadow: 0 4px 16px var(--red-glow); transition: opacity 0.18s, transform 0.15s;
+        }
+        .modal-submit:hover { opacity: 0.9; }
+        .modal-submit:active { transform: scale(0.98); }
+        .modal-skip {
+            width: 100%; margin-top: 14px; padding: 14px;
+            background: transparent; color: var(--muted); border: none;
+            font-size: 16px; font-family: inherit; cursor: pointer;
+        }
+        .modal-skip:hover { color: var(--text); }
+
+        /* ── 반응형: 모바일/앱 사이즈 ── */
+        @media (max-width: 768px) {
+            :root {
+                --header-h: 56px; --cat-h: 50px; --input-h: 68px; --nav-h: 62px;
+            }
+            html, body { font-size: 14px; }
+            .header-inner { padding: 0 16px; gap: 10px; }
+            .header-center { padding: 0 10px; }
+            .logo { font-size: 20px; }
+            .icon-btn { width: 36px; height: 36px; }
+            .icon-btn svg { width: 20px; height: 20px; }
+            .search-wrap input { padding: 9px 40px 9px 16px; font-size: 13px; }
+            .search-wrap button { width: 32px; height: 32px; font-size: 13px; }
+            .loc-btn { font-size: 11px; padding: 7px 12px; max-width: 100px; }
+            .profile-avatar { width: 36px; height: 36px; font-size: 12px; border-radius: 10px; }
+            .cat-inner { padding: 0 16px; gap: 8px; }
+            .cat-btn { font-size: 12px; padding: 7px 14px; }
+            .chat-inner { padding: 16px 16px; gap: 14px; }
+            .bubble { font-size: 13.5px; padding: 12px 16px; border-radius: 16px; }
+            .ai-avatar { width: 36px; height: 36px; font-size: 16px; }
+            .input-inner { padding: 0 14px; gap: 8px; }
+            .situation-select { height: 46px; font-size: 12px; padding: 0 10px; border-radius: 12px; }
+            .input-field { height: 46px; font-size: 13.5px; padding: 10px 14px; border-radius: 14px; }
+            .send-btn { width: 46px; height: 46px; border-radius: 14px; }
+            .send-btn svg { width: 18px; height: 18px; }
+            .nav-item { font-size: 10px; padding: 4px 16px; }
+            .nav-item svg { width: 22px; height: 22px; }
+            .history-panel { display: none !important; }
+            .place-card { margin-left: 48px; padding: 14px 16px; }
+            .place-name { font-size: 13.5px; }
+            .place-addr { font-size: 11px; }
+            .place-link { font-size: 12px; padding: 6px 14px; }
+            .taste-tag { margin-left: 48px; font-size: 12px; }
+            #welcome-card-body { padding: 24px 20px 20px 20px !important; }
+        }
+
+        /* ── 프로필 드롭다운 ── */
+        .profile-dropdown {
+            position: absolute; top: calc(100% + 10px); right: 0;
+            background: white; border: 1px solid var(--border);
+            border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            padding: 8px; min-width: 180px; z-index: 400;
+            animation: dropIn 0.2s cubic-bezier(0.34,1.56,0.64,1);
+            display: none;
+        }
+        .profile-dropdown.open { display: block; }
+        @keyframes dropIn {
+            from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .pd-user {
+            padding: 10px 14px 12px; border-bottom: 1px solid var(--border); margin-bottom: 6px;
+        }
+        .pd-user .pd-name { font-size: 15px; font-weight: 800; color: var(--text); }
+        .pd-user .pd-sub  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+        .pd-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; border-radius: 10px; font-size: 14px; font-weight: 600;
+            color: var(--text); cursor: pointer; transition: background 0.15s;
+            border: none; background: none; font-family: inherit; width: 100%; text-align: left;
+        }
+        .pd-item:hover { background: var(--red-light); color: var(--red); }
+        .pd-item.danger { color: #e53e3e; }
+        .pd-item.danger:hover { background: #fff0f0; }
+        .profile-chip {
+            display: flex; align-items: center; gap: 10px;
+            background: white; border: 1px solid rgba(229,62,62,0.15);
+            border-radius: 14px; padding: 12px 18px; margin-bottom: 8px;
+            font-size: 16px; color: var(--text);
+        }
+        .profile-chip strong { color: var(--red); }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed; bottom: calc(var(--nav-h) + var(--input-h) + 20px);
+            left: 50%; transform: translateX(-50%);
+            background: #1a1a2e; color: white; padding: 12px 26px; border-radius: 50px;
+            font-size: 15px; font-weight: 600; z-index: 400; opacity: 0;
+            transition: opacity 0.3s; pointer-events: none; white-space: nowrap;
+        }
+        .toast.show { opacity: 1; }
+
+        /* ── HISTORY PANEL ── */
+        .history-panel {
+            position: fixed;
+            top: calc(var(--header-h) + var(--cat-h));
+            bottom: calc(var(--input-h) + var(--nav-h));
+            right: 0; width: 280px;
+            background: white; border-left: 1px solid var(--border);
+            z-index: 180; overflow-y: auto; padding: 20px 16px;
+            display: none; flex-direction: column; gap: 6px;
+        }
+        .history-panel.show { display: flex; }
+        .h-title { 
+    font-size: 18px;   /* 🔥 키움 */
+    font-weight: 900;  /* 🔥 더 굵게 */
+    color: var(--text);
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 10px;
+}
+        .h-section { 
+    font-size: 16px;   /* 🔥 키움 */
+    font-weight: 800;
+    color: var(--text);
+    margin: 16px 0 10px;
+}
+        .h-item {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 11px 12px; border-radius: 12px; cursor: pointer; font-size: 15.5px;
+            color: var(--text); transition: background 0.15s; gap: 6px;
+        }
+        .h-item:hover { background: var(--red-light); color: var(--red); }
+        .h-del { border: none; background: none; color: #ccc; cursor: pointer; font-size: 17px; flex-shrink: 0; }
+        .h-del:hover { color: var(--red); }
+        .h-date { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    
+        /* ===== 햄버거/모바일 메뉴 ===== */
+        .hamburger-btn {
+            display: none;
+            background: none; border: none; font-size: 1.6rem;
+            cursor: pointer; padding: 4px 8px; border-radius: 8px;
+            color: #e53e3e; line-height: 1;
+        }
+        .hamburger-btn:hover { background: #fff5f5; }
+        .mobile-nav {
+            display: none; position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); z-index: 2000;
+        }
+        .mobile-nav.open { display: block; }
+        .mobile-nav-panel {
+            position: absolute; top: 0; left: 0;
+            width: 260px; height: 100%; max-height: 100vh;
+            background: #fff; box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+            display: flex; flex-direction: column; box-sizing: border-box;
+        }
+        .mobile-nav-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 20px 16px 20px; border-bottom: 1px solid #f1f1f1; flex-shrink: 0;
+        }
+        .mobile-nav-logo { font-size: 1.4rem; font-weight: 900; color: #e53e3e; text-decoration: none; }
+        .mobile-nav-close { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: #666; padding: 4px; }
+        .mobile-nav-links { padding: 16px 0; display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
+        .mobile-nav-links a { display: block; padding: 14px 24px; font-size: 1rem; font-weight: 600; color: #333; text-decoration: none; transition: background 0.15s; }
+        .mobile-nav-links a:hover { background: #fff5f5; color: #e53e3e; }
+        .mobile-nav-divider { height: 1px; background: #f1f1f1; margin: 8px 0; }
+        @media (max-width: 768px) {
+            .hamburger-btn { display: block !important; }
+        }
+
+        </style>
+</head>
+<body>
+
+<!-- ── ONBOARDING MODAL ── -->
+<div class="modal-backdrop" id="onboardingModal" style="display:none;">
+    <div class="modal-box">
+        <div style="font-size:32px;margin-bottom:12px;">🍷</div>
+        <div class="modal-title">취향을 알려주세요!</div>
+        <div class="modal-sub" id="onboardGreet">더 맛있는 추천을 위해 딱 1분만 투자해 주세요.<br>나중에 마이페이지에서 언제든 수정할 수 있어요.</div>
+
+        <div class="modal-label">🍺 선호하는 주류 (복수 선택)</div>
+        <div class="option-grid" id="alcoholOpts">
+            <button class="opt-btn" data-val="소주">🥃 소주</button>
+            <button class="opt-btn" data-val="맥주">🍺 맥주</button>
+            <button class="opt-btn" data-val="와인">🍷 와인</button>
+            <button class="opt-btn" data-val="막걸리">🍶 막걸리</button>
+            <button class="opt-btn" data-val="위스키">🥃 위스키</button>
+            <button class="opt-btn" data-val="하이볼">🍹 하이볼</button>
+            <button class="opt-btn" data-val="소맥">🍻 소맥</button>
+            <button class="opt-btn" data-val="칵테일">🍸 칵테일</button>
+        </div>
+
+        <div class="modal-label">🍽 선호하는 안주 스타일 (복수 선택)</div>
+        <div class="option-grid" id="snackOpts">
+            <button class="opt-btn" data-val="튀김류">🍗 튀김류</button>
+            <button class="opt-btn" data-val="구이류">🥩 구이류</button>
+            <button class="opt-btn" data-val="해산물">🦑 해산물</button>
+            <button class="opt-btn" data-val="한식">🥘 한식</button>
+            <button class="opt-btn" data-val="치즈/유제품">🧀 치즈</button>
+            <button class="opt-btn" data-val="과자/스낵">🍿 스낵</button>
+            <button class="opt-btn" data-val="육류">🥓 육류</button>
+            <button class="opt-btn" data-val="채소/나물">🥗 채소</button>
+        </div>
+
+        <div class="modal-label">🚫 못 먹거나 싫어하는 것 (선택)</div>
+        <input class="modal-input" id="dislikeInput" type="text" placeholder="ex: 고수, 내장류, 해산물 알레르기..." />
+
+        <div class="modal-label">🥂 주로 마시는 상황</div>
+        <div class="option-grid" id="situOpts">
+            <button class="opt-btn" data-val="혼술">🙋 혼술</button>
+            <button class="opt-btn" data-val="회식">👔 회식</button>
+            <button class="opt-btn" data-val="데이트">💑 데이트</button>
+            <button class="opt-btn" data-val="친구">👫 친구들과</button>
+            <button class="opt-btn" data-val="가족">👨‍👩‍👧 가족</button>
+        </div>
+
+        <button class="modal-submit" onclick="saveOnboarding()">✅ 저장하고 시작하기</button>
+        <button class="modal-skip" onclick="skipOnboarding()">건너뛰기</button>
+    </div>
+</div>
+
+<!-- ── SIDE MENU ── -->
+<div id="sideMenu">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+        <span style="font-size:17px;font-weight:900;">메뉴</span>
+        <button onclick="toggleSideMenu()" style="border:none;background:none;font-size:18px;cursor:pointer;color:#888;">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:2px;">
+        <a href="/company" class="side-link">회사소개</a>
+        <a href="/aichat" class="side-link active-link">AI추천</a>
+        <a href="/community" class="side-link">커뮤니티</a>
+        <div>
+            <div class="side-link" onclick="toggleGameSubMenu()" style="display:flex;justify-content:space-between;align-items:center;">
+                게임 <span style="color:#aaa;font-size:12px;">▾</span>
+            </div>
+            <div id="gameSubMenu" style="display:none;margin-left:12px;flex-direction:column;gap:2px;">
+                <a href="/game/pinball" class="side-link" style="font-size:13px;">핀볼</a>
+                <a href="/game/ladder" class="side-link" style="font-size:13px;">사다리타기</a>
+                <a href="/game/random_amount" class="side-link" style="font-size:13px;">룰렛 게임</a>
+                <a href="/game/worldcup" class="side-link" style="font-size:13px;">음식 월드컵</a>
+                <a href="/game/calculator" class="side-link" style="font-size:13px;">계산기</a>
+            </div>
+        </div>
+        <!-- 취향 수정 버튼 -->
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f0f0f0;">
+            <button class="side-link" onclick="openOnboarding()" style="width:100%;text-align:left;color:var(--red);">
+                ✏️ 취향 프로필 수정
+            </button>
+        </div>
+    </div>
+</div>
+<div id="overlay" onclick="toggleSideMenu()"></div>
+<div class="toast" id="toast"></div>
+
+<!-- ── HEADER ── -->
+<header class="site-header">
+    <div class="header-inner">
+        <!-- 좌측: 햄버거 + 로고 -->
+        <div class="header-left">
+            <button class="icon-btn" onclick="toggleSideMenu()">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+            </button>
+            <button class="hamburger-btn" onclick="openMobileNav()">☰</button>
+            <span class="logo" onclick="location.href='/main'">TasteMate</span>
+        </div>
+
+        <!-- 중앙: 검색창 -->
+        <div class="header-center">
+            <div class="search-wrap">
+                <form onsubmit="handleSearch(event)">
+                    <input id="global-search" type="text" placeholder="지역, 메뉴, 분위기로 맛집 검색" autocomplete="off" />
+                    <button type="submit">🔍</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 우측: 위치 + 프로필 -->
+        <div class="header-right">
+            <button class="loc-btn" id="location-status" onclick="getGPSLocation()">📍 내 위치</button>
+            <div style="position:relative;" id="profileWrap">
+                <button class="profile-avatar" id="profileAvatar" onclick="toggleProfileDropdown()">??</button>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="pd-user">
+                        <div class="pd-name" id="pd-nickname">로그인 중...</div>
+                        <div class="pd-sub" id="pd-email">내 계정</div>
+                    </div>
+                    <button class="pd-item" onclick="location.href='/mypage'">👤 마이페이지</button>
+                    <button class="pd-item" onclick="openOnboarding();closeProfileDropdown()">🎯 취향 수정</button>
+                    <button class="pd-item danger" id="pd-logout-btn" onclick="handleLogout()">🚪 로그아웃</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ── CATEGORY BAR ── -->
+<div class="cat-bar">
+    <div class="cat-inner">
+        <button class="cat-btn" onclick="showTopPlaces('혼밥')">🍚 혼밥 맛집</button>
+        <button class="cat-btn" onclick="showTopPlaces('데이트')">👩‍❤️‍👨 데이트 코스</button>
+        <button class="cat-btn" onclick="showTopPlaces('술집')">🍻 분위기 술집</button>
+        <button class="cat-btn" onclick="fillInput('오늘 추천 안주 뭐가 좋을까?')">⭐ 오늘의 추천</button>
+        <button class="cat-btn" onclick="fillInput('소맥이랑 어울리는 안주 추천해줘')">🥃 소맥 안주</button>
+        <button class="cat-btn" onclick="fillInput('와인이랑 잘 어울리는 음식 추천해줘')">🍷 와인 페어링</button>
+        <button class="cat-btn" onclick="fillInput('맥주 안주 추천해줘')">🍺 맥주 안주</button>
+        <button class="cat-btn" onclick="clearChat()">🗑 대화 초기화</button>
+    </div>
+</div>
+
+<!-- ── CHAT PANEL ── -->
+<div class="chat-panel" id="chatScroll">
+    <div class="chat-inner" id="chat-container"></div>
+</div>
+
+<!-- ── HISTORY PANEL ── -->
+<div class="history-panel" id="historyPanel">
+    <div class="h-title">📂 내 기록</div>
+    <div class="h-section">⭐ 즐겨찾기</div>
+    <div id="favList"><div style="font-size:11px;color:#bbb;padding:2px;">아직 없어요</div></div>
+    <div class="h-section">💬 최근 대화</div>
+    <div id="chatHistoryList"><div style="font-size:11px;color:#bbb;padding:2px;">아직 없어요</div></div>
+</div>
+
+<!-- ── INPUT BAR ── -->
+<div class="input-bar-bg"></div>
+<div class="input-bar">
+    <div class="input-inner">
+        <select class="situation-select" id="situationSelect" onchange="onSituationChange(this.value)">
+            <option value="">🥂 상황</option>
+            <option value="혼술">🙋 혼술</option>
+            <option value="회식">👔 회식</option>
+            <option value="데이트">💑 데이트</option>
+            <option value="친구">👫 친구들과</option>
+            <option value="가족">👨‍👩‍👧 가족</option>
+        </select>
+        <form id="chat-form" style="display:flex;align-items:center;gap:10px;flex:1;">
+            <input id="chat-input" class="input-field" type="text"
+                   placeholder="오늘 어떤 술 마실 예정이에요? 🍻"
+                   autocomplete="off" required />
+            <button type="submit" id="submit-btn" class="send-btn" title="전송">
+                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ── BOTTOM NAV ── -->
+<div class="bottom-nav">
+    <div class="nav-item" onclick="location.href='/main'">
+        <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+        홈
+    </div>
+    <div class="nav-item active">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+        AI 추천
+    </div>
+    <div class="nav-item" onclick="location.href='/community'">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        커뮤니티
+    </div>
+    <div class="nav-item" onclick="location.href='/mypage'">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        내정보
+    </div>
+    
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+let chatHistory   = [];   // [{role:'user'|'ai', content:string}] - 현재 세션
+let currentSituation = "";
+let userLat = null, userLon = null;
+let gameSubOpen = false;
+
+/* ══════════════════════════════════════════
+   STORAGE HELPERS
+══════════════════════════════════════════ */
+function uid() { return localStorage.getItem('user_id') || 'guest'; }
+function sKey(t) { return `tm_${uid()}_${t}`; }
+function save(t, d) { localStorage.setItem(sKey(t), JSON.stringify(d)); }
+function load(t, fb) {
+    try { const r = localStorage.getItem(sKey(t)); return r ? JSON.parse(r) : fb; }
+    catch { return fb; }
+}
+function isLoggedIn() { return !!localStorage.getItem('user_id'); }
+
+/* ── 취향 프로필 ── */
+function getProfile() {
+    return load('tasteProfile', {
+        preferred_alcohol: '', preferred_snack: '', dislikes: '', situation: ''
+    });
+}
+function saveProfile(p) { save('tasteProfile', p); }
+
+/* ── 취향 자동 업데이트 (AI가 감지한 데이터 반영) ── */
+function mergeTasteData(tasteData) {
+    if (!tasteData || !isLoggedIn()) return;
+    const p = getProfile();
+    let changed = false;
+    if (tasteData.detected_alcohol && tasteData.detected_alcohol !== 'null') {
+        const cur = p.preferred_alcohol ? p.preferred_alcohol.split(',') : [];
+        if (!cur.includes(tasteData.detected_alcohol)) {
+            cur.push(tasteData.detected_alcohol);
+            p.preferred_alcohol = cur.join(',');
+            changed = true;
+        }
+    }
+    if (tasteData.detected_snack && tasteData.detected_snack !== 'null') {
+        const cur = p.preferred_snack ? p.preferred_snack.split(',') : [];
+        if (!cur.includes(tasteData.detected_snack)) {
+            cur.push(tasteData.detected_snack);
+            p.preferred_snack = cur.join(',');
+            changed = true;
+        }
+    }
+    if (tasteData.detected_dislike && tasteData.detected_dislike !== 'null') {
+        p.dislikes = tasteData.detected_dislike;
+        changed = true;
+    }
+    if (changed) {
+        saveProfile(p);
+        showTasteTag(tasteData);
+    }
+}
+
+function showTasteTag(tasteData) {
+    const labels = [];
+    if (tasteData.detected_alcohol && tasteData.detected_alcohol !== 'null')
+        labels.push(`🍺 ${tasteData.detected_alcohol} 좋아요 기록됨`);
+    if (tasteData.detected_snack && tasteData.detected_snack !== 'null')
+        labels.push(`🍽 ${tasteData.detected_snack} 취향 저장됨`);
+    if (tasteData.detected_dislike && tasteData.detected_dislike !== 'null')
+        labels.push(`🚫 ${tasteData.detected_dislike} 기피 저장됨`);
+    if (!labels.length) return;
+    labels.forEach((lbl, i) => {
+        setTimeout(() => {
+            const tag = document.createElement('div');
+            tag.className = 'taste-tag';
+            tag.textContent = '✨ ' + lbl;
+            document.getElementById('chat-container').appendChild(tag);
+            scrollToBottom();
+        }, i * 300);
+    });
+}
+
+/* ── 채팅 히스토리 저장 ── */
+function saveChatRecord(userMsg, aiReply) {
+    if (!isLoggedIn()) return;
+    let list = load('chatHistory', []);
+    list.unshift({
+        q: userMsg.slice(0, 40), a: aiReply.slice(0, 80),
+        date: new Date().toLocaleDateString('ko-KR', {month:'short',day:'numeric'})
+    });
+    save('chatHistory', list.slice(0, 30));
+    renderHistory();
+}
+
+/* ── 즐겨찾기 ── */
+function isFav(name) { return load('favorites',[]).some(p=>p.name===name); }
+function toggleFav(place) {
+    if (!isLoggedIn()) { showToast('로그인 후 사용할 수 있어요!'); return false; }
+    let list = load('favorites', []);
+    const idx = list.findIndex(p=>p.name===place.name);
+    if (idx>=0) { list.splice(idx,1); showToast('즐겨찾기 제거'); }
+    else { list.unshift(place); list=list.slice(0,20); showToast('⭐ 즐겨찾기 추가!'); }
+    save('favorites', list);
+    renderHistory();
+    return idx < 0;
+}
+function delFav(name) {
+    save('favorites', load('favorites',[]).filter(p=>p.name!==name));
+    renderHistory();
+}
+
+/* ══════════════════════════════════════════
+   RENDER HISTORY PANEL
+══════════════════════════════════════════ */
+function renderHistory() {
+    // favorites
+    const favs = load('favorites',[]);
+    const fEl = document.getElementById('favList');
+    fEl.innerHTML = favs.length ? favs.map(p=>`
+        <div class="h-item">
+            <div style="flex:1;">
+                <a href="${esc(p.url)}" target="_blank" style="font-weight:700;color:var(--red);font-size:11.5px;text-decoration:none;">⭐ ${esc(p.name)}</a>
+                <div class="h-date">${esc(p.address||'')}</div>
+            </div>
+            <button class="h-del" onclick="delFav('${esc(p.name)}')">×</button>
+        </div>
+    `).join('') : '<div style="font-size:14px;color:#999;padding:6px 4px;">아직 없어요</div>';
+
+    // chat history
+    const hist = load('chatHistory',[]);
+    const hEl = document.getElementById('chatHistoryList');
+    if (hist.length) {
+        // 전체 삭제 버튼
+        const clearBtn = `<button onclick="clearAllHistory()" style="width:100%;margin-bottom:6px;padding:5px 8px;background:#fff0f0;border:1px solid #fca5a5;border-radius:8px;color:var(--red);font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;">🗑 전체 삭제</button>`;
+        hEl.innerHTML = clearBtn + hist.slice(0,15).map((h,i)=>`
+            <div class="h-item">
+                <div style="flex:1;cursor:pointer;" onclick="fillInput('${esc(h.q)}')">
+                    <div>${esc(h.q)}${h.q.length>=40?'…':''}</div>
+                    <div class="h-date">${h.date}</div>
+                </div>
+                <button class="h-del" title="삭제" onclick="delChatHistory(${i})">×</button>
+            </div>
+        `).join('');
+    } else {
+        hEl.innerHTML = '<div style="font-size:14px;color:#999;padding:6px 4px;">아직 없어요</div>';
+    }
+}
+
+function delChatHistory(idx) {
+    let list = load('chatHistory', []);
+    list.splice(idx, 1);
+    save('chatHistory', list);
+    renderHistory();
+}
+function clearAllHistory() {
+    if (!confirm('최근 대화를 모두 삭제할까요?')) return;
+    save('chatHistory', []);
+    renderHistory();
+    showToast('🗑 대화 기록이 모두 삭제됐어요');
+}
+let selectedAlcohol = [], selectedSnack = [], selectedSitu = [];
+
+function openOnboarding() {
+    const nickname = localStorage.getItem('nickname') || '';
+    document.getElementById('onboardGreet').textContent =
+        (nickname ? `${nickname}님, ` : '') + '더 맛있는 추천을 위해 딱 1분만 투자해 주세요!';
+    // 기존 프로필 반영
+    const p = getProfile();
+    selectedAlcohol = p.preferred_alcohol ? p.preferred_alcohol.split(',') : [];
+    selectedSnack   = p.preferred_snack   ? p.preferred_snack.split(',')   : [];
+    selectedSitu    = p.situation         ? p.situation.split(',')          : [];
+    document.getElementById('dislikeInput').value = p.dislikes || '';
+    refreshOptBtns();
+    document.getElementById('onboardingModal').style.display = 'flex';
+}
+function refreshOptBtns() {
+    document.querySelectorAll('#alcoholOpts .opt-btn').forEach(b => {
+        b.classList.toggle('selected', selectedAlcohol.includes(b.dataset.val));
+    });
+    document.querySelectorAll('#snackOpts .opt-btn').forEach(b => {
+        b.classList.toggle('selected', selectedSnack.includes(b.dataset.val));
+    });
+    document.querySelectorAll('#situOpts .opt-btn').forEach(b => {
+        b.classList.toggle('selected', selectedSitu.includes(b.dataset.val));
+    });
+}
+document.querySelectorAll('#alcoholOpts .opt-btn').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.val;
+    selectedAlcohol = selectedAlcohol.includes(v) ? selectedAlcohol.filter(x=>x!==v) : [...selectedAlcohol, v];
+    b.classList.toggle('selected');
+}));
+document.querySelectorAll('#snackOpts .opt-btn').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.val;
+    selectedSnack = selectedSnack.includes(v) ? selectedSnack.filter(x=>x!==v) : [...selectedSnack, v];
+    b.classList.toggle('selected');
+}));
+document.querySelectorAll('#situOpts .opt-btn').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.val;
+    selectedSitu = selectedSitu.includes(v) ? selectedSitu.filter(x=>x!==v) : [...selectedSitu, v];
+    b.classList.toggle('selected');
+}));
+
+function saveOnboarding() {
+    const p = {
+        preferred_alcohol: selectedAlcohol.join(','),
+        preferred_snack:   selectedSnack.join(','),
+        dislikes:          document.getElementById('dislikeInput').value.trim(),
+        situation:         selectedSitu.join(',')
+    };
+    saveProfile(p);
+    document.getElementById('onboardingModal').style.display = 'none';
+    showToast('✅ 취향 프로필 저장 완료!');
+    startChat(); // 기존 카드 업데이트 (새로 추가 X)
+}
+function skipOnboarding() {
+    document.getElementById('onboardingModal').style.display = 'none';
+    startChat(); // 기존 카드 업데이트 (새로 추가 X)
+}
+
+/* ══════════════════════════════════════════
+   CHAT UI
+══════════════════════════════════════════ */
+const chatScroll = document.getElementById('chatScroll');
+function scrollToBottom() {
+    setTimeout(() => chatScroll.scrollTo({top: chatScroll.scrollHeight, behavior:'smooth'}), 40);
+}
+function fillInput(t) { document.getElementById('chat-input').value=t; document.getElementById('chat-input').focus(); }
+function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function showTyping() {
+    const r = document.createElement('div');
+    r.className='typing-row'; r.id='typing-indicator';
+    r.innerHTML=`<div class="ai-avatar" style="width:32px;height:32px;font-size:13px;">🍷</div>
+        <div class="typing-dots"><span></span><span></span><span></span></div>`;
+    document.getElementById('chat-container').appendChild(r); scrollToBottom();
+}
+function hideTyping() { const t=document.getElementById('typing-indicator'); if(t) t.remove(); }
+
+function addMsg(role, html, rawText='') {
+    const isAI = role==='ai';
+    const row = document.createElement('div');
+    row.className = `msg-row${isAI?'':' user-row'}`;
+    if (isAI) {
+        row.innerHTML=`<div class="ai-avatar">🍷</div><div class="bubble bubble-ai">${html}</div>`;
+    } else {
+        row.innerHTML=`<div class="bubble bubble-user">${html}</div>`;
+    }
+    document.getElementById('chat-container').appendChild(row);
+    // 세션 히스토리에 추가
+    chatHistory.push({role: isAI?'ai':'user', content: rawText || html.replace(/<[^>]+>/g,'')});
+    scrollToBottom();
+}
+
+function clearChat() {
+    chatHistory = [];
+    document.getElementById('chat-container').innerHTML = '';
+    startChat();
+}
+
+function onSituationChange(val) {
+    currentSituation = val;
+    if (val) {
+        const emoji = {혼술:'🙋',회식:'👔',데이트:'💑',친구:'👫',가족:'👨‍👩‍👧'}[val] || '';
+        showToast(`${emoji} ${val} 모드로 추천해드릴게요!`);
+    }
+}
+
+/* ══════════════════════════════════════════
+   START CHAT (웰컴 메시지)
+══════════════════════════════════════════ */
+function startChat() {
+    const nickname = localStorage.getItem('nickname') || '';
+    const p = getProfile();
+    const hour = new Date().getHours();
+
+    // 시간대별 인사말
+    let greetWord;
+
+if (hour >= 5 && hour < 12) {
+    greetWord = '좋은 아침이에요';
+} else if (hour >= 12 && hour < 18) {
+    greetWord = '좋은 오후예요';
+} else if (hour >= 18 && hour < 22) {
+    greetWord = '좋은 저녁이에요';
+} else {
+    greetWord = '늦은 밤이네요';
+}
+
+    // "00님, 좋은 아침이에요!" 형식
+    const greeting = nickname
+    ? `${esc(nickname)}님,<br><br>${greetWord}! 🍷`
+    : `${greetWord}! 🍷`;
+
+    // 취향 태그 - 칩 형태로 줄바꿈
+    const profileTag = (p.preferred_alcohol || p.preferred_snack) ? (() => {
+        const alc = p.preferred_alcohol ? p.preferred_alcohol.split(',').filter(Boolean) : [];
+        const snk = p.preferred_snack   ? p.preferred_snack.split(',').filter(Boolean)   : [];
+        const allItems = [...new Set([...alc, ...snk])]; // 중복 제거
+        const chips = allItems.map(item =>
+            `<span style="background:#fff0f0;border:1px solid #fecaca;border-radius:50px;padding:6px 14px;font-size:14px;font-weight:700;color:var(--red);white-space:nowrap;">${esc(item)}</span>`
+        ).join('');
+        return `<div style="background:white;border:1.5px solid #fecaca;border-radius:16px;padding:14px 18px;margin-bottom:28px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:18px;">🎯</span>
+                    <span style="font-size:15px;font-weight:700;color:#333;">${nickname ? `<strong style="color:#1a1a2e">${esc(nickname)}님의</strong> 취향` : '내 취향'}</span>
+                </div>
+                <button onclick="openOnboarding()" style="background:none;border:none;font-size:13px;color:#bbb;cursor:pointer;font-weight:600;font-family:inherit;padding:3px 8px;border-radius:8px;transition:all 0.15s;" onmouseover="this.style.color='#e53e3e';this.style.background='#fff0f0'" onmouseout="this.style.color='#bbb';this.style.background='none'">✏️ 수정</button>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">${chips}</div>
+        </div>`;
+    })() : `<div onclick="openOnboarding()" style="display:inline-flex;align-items:center;gap:8px;background:white;border:1.5px dashed #fecaca;border-radius:14px;padding:11px 18px;font-size:14px;font-weight:600;color:#e53e3e;margin-bottom:24px;cursor:pointer;">
+        <span>🎯</span><span>취향 설정하기</span>
+    </div>`;
+
+    const welcomeHtml = `
+        <div style="font-size:26px;font-weight:900;color:#1a1a2e;margin-bottom:28px;line-height:1.4;text-align:left;">${greeting}</div>
+        <div style="font-size:18px;color:#718096;line-height:1.85;margin-bottom:32px;text-align:left;"><br>오늘의 술자리, 제가 도와드릴게요.<br>어떤 상황인지 알려주시면 딱 맞는 주류·안주를 추천해드려요.<br></div>
+        ${profileTag}
+        <div style="display:flex;flex-wrap:wrap;gap:12px;">
+            <button class="opt-btn selected" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('오늘 기분에 맞는 술과 안주 추천해줘')">✨ 오늘의 추천</button>
+            <button class="opt-btn" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('혼술하기 좋은 조합 추천해줘')">🙋 혼술</button>
+            <button class="opt-btn" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('회식 자리에서 인기 많은 술과 안주 추천해줘')">👔 회식</button>
+            <button class="opt-btn" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('데이트할 때 분위기 있는 술과 어울리는 안주 추천해줘')">💑 데이트</button>
+            <button class="opt-btn" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('가족 모임에 어울리는 술과 안주 추천해줘')">👨‍👩‍👧 가족</button>
+        </div>`;
+
+    // 이미 웰컴 카드가 있으면 내용만 교체 (새로 추가 X)
+    const existingCard = document.getElementById('welcome-card-body');
+    if (existingCard) {
+        existingCard.style.opacity = '0.5';
+        existingCard.style.transition = 'opacity 0.15s';
+        setTimeout(() => {
+            existingCard.innerHTML = welcomeHtml;
+            existingCard.style.opacity = '1';
+        }, 150);
+        return;
+    }
+
+    const row = document.createElement('div');
+    row.className = 'msg-row';
+    row.style.cssText = 'opacity:1;animation:none;';
+    row.innerHTML = `
+        <div class="ai-avatar">🍷</div>
+        <div id="welcome-card-body" style="max-width:82%;background:linear-gradient(180deg,#fce8e8 0%,#fdf3f3 35%,#fdf8f8 60%,#ffffff 100%);border:1px solid rgba(229,62,62,0.1);border-radius:28px;border-top-left-radius:5px;box-shadow:0 4px 20px rgba(229,62,62,0.08);padding:40px 38px 36px 38px;text-align:left;">
+            ${welcomeHtml}
+        </div>`;
+    document.getElementById('chat-container').appendChild(row);
+    scrollToBottom();
+}
+
+/* ══════════════════════════════════════════
+   CHAT FORM SUBMIT
+══════════════════════════════════════════ */
+document.getElementById('chat-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input  = document.getElementById('chat-input');
+    const btn    = document.getElementById('submit-btn');
+    const msg    = input.value.trim();
+    if (!msg) return;
+
+    addMsg('user', esc(msg), msg);
+    input.value = ''; btn.disabled = true;
+    showTyping();
+
+    const p = getProfile();
+    const hour = new Date().getHours();
+    const locText = document.getElementById('location-status').innerText.replace('📍 ','');
+
+    try {
+        const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                message: msg,
+                nickname: localStorage.getItem('nickname') || '손님',
+                history: chatHistory.slice(-8),   // 최근 8턴
+                profile: p,
+                situation: currentSituation,
+                location: locText !== '내 위치' ? locText : '',
+                current_hour: hour
+            })
+        });
+        const data = await res.json();
+        hideTyping();
+
+        // reply를 줄바꿈 처리해서 표시
+        const replyHtml = esc(data.reply).replace(/\n/g, '<br>');
+        addMsg('ai', replyHtml, data.reply);
+
+        // 취향 자동 학습
+        if (data.taste_data) mergeTasteData(data.taste_data);
+
+        // 채팅 기록 저장
+        saveChatRecord(msg, data.reply);
+
+    } catch {
+        hideTyping();
+        addMsg('ai', '서버와 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.', '에러');
+    } finally {
+        btn.disabled = false;
+    }
+});
+
+/* ══════════════════════════════════════════
+   TOP PLACES
+══════════════════════════════════════════ */
+async function showTopPlaces(category) {
+    if (!userLat || !userLon) {
+        if (!navigator.geolocation) { addMsg('ai','이 브라우저는 위치 정보를 지원하지 않습니다.'); return; }
+        addMsg('ai','📍 위치를 확인하는 중입니다...');
+        navigator.geolocation.getCurrentPosition(async pos => {
+            userLat=pos.coords.latitude; userLon=pos.coords.longitude;
+            localStorage.setItem("userLat",userLat); localStorage.setItem("userLon",userLon);
+            await fetchTopPlaces(category);
+        }, ()=>addMsg('ai','❌ 위치 권한이 필요합니다.'));
+    } else { await fetchTopPlaces(category); }
+}
+
+async function fetchTopPlaces(category) {
+    showTyping();
+    try {
+        const res  = await fetch('/api/top-places', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({category, lat:userLat, lon:userLon})
+        });
+        const data = await res.json();
+        hideTyping();
+        addMsg('ai', `📍 내 위치 기준 <b>${esc(category)}</b> 인기 장소 TOP5`);
+        const cc = document.getElementById('chat-container');
+        data.places.forEach((place, i) => {
+            setTimeout(() => {
+                const favd = isFav(place.name);
+                const card = document.createElement('div');
+                card.className='place-card'; card.id=`pc-${i}`;
+                card.innerHTML=`
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+                        <div class="place-name">🍽 ${esc(place.name)}</div>
+                        <button class="fav-btn" id="fb-${i}" onclick="handleFav(${i},${JSON.stringify(place).replace(/"/g,'&quot;')})">${favd?'⭐':'☆'}</button>
+                    </div>
+                    <div class="place-addr">📍 ${esc(place.address)}</div>
+                    <a href="${esc(place.map_url)}" target="_blank" class="place-link">지도 보기 →</a>
+                `;
+                cc.appendChild(card); scrollToBottom();
+            }, i*110);
+        });
+
+    } catch {
+        hideTyping(); addMsg('ai','추천 정보를 불러오지 못했습니다.');
+    }
+}
+
+function handleFav(i, place) {
+    const added = toggleFav({name:place.name, address:place.address, url:place.map_url});
+    const btn = document.getElementById(`fb-${i}`);
+    if (btn) btn.textContent = added ? '⭐' : '☆';
+}
+
+/* ══════════════════════════════════════════
+   LOCATION
+══════════════════════════════════════════ */
+async function getGPSLocation() {
+    const btn = document.getElementById('location-status');
+    const sLat=localStorage.getItem("userLat"), sLon=localStorage.getItem("userLon");
+    if (sLat && sLon) {
+        userLat=parseFloat(sLat); userLon=parseFloat(sLon);
+        try {
+            const r=await fetch(`/api/reverse-geocode?lat=${userLat}&lon=${userLon}`);
+            const d=await r.json();
+            btn.innerText = d.address ? `📍 ${d.address}` : '📍 위치 확인됨';
+        } catch { btn.innerText='📍 위치 확인됨'; }
+        return;
+    }
+    if (!navigator.geolocation) { btn.innerText='📍 미지원'; return; }
+    btn.innerText='📍 찾는 중...';
+    navigator.geolocation.getCurrentPosition(async pos => {
+        userLat=pos.coords.latitude; userLon=pos.coords.longitude;
+        localStorage.setItem("userLat",userLat); localStorage.setItem("userLon",userLon);
+        try {
+            const r=await fetch(`/api/reverse-geocode?lat=${userLat}&lon=${userLon}`);
+            const d=await r.json();
+            btn.innerText = d.address ? `📍 ${d.address}` : '📍 위치 확인됨';
+        } catch { btn.innerText='📍 위치 확인됨'; }
+    }, ()=>{ btn.innerText='📍 위치 거부됨'; });
+}
+
+/* ══════════════════════════════════════════
+   MISC
+══════════════════════════════════════════ */
+function showToast(msg) {
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function handleSearch(e) {
+    e.preventDefault();
+    const q=document.getElementById('global-search').value.trim();
+    if (q) location.href=`/search?query=${encodeURIComponent(q)}`;
+}
+
+/* ── 프로필 드롭다운 ── */
+function toggleProfileDropdown() {
+    const dd = document.getElementById('profileDropdown');
+    dd.classList.toggle('open');
+}
+function closeProfileDropdown() {
+    document.getElementById('profileDropdown').classList.remove('open');
+}
+// 외부 클릭 시 닫기
+document.addEventListener('click', (e) => {
+    const wrap = document.getElementById('profileWrap');
+    if (wrap && !wrap.contains(e.target)) closeProfileDropdown();
+});
+
+function handleLogout() {
+    if (!confirm('로그아웃 하시겠어요?')) return;
+    // 로그인 관련 localStorage 항목 제거
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('nickname');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    showToast('👋 로그아웃 되었어요');
+    setTimeout(() => location.href = '/login', 1000);
+}
+function toggleSideMenu() {
+    const m=document.getElementById("sideMenu"), o=document.getElementById("overlay");
+    const open = m.style.transform==='translateX(0px)'||m.style.transform==='translateX(0)';
+    m.style.transform=open?'translateX(-100%)':'translateX(0)';
+    o.style.display=open?'none':'block';
+}
+function toggleGameSubMenu() {
+    gameSubOpen=!gameSubOpen;
+    document.getElementById("gameSubMenu").style.display=gameSubOpen?'flex':'none';
+}
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", () => {
+    // 프로필 아바타 + 드롭다운
+    const nickname = localStorage.getItem("nickname");
+    const avatar   = document.getElementById("profileAvatar");
+    if (avatar) {
+        if (nickname) {
+            avatar.innerText = nickname.slice(0,2);
+            // 드롭다운 닉네임 채우기
+            const pdName = document.getElementById('pd-nickname');
+            if (pdName) pdName.textContent = nickname + '님';
+            const pdEmail = document.getElementById('pd-email');
+            if (pdEmail) pdEmail.textContent = isLoggedIn() ? '로그인 중' : '비로그인';
+        } else {
+            avatar.innerText = '??';
+        }
+    }
+    // 비로그인 시 로그아웃 버튼 숨기기
+    if (!isLoggedIn()) {
+        const logoutBtn = document.getElementById('pd-logout-btn');
+        if (logoutBtn) logoutBtn.style.display = 'none';
+    }
+
+    // 위치 초기화
+    getGPSLocation();
+
+    // 히스토리 패널 (로그인 시)
+    if (isLoggedIn()) {
+        document.getElementById('historyPanel').classList.add('show');
+        document.getElementById('chatScroll').style.right = '280px';
+        renderHistory();
+    }
+
+    // 첫 방문 (취향 없음) → 온보딩
+    const p = getProfile();
+    const hasProfile = p.preferred_alcohol || p.preferred_snack;
+    if (!hasProfile && isLoggedIn()) {
+        openOnboarding();
+    } else {
+        startChat();
+    }
+});
+</script>
+
+
+    <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
+        <div class="mobile-nav-panel">
+            <div class="mobile-nav-header">
+                <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
+                <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="/main">🏠 홈</a>
+                <a href="/aichat">🤖 AI 맛집추천</a>
+                <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/SOLO">🍚 혼밥</a>
+                <a href="/DATE">💑 데이트</a>
+                <a href="/WORK">🍻 회식</a>
+                <a href="/ETC">🧩 기타</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/game/pinball">🎯 핀볼</a>
+                <a href="/game/ladder">🪜 사다리타기</a>
+                <a href="/game/random_amount">🎰 룰렛 게임</a>
+                <a href="/game/worldcup">🏆 음식 월드컵</a>
+                <a href="/game/calculator">🧮 계산기</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/about">ℹ️ 회사소개</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openMobileNav() { document.getElementById('mobileNav').classList.add('open'); document.body.style.overflow='hidden'; }
+        function closeMobileNav() { document.getElementById('mobileNav').classList.remove('open'); document.body.style.overflow=''; }
+        function closeMobileNavOutside(e) { if (e.target===document.getElementById('mobileNav')) closeMobileNav(); }
+    </script>
+
+</body>
+</html>

@@ -361,32 +361,73 @@
                 right: 20px;
             }
 
+            /* 모바일 헤더 우측 버튼 영역 */
+
+
+            /* --- Mobile Top Ad (헤더 아래 고정) --- */
+            .mobile-top-ad {
+                display: none;
+                position: fixed;
+                top: 100px;
+                left: 0;
+                right: 0;
+                height: 55px;
+                background: #f4f4f4;
+                border-bottom: 1px solid #ddd;
+                align-items: center;
+                justify-content: center;
+                color: #999;
+                font-weight: bold;
+                font-size: 0.9rem;
+                z-index: 499;
+            }
 
             /* ===== 반응형 (태블릿/모바일) ===== */
             @media (max-width: 900px) {
+                .mobile-top-ad { display: flex; }
+                main { padding-top: 130px !important; }
+
+                /* 헤더: 2행 그리드
+                   1행: [header-left(햄버거+로고)] [header-right(버튼들)]
+                   2행: [header-center(검색창) - 전체 너비] */
                 .header {
+                    display: grid;
                     grid-template-columns: 1fr auto;
-                    padding: 10px 16px;
-                    gap: 8px;
+                    grid-template-rows: auto auto;
+                    grid-template-areas:
+                        "left right"
+                        "center center";
+                    padding: 8px 12px;
+                    gap: 6px 8px;
+                    align-items: center;
+                }
+                .header-left {
+                    grid-area: left;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+                .header-right {
+                    grid-area: right;
+                    display: flex !important;
+                    align-items: center;
+                    gap: 4px;
+                    justify-content: flex-end;
                 }
                 .header-center {
-                    grid-column: 1 / -1;
-                    grid-row: 2;
-                    width: 100%;
-                    order: 3;
+                    grid-area: center;
+                    padding: 0;
                 }
-                .header-left { grid-column: 1; }
-                .header-right { grid-column: 2; }
-                .menu-bar { display: none; }
-                .header-logo { font-size: 1.3rem; }
-                .main-title { font-size: 2rem; margin-top: 30px; }
+                .header-logo { font-size: 1.2rem; }
+                .menu-bar { display: none !important; }
+                .login-btn { padding: 6px 10px; font-size: 0.78rem; white-space: nowrap; }
+                .nickname-avatar { width: 30px; height: 30px; font-size: 0.8rem; }
+                .current-location { padding: 5px 7px; font-size: 0.72rem; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+                .main-title { font-size: 2rem; margin-top: 20px; }
                 .main-buttons { flex-direction: column; align-items: center; gap: 12px; }
                 .main-btn { padding: 16px 40px; font-size: 1.1rem; width: 80%; }
                 .community-container { flex-direction: column; padding: 0 16px; }
                 .community-card { width: 100%; box-sizing: border-box; height: auto; min-height: 140px; }
-                .side-ad { display: none !important; }
-                .login-btn { padding: 8px 10px; font-size: 0.8rem; }
-                .current-location { padding: 6px 8px; font-size: 0.78rem; }
             }
 
             @media (max-width: 480px) {
@@ -493,6 +534,8 @@
     </head>
     <body>
         <header class="header">
+            <!-- 데스크탑: header-left / header-center / header-right (grid) -->
+            <!-- 모바일: header-top-row (1행) + header-center (2행) -->
             <div class="header-left">
                 <button class="hamburger-btn" id="hamburgerBtn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
@@ -525,21 +568,13 @@
                 </div>
             </div>
 
-            <div class="header-right" id="headerRightArea">
-                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
-                <button
-                    class="login-btn"
-                    style="background: #fff; color: #dc2626; border: 1.5px solid #dc2626"
-                    onclick="location.href = '/signup'"
-                >
-                    회원가입
-                </button>
-            </div>
+            <div class="header-right" id="headerRightArea"></div>
         </header>
 
         <main style="padding-top: 120px; padding-bottom: 100px; position: relative">
             <div class="side-ad ad-left">광고 영역 (좌)</div>
             <div class="side-ad ad-right">광고 영역 (우)</div>
+            <div class="mobile-top-ad" id="mobileTopAd">📢 광고 영역 (모바일)</div>
 
             <div class="main-title">🍽️ <span>테이스트메이트</span></div>
 
@@ -918,19 +953,28 @@
             document.addEventListener('DOMContentLoaded', () => {
                 const nickname = localStorage.getItem('nickname');
                 const isAdmin = localStorage.getItem('is_admin');
+
+                // 로그인 상태에 따라 헤더 우측 렌더링
+                const headerRightArea = document.getElementById('headerRightArea');
                 if (nickname) {
-                    let adminButton = '';
-                    if (isAdmin === '1') {
-                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`;
-                    }
-                    document.getElementById('headerRightArea').innerHTML = `
+                    let adminButton = isAdmin === '1'
+                        ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자</button>`
+                        : '';
+                    headerRightArea.innerHTML = `
                         <span class="nickname-avatar" onclick="location.href='/mypage'">${nickname.slice(0, 2)}</span>
                         ${adminButton}
-                        <button class="login-btn" onclick="localStorage.clear(); location.reload();" style="background: #666; margin-left:8px;">로그아웃</button>
+                        <button class="login-btn" onclick="localStorage.clear(); location.reload();" style="background: #666;">로그아웃</button>
                         <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 위치 로딩...</span>
                     `;
                     getGPSLocation();
+                } else {
+                    headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href='/login'">로그인</button>
+                        <button class="login-btn" style="background:#fff; color:#dc2626; border:1.5px solid #dc2626;" onclick="location.href='/signup'">회원가입</button>
+                    `;
                 }
+
+
 
                 updateRealtimeRecommendation();
                 updateThemeRecommendation();
@@ -944,14 +988,18 @@
                 // 광고 배너: CSS 미디어쿼리 대신 JS로 제어 (ngrok iframe 환경 대응)
                 function updateAdVisibility() {
                     const realWidth = window.screen.width;
-                    const ads = document.querySelectorAll('.side-ad');
-                    ads.forEach(ad => {
-                        if (realWidth >= 1200) {
-                            ad.classList.add('visible');
-                        } else {
-                            ad.classList.remove('visible');
-                        }
-                    });
+                    const sideAds = document.querySelectorAll('.side-ad');
+                    const topAd = document.getElementById('mobileTopAd');
+
+                    if (realWidth >= 1200) {
+                        // 데스크탑: 좌우 배너 표시, 상단 배너 숨김
+                        sideAds.forEach(ad => ad.classList.add('visible'));
+                        if (topAd) topAd.style.display = 'none';
+                    } else {
+                        // 모바일/태블릿: 좌우 배너 숨기고, 헤더 아래 가로 배너 표시
+                        sideAds.forEach(ad => ad.classList.remove('visible'));
+                        if (topAd) topAd.style.display = 'flex';
+                    }
                 }
                 updateAdVisibility();
                 window.addEventListener('resize', updateAdVisibility);
