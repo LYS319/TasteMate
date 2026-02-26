@@ -1,5 +1,8 @@
 import requests
 import logging
+import random
+import math
+import datetime
 from pydantic import BaseModel
 from typing import List
 from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile, Body, Query
@@ -1021,3 +1024,109 @@ def reverse_geocode(lat: float = Query(...), lon: float = Query(...)):
     except Exception as e:
         logging.error(f"Kakao API 에러: {e}")
         return {"address": None}
+
+# =============================================
+# 날씨별 음식 추천 (기상청 초단기실황 API)
+# =============================================
+@app.get("/api/weather")
+async def get_weather(lat: float = Query(...), lon: float = Query(...)):
+    return await get_weather_recommendation(lat, lon)
+
+@app.get("/api/weather-recommend")
+async def get_weather_recommendation(lat: float = Query(...), lon: float = Query(...)):
+    temp_menu_data = {
+        -10: ["사골만두국", "얼큰육개장", "부대찌개", "김치찌개", "순두부찌개", "감자탕", "내장탕", "떡국", "칼국수", "수제비"],
+        -5:  ["나베요리", "알탕", "동태탕", "도가니탕", "설렁탕", "우거지해장국", "뼈해장국", "콩나물국밥", "어묵탕", "우동"],
+        0:   ["샤브샤브", "스키야키", "매운탕", "추어탕", "순대국", "돼지국밥", "잔치국수", "해물파전", "삼계탕", "곰탕"],
+        5:   ["돈까스나베", "가츠동", "라멘", "쌀국수", "짬뽕", "짜장면", "부침개", "만두전골", "온소바", "육회비빔밥"],
+        10:  ["제육볶음", "불고기", "쌈밥", "된장찌개", "청국장", "비빔밥", "돈까스", "햄버거", "샌드위치", "파스타"],
+        15:  ["초밥", "텐동", "연어덮밥", "스테이크", "리조또", "피자", "오므라이스", "카레", "생선구이", "간장게장"],
+        20:  ["월남쌈", "포케", "샐러드", "타코", "회덮밥", "물회", "막국수", "비빔국수", "쫄면", "냉우동"],
+        25:  ["냉소바", "콩국수", "냉면", "비빔냉면", "묵사발", "냉채족발", "훈제오리샐러드", "김치말이국수", "참치회", "모밀"],
+        30:  ["평양냉면", "함흥냉면", "초계국수", "물회", "산낙지", "메밀소바", "얼음동동미역국", "열무국수", "빙수", "아이스크림"],
+        35:  ["삼계탕(이열치열)", "전복삼계탕", "장어구이", "보쌈", "족발", "치킨", "피자", "아이스커피", "냉녹차", "수박"],
+        40:  ["살얼음맥주", "생과일주스", "팥빙수", "망고빙수", "냉파스타", "샐러드파스타", "아사이볼", "스무디", "젤라또"],
+    }
+
+    try:
+        def dfs_xy_conv(lat, lon):
+            RE = 6371.00877
+            GRID = 5.0
+            SLAT1 = 30.0
+            SLAT2 = 60.0
+            OLON = 126.0
+            OLAT = 38.0
+            XO = 43
+            YO = 136
+            DEGRAD = math.pi / 180.0
+            re = RE / GRID
+            slat1 = SLAT1 * DEGRAD
+            slat2 = SLAT2 * DEGRAD
+            olon = OLON * DEGRAD
+            olat = OLAT * DEGRAD
+            sn = math.tan(math.pi * 0.25 + slat2 * 0.5) / math.tan(math.pi * 0.25 + slat1 * 0.5)
+            sn = math.log(math.cos(slat1) / math.cos(slat2)) / math.log(sn)
+            sf = math.tan(math.pi * 0.25 + slat1 * 0.5)
+            sf = math.pow(sf, sn) * math.cos(slat1) / sn
+            ro = math.tan(math.pi * 0.25 + olat * 0.5)
+            ro = re * sf / math.pow(ro, sn)
+            ra = math.tan(math.pi * 0.25 + lat * DEGRAD * 0.5)
+            ra = re * sf / math.pow(ra, sn)
+            theta = lon * DEGRAD - olon
+            if theta > math.pi:
+                theta -= 2.0 * math.pi
+            if theta < -math.pi:
+                theta += 2.0 * math.pi
+            theta *= sn
+            x = (ra * math.sin(theta)) + XO + 0.5
+            y = (ro - ra * math.cos(theta)) + YO + 0.5
+            return int(x), int(y)
+
+        x, y = dfs_xy_conv(lat, lon)
+        now = datetime.datetime.now()
+        base_date = now.strftime('%Y%m%d')
+        base_time = (now - datetime.timedelta(hours=1) if now.minute < 45 else now).strftime('%H00')
+        params = {
+            'serviceKey': settings.KMA_API_KEY,
+            'numOfRows': 10,
+            'pageNo': 1,
+            'dataType': 'JSON',
+            'base_date': base_date,
+            'base_time': base_time,
+            'nx': x,
+            'ny': y
+        }
+        url = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst'
+        resp = requests.get(url, params=params, timeout=5)
+        temp = 20
+        if resp.ok:
+            items = resp.json().get('response', {}).get('body', {}).get('items', {}).get('item', [])
+            for item in items:
+                if item.get('category') == 'T1H':
+                    temp = float(item.get('obsrValue'))
+                    break
+        base_temp = (int(temp) // 5) * 5
+        base_temp = max(-10, min(40, base_temp))
+        selected_menu = random.choice(temp_menu_data[base_temp])
+        if base_temp <= 0:
+            title, desc = "🥶 꽁꽁 얼어붙는 추위", "몸을 녹여줄 따뜻한"
+        elif base_temp >= 30:
+            title, desc = "🥵 숨막히는 폭염주의", "더위를 날려줄 시원한"
+        else:
+            title, desc = "☀️ 기분 좋은 날씨", "오늘 날씨와 잘 어울리는"
+        return {
+            "title": f"{title} ({temp}℃)",
+            "subtitle": f"오늘의 추천: {selected_menu}",
+            "desc": f"{desc} '{selected_menu}' 어떠세요?",
+            "search": selected_menu,
+            "tag": f"#{base_temp}도_맞춤추천"
+        }
+    except Exception as e:
+        logging.error(f"날씨 API 오류: {e}")
+        return {
+            "title": "🍽️ 테이스트메이트 추천",
+            "subtitle": "맛있는 식사 하세요!",
+            "desc": "주변의 맛집을 찾아보세요.",
+            "search": "맛집",
+            "tag": "#오늘의메뉴"
+        }

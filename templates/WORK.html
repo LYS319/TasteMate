@@ -547,7 +547,7 @@
                             const { latitude: lat, longitude: lon } = pos.coords;
                             try {
                                 const res = await fetch(
-                                    `/api/reverse_geocode?lat=${lat}&lon=${lon}`,
+                                    `/api/reverse-geocode?lat=${lat}&lon=${lon}`,
                                 );
                                 const data = await res.json();
                                 const addr = data.address;

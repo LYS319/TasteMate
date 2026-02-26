@@ -364,6 +364,20 @@
             /* 모바일 헤더 우측 버튼 영역 */
 
 
+            /* 모바일 위치 버튼 (검색창 옆) */
+            .mobile-location-btn {
+                display: none;
+                background: #fff1f1;
+                border: 1.5px solid rgba(220,38,38,0.2);
+                border-radius: 10px;
+                padding: 8px 10px;
+                font-size: 1.1rem;
+                cursor: pointer;
+                flex-shrink: 0;
+                transition: background 0.2s;
+            }
+            .mobile-location-btn:hover { background: #ffe0e0; }
+
             /* --- Mobile Top Ad (헤더 아래 고정) --- */
             .mobile-top-ad {
                 display: none;
@@ -417,7 +431,13 @@
                 .header-center {
                     grid-area: center;
                     padding: 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
                 }
+                .header-center .search-box { flex: 1; overflow: visible; position: relative; }
+                .header-center .search-box input { padding-right: 50px; }
+                .mobile-location-btn { display: flex; }
                 .header-logo { font-size: 1.2rem; }
                 .menu-bar { display: none !important; }
                 .login-btn { padding: 6px 10px; font-size: 0.78rem; white-space: nowrap; }
@@ -566,6 +586,7 @@
                     />
                     <button class="search-submit-btn" onclick="handleSearch()">🔍</button>
                 </div>
+                <button class="mobile-location-btn" id="mobile-gps-btn" onclick="getMobileGPSLocation()">📍</button>
             </div>
 
             <div class="header-right" id="headerRightArea"></div>
@@ -609,14 +630,14 @@
                     style="cursor: pointer"
                     onclick="handleThemeRecommendClick()"
                 >
-                    <div class="card-title">✨ <span id="theme-title">오늘의 테마</span></div>
+                    <div class="card-title"><span id="theme-title">날씨 분석 중...</span></div>
                     <div class="card-info">
                         <div class="card-count" id="theme-subtitle" style="color: #dc2626; font-weight: 800">
-                            분석 중...
+                            데이터 로딩 중...
                         </div>
-                        <div class="card-recent" id="theme-desc">가장 잘 어울리는 장소</div>
+                        <div class="card-recent" id="theme-desc">기온 맞춤형 메뉴 추천</div>
                     </div>
-                    <div class="card-tag" id="theme-tag">#테마맛집</div>
+                    <div class="card-tag" id="theme-tag">#날씨맛집</div>
                 </div>
 
                 <div
@@ -781,7 +802,7 @@
                     navigator.geolocation.getCurrentPosition(async (pos) => {
                         try {
                             const res = await fetch(
-                                `/api/reverse_geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                                `/api/reverse-geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
                             );
                             const data = await res.json();
                             // 시(city)와 구(district) 조합
@@ -821,7 +842,7 @@
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(async (pos) => {
                         const res = await fetch(
-                            `/api/reverse_geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                            `/api/reverse-geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
                         );
                         const data = await res.json();
                         const neighborhood = data.address.suburb || data.address.neighbourhood || '내 주변';
@@ -833,7 +854,7 @@
 
                         document.getElementById('realtime-recommend-card').onclick = () => {
                             window.open(
-                                `https://map.naver.com/v5/search/${encodeURIComponent(neighborhood + ' ' + selected.search)}`,
+                                `https://map.naver.com/v5/search/${encodeURIComponent(selected.search)}`,
                                 '_blank',
                             );
                         };
@@ -846,87 +867,41 @@
                 const themeSubtitle = document.getElementById('theme-subtitle');
                 const themeDesc = document.getElementById('theme-desc');
                 const themeTag = document.getElementById('theme-tag');
+                const themeCard = document.getElementById('theme-recommend-card');
 
-                const now = new Date();
-                const hour = now.getHours();
-                const day = now.getDay();
-
-                let config = {
-                    title: '오늘의 테마',
-                    subtitle: '맛집 탐방',
-                    desc: '주변 맛집을 확인하세요',
-                    search: '맛집',
-                    tag: '#테마추천',
-                };
-
-                if (day === 0) {
-                    config = {
-                        title: '평화로운 일요일',
-                        subtitle: '여유로운 브런치',
-                        desc: '분위기 좋은 카페와 브런치',
-                        search: '브런치 카페',
-                        tag: '#일요일브런치',
-                    };
-                } else if ((day === 5 || day === 6) && hour >= 17) {
-                    config = {
-                        title: '신나는 불금/불토',
-                        subtitle: '분위기 끝판왕 맛집',
-                        desc: '데이트나 모임하기 좋은 곳',
-                        search: '분위기 맛집',
-                        tag: '#불금데이트',
-                    };
-                } else if (day >= 1 && day <= 5 && hour >= 11 && hour <= 15) {
-                    config = {
-                        title: '바쁜 평일 점심',
-                        subtitle: '빠르고 든든한 혼밥',
-                        desc: '직장인이 선호하는 식당',
-                        search: '혼밥 맛집',
-                        tag: '#직장인점심',
-                    };
-                } else if (hour >= 16 && hour <= 21) {
-                    const dinnerMenus = [
-                        '삼겹살',
-                        '파스타',
-                        '불고기',
-                        '치킨',
-                        '마라탕',
-                        '초밥',
-                        '돈카츠',
-                        '제육볶음',
-                        '수제버거',
-                        '짬뽕',
-                    ];
-                    const randomIdx = Math.floor(Math.random() * dinnerMenus.length);
-                    const dinnerMenu = dinnerMenus[randomIdx];
-                    config = {
-                        title: '고생한 하루 끝',
-                        subtitle: `맛있는 저녁 식사 (${dinnerMenu})`,
-                        desc: `든든하게 먹고 푹 쉬세요. 오늘은 '${dinnerMenu}' 어떠세요?`,
-                        search: dinnerMenu,
-                        tag: '#오늘의저녁',
-                    };
+                async function fetchWeather(latitude, longitude) {
+                    try {
+                        const res = await fetch(`/api/weather-recommend?lat=${latitude}&lon=${longitude}`);
+                        if (!res.ok) {
+                            console.error('[날씨] API 응답 오류:', res.status, await res.text());
+                            return;
+                        }
+                        const data = await res.json();
+                        console.log('[날씨] 응답:', data);
+                        themeTitle.innerText = data.title;
+                        themeSubtitle.innerText = data.subtitle;
+                        themeDesc.innerText = data.desc;
+                        themeTag.innerText = data.tag;
+                        themeCard.onclick = () => {
+                            window.location.href = `/search?keyword=${encodeURIComponent(data.search)}`;
+                        };
+                    } catch (e) {
+                        console.error('[날씨] fetch 오류:', e);
+                    }
                 }
 
                 if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(async (pos) => {
-                        const res = await fetch(
-                            `/api/reverse_geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
-                        );
-                        const data = await res.json();
-                        const neighborhood = data.address.suburb || data.address.neighbourhood || '내 주변';
-
-                        themeTitle.innerText = config.title;
-                        themeSubtitle.innerText = config.subtitle;
-                        themeDesc.innerText = `${neighborhood} ${config.desc}`;
-                        themeTag.innerText = config.tag;
-
-                        document.getElementById('theme-recommend-card').onclick = () => {
-                            window.open(
-                                `https://map.naver.com/v5/search/${encodeURIComponent(neighborhood + ' ' + config.search)}`,
-                                '_blank',
-                            );
-                        };
-                    });
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+                        (err) => {
+                            console.warn('[날씨] GPS 거부/오류, 서울 기본값 사용:', err.message);
+                            fetchWeather(37.5665, 126.9780); // 서울 기본값
+                        },
+                        { timeout: 5000 }
+                    );
+                } else {
+                    console.warn('[날씨] geolocation 미지원, 서울 기본값 사용');
+                    fetchWeather(37.5665, 126.9780);
                 }
             }
 
