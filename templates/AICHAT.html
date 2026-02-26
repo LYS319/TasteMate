@@ -17,7 +17,15 @@
             --header-h: 80px; --cat-h: 68px; --input-h: 92px; --nav-h: 80px;
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Noto Sans KR', sans-serif; background: var(--bg); font-size: 18px; }
+        html, body { 
+    width: 100%; 
+    height: 100%; 
+    overflow-x: hidden;
+    overflow-y: auto;   /* 🔥 이걸로 변경 */
+    font-family: 'Noto Sans KR', sans-serif; 
+    background: var(--bg); 
+    font-size: 18px; 
+}
 
         /* ── HEADER ── */
         .site-header {
@@ -361,28 +369,7 @@
             #welcome-card-body { padding: 24px 20px 20px 20px !important; }
         }
 
-        @media (max-width: 768px) {
-
-    .history-panel {
-        position: fixed;
-        top: calc(var(--header-h) + var(--cat-h));
-        left: 0;
-        right: 0;
-        bottom: calc(var(--input-h) + var(--nav-h));
-        background: rgba(255,255,255,0.98);
-        backdrop-filter: blur(6px);
-        z-index: 1000;
-        display: none;
-        padding: 16px;
-        overflow-y: auto;
-        box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
-    }
-
-    .history-panel.mobile-open {
-        display: block;
-    }
-
-}
+        
 
         /* ── 프로필 드롭다운 ── */
         .profile-dropdown {
@@ -441,6 +428,32 @@
             display: none; flex-direction: column; gap: 6px;
         }
         .history-panel.show { display: flex; }
+
+        @media (max-width: 768px) {
+
+    .history-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 260px;
+        height: 100vh;
+        background: #fff;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+        z-index: 2500;
+        padding: 20px;
+        overflow-y: auto;
+        border-left: none;
+
+        display: block; /* 🔥 이 줄 추가 */
+    }
+
+    .history-panel.mobile-open {
+        transform: translateX(0);
+    }
+
+}
         .h-title { 
     font-size: 18px;   /* 🔥 키움 */
     font-weight: 900;  /* 🔥 더 굵게 */
@@ -663,11 +676,6 @@
     }
 }
 
-@media (max-width: 768px) {
-    .history-panel.show {
-        display: none !important;
-    }
-}
 
         </style>
 </head>
@@ -717,6 +725,10 @@
         </div>
 
         <button class="modal-submit" onclick="saveOnboarding()">✅ 저장하고 시작하기</button>
+        <button class="modal-skip" onclick="resetTasteData()" 
+        style="color:#e53e3e;font-weight:700;">
+        🗑 취향 데이터 전체 초기화
+        </button>
         <button class="modal-skip" onclick="skipOnboarding()">건너뛰기</button>
     </div>
 </div>
@@ -829,13 +841,18 @@
 </div>
 
 <!-- ── HISTORY PANEL ── -->
+
+
+
+<!-- 🔥 모바일 전용 뒤로가기 헤더 (단 하나만!) -->
 <div id="mobileHistoryHeader" style="display:none;margin-bottom:14px;">
     <button onclick="closeMobileHistory()" 
         style="background:none;border:none;font-size:14px;font-weight:700;color:#e53e3e;cursor:pointer;">
         ← 채팅으로 돌아가기
     </button>
 </div>
-<div class="history-panel" id="historyPanel">
+
+<div class="history-panel" id="historyPanel" onclick="event.stopPropagation()">
     <div class="h-title">📂 내 기록</div>
     <div class="h-section">⭐ 즐겨찾기</div>
     <div id="favList"><div style="font-size:11px;color:#bbb;padding:2px;">아직 없어요</div></div>
@@ -917,34 +934,69 @@ function getProfile() {
 function saveProfile(p) { save('tasteProfile', p); }
 
 /* ── 취향 자동 업데이트 (AI가 감지한 데이터 반영) ── */
-function mergeTasteData(tasteData) {
+function accumulateTasteData(tasteData) {
     if (!tasteData || !isLoggedIn()) return;
-    const p = getProfile();
-    let changed = false;
+
+    let store = load('tasteLearning', {
+        alcohol: {},
+        snack: {},
+        dislike: {}
+    });
+
+    // 🔥 알코올 누적
     if (tasteData.detected_alcohol && tasteData.detected_alcohol !== 'null') {
-        const cur = p.preferred_alcohol ? p.preferred_alcohol.split(',') : [];
-        if (!cur.includes(tasteData.detected_alcohol)) {
-            cur.push(tasteData.detected_alcohol);
-            p.preferred_alcohol = cur.join(',');
-            changed = true;
-        }
+        const key = tasteData.detected_alcohol;
+        store.alcohol[key] = (store.alcohol[key] || 0) + 1;
     }
+
+    // 🔥 안주 누적
     if (tasteData.detected_snack && tasteData.detected_snack !== 'null') {
-        const cur = p.preferred_snack ? p.preferred_snack.split(',') : [];
-        if (!cur.includes(tasteData.detected_snack)) {
-            cur.push(tasteData.detected_snack);
-            p.preferred_snack = cur.join(',');
-            changed = true;
+        const key = tasteData.detected_snack;
+        store.snack[key] = (store.snack[key] || 0) + 1;
+    }
+
+    // 🔥 기피 누적
+    if (tasteData.detected_dislike && tasteData.detected_dislike !== 'null') {
+        const key = tasteData.detected_dislike;
+        store.dislike[key] = (store.dislike[key] || 0) + 1;
+    }
+
+    save('tasteLearning', store);
+
+    applyLearningToProfile();
+}
+
+function applyLearningToProfile() {
+    const store = load('tasteLearning', null);
+    if (!store) return;
+
+    const THRESHOLD = 3; // 🔥 3번 이상 언급되면 취향 반영
+
+    const p = getProfile();
+
+    // 알코올
+    for (let key in store.alcohol) {
+        if (store.alcohol[key] >= THRESHOLD) {
+            const cur = p.preferred_alcohol ? p.preferred_alcohol.split(',') : [];
+            if (!cur.includes(key)) {
+                cur.push(key);
+                p.preferred_alcohol = cur.join(',');
+            }
         }
     }
-    if (tasteData.detected_dislike && tasteData.detected_dislike !== 'null') {
-        p.dislikes = tasteData.detected_dislike;
-        changed = true;
+
+    // 안주
+    for (let key in store.snack) {
+        if (store.snack[key] >= THRESHOLD) {
+            const cur = p.preferred_snack ? p.preferred_snack.split(',') : [];
+            if (!cur.includes(key)) {
+                cur.push(key);
+                p.preferred_snack = cur.join(',');
+            }
+        }
     }
-    if (changed) {
-        saveProfile(p);
-        showTasteTag(tasteData);
-    }
+
+    saveProfile(p);
 }
 
 function showTasteTag(tasteData) {
@@ -1186,9 +1238,37 @@ if (hour >= 5 && hour < 12) {
         const alc = p.preferred_alcohol ? p.preferred_alcohol.split(',').filter(Boolean) : [];
         const snk = p.preferred_snack   ? p.preferred_snack.split(',').filter(Boolean)   : [];
         const allItems = [...new Set([...alc, ...snk])]; // 중복 제거
-        const chips = allItems.map(item =>
-            `<span style="background:#fff0f0;border:1px solid #fecaca;border-radius:50px;padding:6px 14px;font-size:14px;font-weight:700;color:var(--red);white-space:nowrap;">${esc(item)}</span>`
-        ).join('');
+        const chips = allItems.map(item => {
+    const type = alc.includes(item) ? 'alcohol' : 'snack';
+
+    return `
+    <span style="
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        background:#fff0f0;
+        border:1px solid #fecaca;
+        border-radius:50px;
+        padding:6px 12px;
+        font-size:14px;
+        font-weight:700;
+        color:var(--red);
+        white-space:nowrap;
+    ">
+        ${esc(item)}
+        <button 
+            onclick="removeSpecificTaste('${type}','${esc(item)}')" 
+            style="
+                background:none;
+                border:none;
+                font-size:13px;
+                cursor:pointer;
+                color:#e53e3e;
+                padding:0 2px;
+            "
+        >✕</button>
+    </span>`;
+}).join('');
         return `<div style="background:white;border:1.5px solid #fecaca;border-radius:16px;padding:14px 18px;margin-bottom:28px;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
                 <div style="display:flex;align-items:center;gap:8px;">
@@ -1279,7 +1359,7 @@ document.getElementById('chat-form').addEventListener('submit', async (e) => {
         addMsg('ai', replyHtml, data.reply);
 
         // 취향 자동 학습
-        if (data.taste_data) mergeTasteData(data.taste_data);
+        if (data.taste_data) accumulateTasteData(data.taste_data);
 
         // 채팅 기록 저장
         saveChatRecord(msg, data.reply);
@@ -1481,23 +1561,43 @@ document.addEventListener("DOMContentLoaded", () => {
                 <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
             </div>
             <div class="mobile-nav-links">
-                <a href="#" onclick="toggleMobileHistory()">📂 내 기록</a>
-                <a href="/main">🏠 홈</a>
-                <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
-                <div class="mobile-nav-divider"></div>
-                <a href="/SOLO">🍚 혼밥</a>
-                <a href="/DATE">💑 데이트</a>
-                <a href="/WORK">🍻 회식</a>
-                <a href="/ETC">🧩 기타</a>
-                <div class="mobile-nav-divider"></div>
-                <a href="/game/pinball">🎯 핀볼</a>
-                <a href="/game/ladder">🪜 사다리타기</a>
-                <a href="/game/random_amount">🎰 룰렛 게임</a>
-                <a href="/game/worldcup">🏆 음식 월드컵</a>
-                <a href="/game/calculator">🧮 계산기</a>
-                <div class="mobile-nav-divider"></div>
-                <a href="/about">ℹ️ 회사소개</a>
-            </div>
+
+    <!-- 🔥 게임 아코디언 -->
+    <div class="mobile-nav-links">
+
+    <a href="#" onclick="toggleMobileHistory()">📂 기록</a>
+
+    <a href="/main">🏠 홈</a>
+
+    <!-- 현재 페이지가 aichat이면 JS로 숨길 수 있음 -->
+    <a href="/aichat" id="mobileAiLink">🤖 AI</a>
+
+    <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+
+    <!-- 🎮 게임 아코디언 -->
+    <div>
+        <a href="#" 
+           onclick="toggleMobileGameMenu(event)" 
+           style="display:flex;justify-content:space-between;align-items:center;">
+            🎮 게임 <span id="mobileGameArrow">▾</span>
+        </a>
+
+        <div id="mobileGameSubMenu" 
+             style="display:none;flex-direction:column;padding-left:18px;">
+
+            <a href="/game/pinball">🎯 핀볼</a>
+            <a href="/game/ladder">🪜 사다리타기</a>
+            <a href="/game/random_amount">🎰 룰렛</a>
+            <a href="/game/worldcup">🏆 음식 월드컵</a>
+            <a href="/game/calculator">🧮 계산기</a>
+
+        </div>
+    </div>
+
+    <!-- ✅ 회사소개는 하나만 -->
+    <a href="/about">🏢 회사소개</a>
+
+</div>
         </div>
     </div>
     <script>
@@ -1520,35 +1620,145 @@ function handleMobileSearch(e) {
 function toggleMobileHistory() {
     if (window.innerWidth > 768) return;
 
-    document.getElementById('historyPanel').classList.add('mobile-open');
-    document.getElementById('mobileHistoryHeader').style.display = 'block';
+    const panel = document.getElementById('historyPanel');
+    const overlay = document.getElementById('historyOverlay');
+    const isOpen = panel.classList.contains('mobile-open');
+
+    if (isOpen) {
+        closeMobileHistory();
+    } else {
+        panel.classList.add('mobile-open');
+        overlay.style.display = 'block';
+    }
 
     closeMobileNav();
 }
 
 function closeMobileHistory() {
-    document.getElementById('historyPanel').classList.remove('mobile-open');
-    document.getElementById('mobileHistoryHeader').style.display = 'none';
+    const panel = document.getElementById('historyPanel');
+    const overlay = document.getElementById('historyOverlay');
+
+    panel.classList.remove('mobile-open');
+    overlay.style.display = 'none';
 }
+
+let currentSessionBackup = [];
 
 function loadChatFromHistory(index) {
     const hist = load('chatHistory', []);
     const record = hist[index];
     if (!record) return;
 
+    // 🔥 현재 진행 중 세션 백업
+    currentSessionBackup = [...chatHistory];
+
     // 채팅창 초기화
     chatHistory = [];
     document.getElementById('chat-container').innerHTML = '';
 
-    // 질문 다시 표시
+    // 세션 히스토리 복원
     addMsg('user', esc(record.q), record.q);
+    addMsg('ai', esc(record.a).replace(/\n/g, '<br>'), record.a);
 
-    // 답변 다시 표시
-    addMsg('ai', esc(record.a).replace(/\n/g,'<br>'), record.a);
+    showToast("이전 대화를 불러왔어요");
 
-    closeMobileHistory(); // 모바일이면 패널 닫기
+    // 모바일이면 닫기
+    closeMobileHistory();
 }
+
+function toggleMobileGameMenu(e) {
+    e.preventDefault();
+
+    const sub = document.getElementById('mobileGameSubMenu');
+    const arrow = document.getElementById('mobileGameArrow');
+
+    const isOpen = sub.style.display === 'flex';
+
+    if (isOpen) {
+        sub.style.display = 'none';
+        arrow.textContent = '▾';
+    } else {
+        sub.style.display = 'flex';
+        arrow.textContent = '▴';
+    }
+}
+
+function resetTasteData() {
+    if (!confirm("저장된 취향 데이터와 학습 데이터를 모두 삭제할까요?")) return;
+
+    // 확정 프로필 삭제
+    localStorage.removeItem(sKey('tasteProfile'));
+
+    // 학습 누적 데이터 삭제
+    localStorage.removeItem(sKey('tasteLearning'));
+
+    showToast("🗑 취향 데이터가 초기화됐어요");
+
+    // 모달 닫고 새로고침된 느낌 주기
+    document.getElementById('onboardingModal').style.display = 'none';
+    clearChat();
+}
+
+function removeSpecificTaste(type, value) {
+    const p = getProfile();
+    const learning = load('tasteLearning', {
+        alcohol: {},
+        snack: {},
+        dislike: {}
+    });
+
+    if (type === 'alcohol') {
+        const arr = p.preferred_alcohol ? p.preferred_alcohol.split(',') : [];
+        p.preferred_alcohol = arr.filter(v => v !== value).join(',');
+        delete learning.alcohol[value];
+    }
+
+    if (type === 'snack') {
+        const arr = p.preferred_snack ? p.preferred_snack.split(',') : [];
+        p.preferred_snack = arr.filter(v => v !== value).join(',');
+        delete learning.snack[value];
+    }
+
+    saveProfile(p);
+    save('tasteLearning', learning);
+
+    showToast(`❌ ${value} 취향이 삭제됐어요`);
+
+    startChat(); // 카드 즉시 갱신
+}
+
+/* 📂 모바일 히스토리 - 바깥 클릭 시 닫기 */
+document.addEventListener('click', function (e) {
+
+    if (window.innerWidth > 768) return;
+
+    const panel = document.getElementById('historyPanel');
+    const mobileNav = document.getElementById('mobileNav');
+
+    if (!panel.classList.contains('mobile-open')) return;
+
+    // 패널 안 클릭이면 무시
+    if (panel.contains(e.target)) return;
+
+    // 모바일 메뉴 클릭이면 무시
+    if (mobileNav && mobileNav.contains(e.target)) return;
+
+    closeMobileHistory();
+
+}, true);  // 🔥 캡처 단계 사용
+
     </script>
+<div id="historyOverlay" 
+     onclick="closeMobileHistory()"
+     style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.45);
+        backdrop-filter:blur(2px);
+        z-index:2400;
+     ">
+</div>
 
 </body>
 </html>
