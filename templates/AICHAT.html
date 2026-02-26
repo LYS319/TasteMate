@@ -352,7 +352,7 @@
             .send-btn svg { width: 18px; height: 18px; }
             .nav-item { font-size: 10px; padding: 4px 16px; }
             .nav-item svg { width: 22px; height: 22px; }
-            .history-panel { display: none !important; }
+
             .place-card { margin-left: 48px; padding: 14px 16px; }
             .place-name { font-size: 13.5px; }
             .place-addr { font-size: 11px; }
@@ -360,6 +360,29 @@
             .taste-tag { margin-left: 48px; font-size: 12px; }
             #welcome-card-body { padding: 24px 20px 20px 20px !important; }
         }
+
+        @media (max-width: 768px) {
+
+    .history-panel {
+        position: fixed;
+        top: calc(var(--header-h) + var(--cat-h));
+        left: 0;
+        right: 0;
+        bottom: calc(var(--input-h) + var(--nav-h));
+        background: rgba(255,255,255,0.98);
+        backdrop-filter: blur(6px);
+        z-index: 1000;
+        display: none;
+        padding: 16px;
+        overflow-y: auto;
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+    }
+
+    .history-panel.mobile-open {
+        display: block;
+    }
+
+}
 
         /* ── 프로필 드롭다운 ── */
         .profile-dropdown {
@@ -473,8 +496,178 @@
         .mobile-nav-links a:hover { background: #fff5f5; color: #e53e3e; }
         .mobile-nav-divider { height: 1px; background: #f1f1f1; margin: 8px 0; }
         @media (max-width: 768px) {
-            .hamburger-btn { display: block !important; }
+            .hamburger-btn { display: block !important; 
+            }
         }
+
+        /* 🔥 모바일에서 데스크탑 햄버거 버튼 숨김 */
+        @media (max-width: 768px) {
+    .loc-btn {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        padding: 6px 10px;
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+        /* ==================================================
+   📱 MOBILE FULL OPTIMIZATION PATCH
+   ================================================== */
+
+@media (max-width: 768px) {
+
+    /* 전체 폰트 살짝 축소 */
+    html, body {
+        font-size: 14px;
+    }
+
+    /* ───── HEADER ───── */
+    .header-inner {
+        padding: 0 12px;
+        gap: 8px;
+    }
+
+    .header-center {
+        display: none;   /* 🔥 모바일에서 검색창 숨김 */
+    }
+
+    .logo {
+        font-size: 18px;
+    }
+
+    .loc-btn {
+        display: inline-flex !important;
+        font-size: 11px;
+        padding: 6px 10px;
+        max-width: 120px;
+    }
+
+    .profile-avatar {
+        width: 34px;
+        height: 34px;
+        font-size: 11px;
+    }
+
+    /* ───── CATEGORY BAR ───── */
+    .cat-inner {
+        padding: 0 12px;
+        gap: 6px;
+    }
+
+    .cat-btn {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    /* ───── CHAT PANEL ───── */
+    .chat-inner {
+        padding: 14px 14px;
+        gap: 14px;
+    }
+
+    .bubble {
+        max-width: 85%;
+        font-size: 13px;
+        padding: 12px 14px;
+        border-radius: 16px;
+    }
+
+    .ai-avatar {
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+    }
+
+    /* ───── PLACE CARD ───── */
+    .place-card {
+        max-width: 85%;
+        margin-left: 44px;
+        padding: 14px;
+    }
+
+    .place-name {
+        font-size: 14px;
+    }
+
+    .place-addr {
+        font-size: 12px;
+    }
+
+    .place-link {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .taste-tag {
+        margin-left: 44px;
+        font-size: 12px;
+    }
+
+    /* ───── INPUT BAR ───── */
+    .input-inner {
+        padding: 0 10px;
+        gap: 6px;
+    }
+
+    .situation-select {
+        height: 44px;
+        font-size: 12px;
+        padding: 0 8px;
+    }
+
+    .input-field {
+        height: 44px;
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    .send-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .send-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* ───── BOTTOM NAV ───── */
+    .bottom-nav {
+        height: 58px;
+    }
+
+    .nav-item {
+        font-size: 10px;
+        padding: 4px 10px;
+    }
+
+    .nav-item svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    #chatScroll {
+        right: 0 !important;
+    }
+
+}
+
+@media (max-width: 768px) {
+    .header-left .icon-btn {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .history-panel.show {
+        display: none !important;
+    }
+}
 
         </style>
 </head>
@@ -585,6 +778,7 @@
 
         <!-- 우측: 위치 + 프로필 -->
         <div class="header-right">
+            <button class="icon-btn mobile-search-btn" onclick="toggleMobileSearch()">🔍</button>
             <button class="loc-btn" id="location-status" onclick="getGPSLocation()">📍 내 위치</button>
             <div style="position:relative;" id="profileWrap">
                 <button class="profile-avatar" id="profileAvatar" onclick="toggleProfileDropdown()">??</button>
@@ -600,6 +794,19 @@
             </div>
         </div>
     </div>
+    <div id="mobileSearchBar" 
+     style="display:none;position:fixed;top:56px;left:0;right:0;
+     background:white;padding:10px 14px;
+     z-index:210;border-bottom:1px solid #eee;">
+
+    <form onsubmit="handleMobileSearch(event)">
+        <input type="text" id="mobile-search-input"
+               placeholder="지역, 메뉴, 분위기 검색"
+               style="width:100%;padding:10px 14px;
+               border-radius:12px;border:1px solid #ddd;
+               font-size:14px;">
+    </form>
+</div>
 </header>
 
 <!-- ── CATEGORY BAR ── -->
@@ -622,6 +829,12 @@
 </div>
 
 <!-- ── HISTORY PANEL ── -->
+<div id="mobileHistoryHeader" style="display:none;margin-bottom:14px;">
+    <button onclick="closeMobileHistory()" 
+        style="background:none;border:none;font-size:14px;font-weight:700;color:#e53e3e;cursor:pointer;">
+        ← 채팅으로 돌아가기
+    </button>
+</div>
 <div class="history-panel" id="historyPanel">
     <div class="h-title">📂 내 기록</div>
     <div class="h-section">⭐ 즐겨찾기</div>
@@ -759,9 +972,10 @@ function saveChatRecord(userMsg, aiReply) {
     if (!isLoggedIn()) return;
     let list = load('chatHistory', []);
     list.unshift({
-        q: userMsg.slice(0, 40), a: aiReply.slice(0, 80),
-        date: new Date().toLocaleDateString('ko-KR', {month:'short',day:'numeric'})
-    });
+    q: userMsg,
+    a: aiReply,
+    date: new Date().toLocaleDateString('ko-KR', {month:'short',day:'numeric'})
+});
     save('chatHistory', list.slice(0, 30));
     renderHistory();
 }
@@ -808,7 +1022,7 @@ function renderHistory() {
         const clearBtn = `<button onclick="clearAllHistory()" style="width:100%;margin-bottom:6px;padding:5px 8px;background:#fff0f0;border:1px solid #fca5a5;border-radius:8px;color:var(--red);font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;">🗑 전체 삭제</button>`;
         hEl.innerHTML = clearBtn + hist.slice(0,15).map((h,i)=>`
             <div class="h-item">
-                <div style="flex:1;cursor:pointer;" onclick="fillInput('${esc(h.q)}')">
+                <div style="flex:1;cursor:pointer;" onclick="loadChatFromHistory(${i})">
                     <div>${esc(h.q)}${h.q.length>=40?'…':''}</div>
                     <div class="h-date">${h.date}</div>
                 </div>
@@ -1238,10 +1452,14 @@ document.addEventListener("DOMContentLoaded", () => {
     getGPSLocation();
 
     // 히스토리 패널 (로그인 시)
-    if (isLoggedIn()) {
+    if (isLoggedIn()) 
+    {
+    renderHistory();
+
+    if (window.innerWidth > 768) {
         document.getElementById('historyPanel').classList.add('show');
         document.getElementById('chatScroll').style.right = '280px';
-        renderHistory();
+    }
     }
 
     // 첫 방문 (취향 없음) → 온보딩
@@ -1263,8 +1481,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
             </div>
             <div class="mobile-nav-links">
+                <a href="#" onclick="toggleMobileHistory()">📂 내 기록</a>
                 <a href="/main">🏠 홈</a>
-                <a href="/aichat">🤖 AI 맛집추천</a>
                 <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
                 <div class="mobile-nav-divider"></div>
                 <a href="/SOLO">🍚 혼밥</a>
@@ -1286,6 +1504,50 @@ document.addEventListener("DOMContentLoaded", () => {
         function openMobileNav() { document.getElementById('mobileNav').classList.add('open'); document.body.style.overflow='hidden'; }
         function closeMobileNav() { document.getElementById('mobileNav').classList.remove('open'); document.body.style.overflow=''; }
         function closeMobileNavOutside(e) { if (e.target===document.getElementById('mobileNav')) closeMobileNav(); }
+        function toggleMobileSearch() {
+    const bar = document.getElementById('mobileSearchBar');
+    bar.style.display = bar.style.display === 'block' ? 'none' : 'block';
+}
+
+function handleMobileSearch(e) {
+    e.preventDefault();
+    const q = document.getElementById('mobile-search-input').value.trim();
+    if (q) {
+        location.href = `/search?query=${encodeURIComponent(q)}`;
+    }
+}
+
+function toggleMobileHistory() {
+    if (window.innerWidth > 768) return;
+
+    document.getElementById('historyPanel').classList.add('mobile-open');
+    document.getElementById('mobileHistoryHeader').style.display = 'block';
+
+    closeMobileNav();
+}
+
+function closeMobileHistory() {
+    document.getElementById('historyPanel').classList.remove('mobile-open');
+    document.getElementById('mobileHistoryHeader').style.display = 'none';
+}
+
+function loadChatFromHistory(index) {
+    const hist = load('chatHistory', []);
+    const record = hist[index];
+    if (!record) return;
+
+    // 채팅창 초기화
+    chatHistory = [];
+    document.getElementById('chat-container').innerHTML = '';
+
+    // 질문 다시 표시
+    addMsg('user', esc(record.q), record.q);
+
+    // 답변 다시 표시
+    addMsg('ai', esc(record.a).replace(/\n/g,'<br>'), record.a);
+
+    closeMobileHistory(); // 모바일이면 패널 닫기
+}
     </script>
 
 </body>
