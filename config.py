@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     GEMINI_API_KEY: str
+    KMA_API_KEY: str
 
     # extra="ignore" 를 추가하면 .env에 선언되지 않은 잉여 변수가 있어도 에러가 나지 않습니다.
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")

@@ -1,37 +1,34 @@
-
-# --- Standard Library Imports ---
-import os
-import logging
-
-
-# --- Third Party Imports ---
 import requests
-from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile, Body, Query, Response
+import logging
+import random
+import math
+import datetime
+from pydantic import BaseModel
+from typing import List
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile, Body, Query
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
 from starlette.responses import JSONResponse
+from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, text, func
 from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
 from dotenv import load_dotenv
-from typing import List, Optional
-from pydantic import BaseModel
+import os
 import google.generativeai as genai
+import logging
+logging.basicConfig(level=logging.INFO)
 
-
-# --- Local App Imports ---
 from Database import Like, User, Post, Comment, get_db
 from config import settings
 from game_ideal_router import router as ideal_router
-
-logging.basicConfig(level=logging.INFO)
-
 
 app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 templates = Jinja2Templates(directory="templates")
 
+<<<<<<< HEAD
 # --- 인기글 라우터 (AI 코드 건드리지 않음) ---
 @app.get("/SOLO", response_class=HTMLResponse)
 def solo_page(request: Request):
@@ -54,59 +51,152 @@ async def add_ngrok_skip_header(request: Request, call_next):
     response = await call_next(request)
     response.headers["ngrok-skip-browser-warning"] = "true"
     return response
+=======
+>>>>>>> feature/App_DB-LYS
 
-from fastapi import Response
-@app.get("/api/reverse_geocode")
-def reverse_geocode_nominatim(lat: float = Query(...), lon: float = Query(...)):
-    """Reverse geocoding using Nominatim (for CORS-safe frontend use)"""
-    url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}"
-    headers = {"User-Agent": "TasteMate/1.0"}
-    try:
-        resp = requests.get(url, headers=headers, timeout=5)
-        resp.raise_for_status()
-        return Response(content=resp.content, media_type="application/json")
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+# --- 인기글 라우터 (AI 코드 건드리지 않음) ---
+@app.get("/SOLO", response_class=HTMLResponse)
+def solo_page(request: Request):
+    return templates.TemplateResponse("SOLO.html", {"request": request})
+
+@app.get("/DATE", response_class=HTMLResponse)
+def date_page(request: Request):
+    return templates.TemplateResponse("DATE.html", {"request": request})
+
+@app.get("/WORK", response_class=HTMLResponse)
+def work_page(request: Request):
+    return templates.TemplateResponse("WORK.html", {"request": request})
+
+@app.get("/ETC", response_class=HTMLResponse)
+def etc_page(request: Request):
+    return templates.TemplateResponse("ETC.html", {"request": request})
 
 # --- Gemini AI 챗봇 엔드포인트 ---
 class ChatRequest(BaseModel):
     message: str
 
+# --- 카테고리별 인기 장소 API ---
+from sqlalchemy import desc
+
+# 🔥 카테고리별 인기 장소 요청 모델
+class TopPlaceRequest(BaseModel):
+    category: str
+    lat: float
+    lon: float
 
 
+# 🔥 카테고리별 인기 장소 API (프론트와 구조 맞춤)
 @app.post("/api/top-places")
-def top_places_by_category(db: Session = Depends(get_db)):
-    # 카테고리별 place_name, place_address, post count 집계
-    categories = db.query(Post.category).distinct().all()
-    result = {}
-    for (category,) in categories:
-        # place_name이 null이 아닌 것만 집계
-        rows = (
-            db.query(
-                Post.place_name,
-                Post.place_address,
-                func.count(Post.id).label("post_count")
-            )
-            .filter(Post.category == category, Post.place_name != None)
-            .group_by(Post.place_name, Post.place_address)
-            .order_by(desc("post_count"))
-            .limit(5)
-            .all()
-        )
-        result[category] = [
-            {
-                "place_name": r.place_name,
-                "place_address": r.place_address,
-                "post_count": r.post_count
-            } for r in rows
-        ]
-    return result
+def kakao_top_places(request: TopPlaceRequest):
 
+    KAKAO_REST_API_KEY = settings.KAKAO_REST_API_KEY
+
+    # 🔥 버튼별 검색 키워드 매핑
+    keyword_map = {
+        "혼밥": "혼밥 맛집",
+        "데이트": "데이트 맛집",
+        "술집": "술집"
+    }
+
+    keyword = keyword_map.get(request.category, request.category)
+
+    url = "https://dapi.kakao.com/v2/local/search/keyword.json"
+
+    headers = {
+        "Authorization": f"KakaoAK {KAKAO_REST_API_KEY}"
+    }
+
+    params = {
+        "query": keyword,
+        "x": request.lon,
+        "y": request.lat,
+        "radius": 2000,
+        "size": 5
+    }
+
+    try:
+        resp = requests.get(url, headers=headers, params=params, timeout=5)
+        resp.raise_for_status()
+        data = resp.json()
+
+        places = []
+
+        for doc in data.get("documents", []):
+            places.append({
+                "name": doc.get("place_name"),
+                "address": doc.get("road_address_name") or doc.get("address_name"),
+                "map_url": doc.get("place_url")
+            })
+
+        return {"places": places}
+
+    except Exception as e:
+        logging.error(f"Kakao 장소 검색 에러: {e}")
+        return {"places": []}
+
+# ================================================================
+# 이 파일의 내용을 main.py의 기존 /api/chat 엔드포인트와
+# ChatRequest 모델을 아래 코드로 교체하세요.
+# ================================================================
+
+# --- 개선된 ChatRequest 모델 ---
+class ChatRequest(BaseModel):
+    message: str
+    nickname: str = "손님"           # 사용자 닉네임
+    history: list = []               # 이전 대화 내역 [{role, content}, ...]
+    profile: dict = {}               # 취향 프로필 {preferred_alcohol, preferred_snack, situation, dislikes}
+    situation: str = ""              # 현재 상황 (혼술/회식/데이트/기타)
+    location: str = ""               # 현재 위치 (ex: 강남구 역삼동)
+    current_hour: int = -1           # 현재 시각 (0~23), 시간대별 추천에 활용
+
+
+# --- 개선된 /api/chat 엔드포인트 ---
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
+        # ============================
+    # 🔎 RAG 1: 커뮤니티 게시글 검색
+    # ============================
+    from sqlalchemy import or_
+
+    rag_context = ""
+
+    try:
+        db = next(get_db())
+
+        # 사용자 질문을 단어 단위로 분리
+        keywords = request.message.split()
+
+        filters = []
+
+        for word in keywords:
+            if len(word) > 1:  # 한 글자 단어는 제외 (노이즈 방지)
+                filters.append(Post.title.contains(word))
+                filters.append(Post.content.contains(word))
+
+        related_posts = (
+            db.query(Post)
+            .filter(or_(*filters))  # 여러 단어 OR 조건
+            .order_by(Post.created_at.desc())
+            .limit(3)
+            .all()
+        )
+
+        if related_posts:
+            rag_lines = []
+            for p in related_posts:
+                rag_lines.append(
+                    f"- 제목: {p.title}\n  내용 요약: {p.content[:120]}"
+                )
+
+            rag_context = "\n".join(rag_lines)
+
+    except Exception as e:
+        logging.error(f"RAG 검색 에러: {e}")
+
     try:
         genai.configure(api_key=settings.GEMINI_API_KEY)
         model = genai.GenerativeModel("gemini-2.5-flash")
+<<<<<<< HEAD
         prompt = f"""
             당신은 모바일 서비스 '테이스트메이트 AI'입니다.
 
@@ -134,9 +224,155 @@ async def chat(request: ChatRequest):
             """
         response = model.generate_content(prompt)
         return {"reply": response.text}
+=======
+
+        # ── 시간대 문구 ──
+        hour = request.current_hour
+        if 0 <= hour < 6:
+            time_ctx = "새벽 시간대"
+        elif 6 <= hour < 12:
+            time_ctx = "오전"
+        elif 12 <= hour < 17:
+            time_ctx = "오후"
+        elif 17 <= hour < 21:
+            time_ctx = "저녁 황금시간대"
+        else:
+            time_ctx = "밤"
+
+        # ── 취향 프로필 문자열 ──
+        profile = request.profile
+        profile_lines = []
+        if profile.get("preferred_alcohol"):
+            profile_lines.append(f"- 선호 주류: {profile['preferred_alcohol']}")
+        if profile.get("preferred_snack"):
+            profile_lines.append(f"- 선호 안주: {profile['preferred_snack']}")
+        if profile.get("dislikes"):
+            profile_lines.append(f"- 싫어하는 것: {profile['dislikes']}")
+        if profile.get("situation"):
+            profile_lines.append(f"- 주로 마시는 상황: {profile['situation']}")
+        profile_str = "\n".join(profile_lines) if profile_lines else "아직 파악되지 않음"
+
+        # ── 이전 대화 맥락 ──
+        history_str = ""
+        if request.history:
+            recent = request.history[-6:]  # 최근 6턴만
+            lines = []
+            for h in recent:
+                role_label = f"{request.nickname}" if h.get("role") == "user" else "AI"
+                lines.append(f"{role_label}: {h.get('content', '')}")
+            history_str = "\n".join(lines)
+
+        # ── 상황 컨텍스트 ──
+        situation_ctx = ""
+        if request.situation == "혼술":
+            situation_ctx = "혼자 조용히 마시는 혼술 상황입니다. 부담 없이 즐길 수 있는 추천을 해주세요."
+        elif request.situation == "회식":
+            situation_ctx = "여러 명이 함께하는 회식 자리입니다. 다양한 취향을 아우를 수 있는 추천을 해주세요."
+        elif request.situation == "데이트":
+            situation_ctx = "로맨틱한 데이트 상황입니다. 분위기 있는 술과 음식을 추천해주세요."
+        elif request.situation:
+            situation_ctx = f"'{request.situation}' 상황입니다."
+
+        # ── 위치 컨텍스트 ──
+        location_ctx = f"현재 위치: {request.location}" if request.location else ""
+
+        # ── 시스템 프롬프트 ──
+        community_context = rag_context if rag_context else "관련 커뮤니티 정보 없음"
+        system_prompt = f"""
+당신은 대한민국 최고의 주류·안주·맛집 전문 AI 소믈리에 '테이스트메이트'입니다.
+
+[사용자 정보]
+- 이름/닉네임: {request.nickname}
+- 현재 시간대: {time_ctx}
+{location_ctx}
+{situation_ctx}
+
+[커뮤니티 참고 정보 - 실제 사용자 후기]
+{community_context}
+
+[이전 대화 맥락]
+{history_str if history_str else "첫 대화"}
+
+[답변 스타일 - 매우 중요]
+
+- 긴 설명형 문단을 작성하지 마세요.
+- 각 추천은 "이름 + 한 줄 이유" 형식으로만 작성하세요.
+- 불필요한 배경 설명은 생략하세요.
+- 읽기 쉽게 줄바꿈을 사용하세요.
+- 답변은 간결하고 리듬감 있게 작성하세요.
+
+[답변 형식]
+
+🍺 또는 🍷 추천 목록
+
+1. [제품명]
+→ [한 줄 이유]
+
+2. [제품명]
+→ [한 줄 이유]
+
+3. [제품명]
+→ [한 줄 이유]
+
+💬 [친근한 코멘트 + 자연스러운 후속 질문]
+
+---
+[취향 추출 - 반드시 포함, JSON 형식, 답변 맨 끝에 숨겨서]
+TASTE_DATA:{{
+  "detected_alcohol": "[이번 대화에서 파악된 선호 주류, 없으면 null]",
+  "detected_snack": "[이번 대화에서 파악된 선호 안주, 없으면 null]",
+  "detected_dislike": "[이번 대화에서 파악된 기피 항목, 없으면 null]"
+}}
+"""
+
+        # Gemini API 호출
+        response = model.generate_content(system_prompt + f"\n\n{request.nickname}: {request.message}")
+
+        raw_text = response.text
+
+        # TASTE_DATA 추출 및 분리
+        taste_data = {}
+        display_text = raw_text
+        if "TASTE_DATA:" in raw_text:
+            parts = raw_text.split("TASTE_DATA:")
+            display_text = parts[0].strip()
+            try:
+                import json
+                import re
+                json_str = re.search(r'\{.*?\}', parts[1], re.DOTALL)
+                if json_str:
+                    taste_data = json.loads(json_str.group())
+            except Exception:
+                pass
+
+        return {
+            "reply": display_text,
+            "taste_data": taste_data  # 프론트에서 취향 프로필 업데이트에 사용
+        }
+
+>>>>>>> feature/App_DB-LYS
     except Exception as e:
-        print("🔥 Gemini 에러:", e)
-        return {"reply": "AI 연결에 문제가 발생했습니다."}
+        logging.error(f"Gemini 에러: {e}")
+        return {"reply": "AI 연결에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.", "taste_data": {}}
+
+
+# ================================================================
+# 취향 프로필 온보딩 API (신규 유저 첫 접속 시)
+# ================================================================
+class ProfileRequest(BaseModel):
+    preferred_alcohol: str = ""
+    preferred_snack: str = ""
+    dislikes: str = ""
+    situation: str = ""
+
+@app.post("/api/user-profile")
+async def save_user_profile(profile: ProfileRequest):
+    """
+    프론트에서 localStorage에 저장하는 방식이므로,
+    이 엔드포인트는 서버 측 검증/응답용으로 활용.
+    실제 저장은 프론트 localStorage에서 처리.
+    """
+    return {"message": "프로필 저장 완료", "profile": profile.dict()}
 
 ## 중복 선언 제거 (위에서 이미 선언됨)
 
@@ -304,6 +540,7 @@ def get_posts_latest(category: str, db: Session = Depends(get_db)):
 # 인기순 게시글 리스트 (댓글 수 기준)
 @app.get("/api/posts/{category}/popular")
 def get_posts_popular(category: str, db: Session = Depends(get_db)):
+    from Database import Like
     # 1. 공지글 먼저
     notice_posts = db.query(Post).filter(Post.category == category.upper(), Post.is_notice == 1) \
         .outerjoin(Post.likes) \
@@ -329,7 +566,51 @@ def get_posts_popular(category: str, db: Session = Depends(get_db)):
         for post in posts
     ]
 
-@app.get("/test/users")
+# 위치 기반 근처 게시글 (하버사인 공식)
+@app.get("/api/posts/{category}/nearby")
+def get_posts_nearby(
+    category: str,
+    lat: float = Query(...),
+    lon: float = Query(...),
+    radius: float = Query(5.0),  # km 단위, 기본 5km
+    db: Session = Depends(get_db)
+):
+    import math
+
+    def haversine(lat1, lon1, lat2, lon2):
+        R = 6371.0
+        d_lat = math.radians(lat2 - lat1)
+        d_lon = math.radians(lon2 - lon1)
+        a = math.sin(d_lat/2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(d_lon/2)**2
+        return R * 2 * math.asin(math.sqrt(a))
+
+    # 위치 정보 있는 글만 조회
+    posts = db.query(Post).filter(
+        Post.category == category.upper(),
+        Post.lat != None,
+        Post.lon != None
+    ).order_by(Post.is_notice.desc(), Post.created_at.desc()).all()
+
+    nearby = []
+    for post in posts:
+        dist = haversine(lat, lon, post.lat, post.lon)
+        if dist <= radius:
+            nearby.append({
+                "id": post.id,
+                "title": post.title,
+                "content": post.content,
+                "nickname": post.owner.nickname if post.owner else "",
+                "created_at": post.created_at,
+                "comment_count": len(post.comments),
+                "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0,
+                "is_notice": getattr(post, 'is_notice', 0),
+                "distance": round(dist, 2),
+                "place_name": getattr(post, 'place_name', None),
+            })
+
+    # 거리순 정렬 (공지는 맨 위)
+    nearby.sort(key=lambda x: (x['is_notice'] == 0, x['distance']))
+    return nearby
 def test_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
     return [{"id": u.id, "email": u.email, "nickname": u.nickname, "hashed_password": u.hashed_password} for u in users]
@@ -437,26 +718,6 @@ def create_post(
     db.commit()
     db.refresh(new_post)
     return {"message": "게시글이 성공적으로 등록되었습니다!", "redirect": f"/post_detail/{new_post.id}", "post_id": new_post.id}
-
-# /SOLO 페이지 라우터 추가
-@app.get("/SOLO", response_class=HTMLResponse)
-def solo_page(request: Request):
-    return templates.TemplateResponse("SOLO.html", {"request": request})
-
-# /DATE 페이지 라우터 추가
-@app.get("/DATE", response_class=HTMLResponse)
-def date_page(request: Request):
-    return templates.TemplateResponse("DATE.html", {"request": request})
-
-# /WORK 페이지 라우터 추가
-@app.get("/WORK", response_class=HTMLResponse)
-def work_page(request: Request):
-    return templates.TemplateResponse("WORK.html", {"request": request})
-
-# /ETC 페이지 라우터 추가
-@app.get("/ETC", response_class=HTMLResponse)
-def etc_page(request: Request):
-    return templates.TemplateResponse("ETC.html", {"request": request})
 
 @app.get("/community", response_class=HTMLResponse)
 def community_page(request: Request):
@@ -824,43 +1085,170 @@ def search(request: Request, db: Session = Depends(get_db)):
         {"request": request, "keyword": keyword, "posts": post_list}
     )
 
+from fastapi import Query
 
-# --- Kakao REST API 역지오코딩 (별도 엔드포인트, 필요시 사용) ---
 @app.get("/api/reverse-geocode")
-def reverse_geocode_kakao(lat: float = Query(...), lon: float = Query(...)):
-    """Reverse geocoding using Kakao REST API (for Korean addresses)"""
+def reverse_geocode(lat: float = Query(...), lon: float = Query(...)):
+
     KAKAO_REST_API_KEY = settings.KAKAO_REST_API_KEY
     url = "https://dapi.kakao.com/v2/local/geo/coord2address.json"
     headers = {"Authorization": f"KakaoAK {KAKAO_REST_API_KEY}"}
     params = {"x": lon, "y": lat}
+
     try:
         resp = requests.get(url, headers=headers, params=params, timeout=5)
         resp.raise_for_status()
         data = resp.json()
-        logging.info(f'Kakao API 응답: {data}')
-        # 주소 정보 파싱
-        if data and isinstance(data, dict) and data.get("documents"):
-            doc = data["documents"][0] if data["documents"] else None
-            if not doc or not isinstance(doc, dict):
-                return {"address": None}
-            address = doc.get("address") if isinstance(doc.get("address"), dict) else {}
-            road_address = doc.get("road_address") if isinstance(doc.get("road_address"), dict) else {}
-            # 시/구만 추출
-            addr_name = road_address.get("address_name") or address.get("address_name") or None
-            city_raw = address.get("region_1depth_name") or road_address.get("region_1depth_name") or None
-            district_raw = address.get("region_2depth_name") or road_address.get("region_2depth_name") or None
-            city = city_raw
-            if city == "서울":
-                city = "서울특별시"
-            elif city and not city.endswith("시"):
-                city = city + "시"
-            summary = f"{city} {district_raw}" if city and district_raw else city or district_raw or addr_name or "위치 확인됨"
-            result = {
-                "address": summary,
-                "building_name": road_address.get("building_name") if road_address else None
-            }
-            return result
+
+        logging.info(f"Kakao API 응답: {data}")
+
+        # documents가 존재할 때만 처리
+        if "documents" in data and len(data["documents"]) > 0:
+            doc = data["documents"][0]
+            address = doc.get("address", {})
+
+            region1 = address.get("region_1depth_name", "")
+            region2 = address.get("region_2depth_name", "")
+            region3 = address.get("region_3depth_name", "")
+
+            short_address = " ".join(
+                [r for r in [region1, region2, region3] if r]
+            )
+
+            return {"address": short_address}
+
+        # documents 없을 경우
         return {"address": None}
+
     except Exception as e:
-        logging.error(f'Kakao API 에러: {e}')
-        return {"error": str(e)}
+        logging.error(f"Kakao API 에러: {e}")
+        return {"address": None}
+
+# =============================================
+# 날씨별 음식 추천 (기상청 초단기실황 API)
+# =============================================
+@app.get("/api/weather")
+async def get_weather(lat: float = Query(...), lon: float = Query(...)):
+    return await get_weather_recommendation(lat, lon)
+
+@app.get("/api/weather-recommend")
+async def get_weather_recommendation(lat: float = Query(...), lon: float = Query(...)):
+
+    def dfs_xy_conv(lat, lon):
+        RE, GRID = 6371.00877, 5.0
+        SLAT1, SLAT2, OLON, OLAT, XO, YO = 30.0, 60.0, 126.0, 38.0, 43, 136
+        DEGRAD = math.pi / 180.0
+        re = RE / GRID
+        slat1, slat2 = SLAT1 * DEGRAD, SLAT2 * DEGRAD
+        olon, olat = OLON * DEGRAD, OLAT * DEGRAD
+        sn = math.log(math.cos(slat1) / math.cos(slat2)) / math.log(
+            math.tan(math.pi * 0.25 + slat2 * 0.5) / math.tan(math.pi * 0.25 + slat1 * 0.5))
+        sf = math.pow(math.tan(math.pi * 0.25 + slat1 * 0.5), sn) * math.cos(slat1) / sn
+        ro = re * sf / math.pow(math.tan(math.pi * 0.25 + olat * 0.5), sn)
+        ra = re * sf / math.pow(math.tan(math.pi * 0.25 + lat * DEGRAD * 0.5), sn)
+        theta = (lon * DEGRAD - olon) * sn
+        if theta > math.pi: theta -= 2.0 * math.pi
+        if theta < -math.pi: theta += 2.0 * math.pi
+        return int(ra * math.sin(theta) + XO + 0.5), int(ro - ra * math.cos(theta) + YO + 0.5)
+
+    # ── 1. 기상청 초단기실황 API 호출 (기온/습도/바람/강수/하늘) ──
+    weather_info = {"temp": 20.0, "humidity": 50, "wind": 0.0, "rain": 0.0, "sky": "맑음"}
+    try:
+        from urllib.parse import unquote
+        x, y = dfs_xy_conv(lat, lon)
+        now = datetime.datetime.now()
+        base_dt = now - datetime.timedelta(hours=1) if now.minute < 40 else now
+        url = (
+            f'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst'
+            f'?serviceKey={unquote(settings.KMA_API_KEY)}&numOfRows=20&pageNo=1&dataType=JSON'
+            f'&base_date={now.strftime("%Y%m%d")}&base_time={base_dt.strftime("%H00")}&nx={x}&ny={y}'
+        )
+        resp = requests.get(url, timeout=5)
+        logging.info(f"[날씨] 기상청 status={resp.status_code}, nx={x}, ny={y}")
+
+        if resp.ok:
+            sky_code = {"1": "맑음", "3": "구름 많음", "4": "흐림"}
+            pty_code  = {"0": "", "1": "비", "2": "비/눈", "3": "눈", "5": "빗방울", "6": "빗방울/눈날림", "7": "눈날림"}
+            items = resp.json().get('response', {}).get('body', {}).get('items', {}).get('item', [])
+            pty_val = ""
+            for item in items:
+                cat, val = item.get('category'), str(item.get('obsrValue', ''))
+                if cat == 'T1H':  weather_info['temp']     = float(val)
+                elif cat == 'REH': weather_info['humidity'] = int(float(val))
+                elif cat == 'WSD': weather_info['wind']     = float(val)
+                elif cat == 'RN1': weather_info['rain']     = float(val) if val != '강수없음' else 0.0
+                elif cat == 'SKY': weather_info['sky']      = sky_code.get(val, '맑음')
+                elif cat == 'PTY': pty_val = pty_code.get(val, '')
+            if pty_val:
+                weather_info['sky'] = pty_val  # 강수 있으면 sky 덮어쓰기
+            logging.info(f"[날씨] 수신 완료: {weather_info}")
+    except Exception as e:
+        logging.warning(f"[날씨] 기상청 API 실패, 기본값 사용: {e}")
+
+    # ── 2. Gemini AI 메뉴 추천 ──
+    try:
+        temp     = weather_info['temp']
+        humidity = weather_info['humidity']
+        wind     = weather_info['wind']
+        rain     = weather_info['rain']
+        sky      = weather_info['sky']
+        now_hour = datetime.datetime.now().hour
+        meal_time = "아침" if now_hour < 10 else "점심" if now_hour < 15 else "저녁" if now_hour < 21 else "야식"
+
+        # 매 요청마다 다른 추천을 위한 랜덤 힌트
+        food_styles = ["한식", "분식", "일식", "중식", "양식", "국물요리", "면요리", "구이", "찜/조림", "디저트/음료"]
+        avoid_hint = random.choice(food_styles)
+        seed = random.randint(1, 9999)
+
+        prompt = f"""당신은 날씨와 음식을 잘 아는 한국 맛집 전문가입니다.
+지금 날씨 정보:
+- 기온: {temp}℃
+- 날씨: {sky}
+- 습도: {humidity}%
+- 바람: {wind}m/s
+- 강수량: {rain}mm
+- 식사 시간대: {meal_time}
+- 추천 번호: {seed}번째 추천 (매번 반드시 다른 음식을 추천할 것)
+- 이번엔 "{avoid_hint}" 계열 외의 음식을 우선 고려해주세요
+
+이 날씨와 시간대에 잘 어울리는 한국 음식 1가지를 추천하고, 왜 이 날씨에 어울리는지 한 줄로 설명해주세요.
+절대 매번 같은 음식을 추천하지 마세요. 다양한 음식 중에서 오늘 날씨에 맞는 것을 골라주세요.
+
+반드시 아래 JSON 형식으로만 답하세요. 다른 텍스트는 절대 포함하지 마세요:
+{{
+  "title": "날씨를 표현하는 짧은 제목 (이모지 포함, 15자 이내)",
+  "menu": "추천 메뉴 1개",
+  "reason": "이 날씨에 이 음식이 어울리는 이유 (1문장, 30자 이내)",
+  "search": "추천 메뉴 1개",
+  "tag": "#해시태그"
+}}"""
+
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+        model = genai.GenerativeModel(
+            "gemini-2.5-flash",
+            generation_config={"temperature": 1.8, "top_p": 0.95, "top_k": 64}
+        )
+        response = model.generate_content(prompt)
+        raw = response.text.strip().replace("```json", "").replace("```", "").strip()
+
+        import json
+        result = json.loads(raw)
+        result["title"] = f"{result['title']} ({temp}℃)"
+        logging.info(f"[날씨] Gemini 추천 완료: {result.get('menu')}")
+        return result
+
+    except Exception as e:
+        logging.error(f"[날씨] Gemini 추천 실패: {e}", exc_info=True)
+        temp = weather_info['temp']
+        if temp <= 0:    title, menu, reason = "🥶 꽁꽁 얼어붙는 추위", "감자탕", "칼바람 부는 날엔 뜨끈한 국물이 최고예요"
+        elif temp <= 10: title, menu, reason = "🧥 쌀쌀한 날씨", "부대찌개", "쌀쌀한 날씨엔 얼큰하고 든든한 한 끼가 필요해요"
+        elif temp <= 20: title, menu, reason = "🌤️ 기분 좋은 날씨", "비빔밥", "선선한 날씨에 가볍고 균형 잡힌 비빔밥 어떠세요"
+        elif temp <= 28: title, menu, reason = "☀️ 따뜻한 날씨", "냉면", "더위가 오기 전 시원한 냉면으로 기분 전환해요"
+        else:            title, menu, reason = "🥵 숨막히는 폭염", "팥빙수", "이 더위엔 달콤한 팥빙수 한 그릇이 답이에요"
+        return {
+            "title": f"{title} ({temp}℃)",
+            "menu": menu,
+            "reason": reason,
+            "search": menu,
+            "tag": "#오늘의메뉴"
+        }

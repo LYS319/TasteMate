@@ -336,57 +336,75 @@
             }
 
             /* --- Side Ad --- */
-            .side-ad {
-                position: fixed;
-                top: 150px;
-                width: 160px;
-                height: 600px;
-                background: #f4f4f4;
-                border: 1px solid #ddd;
-                display: none;
-                align-items: center;
-                justify-content: center;
-                color: #999;
-                font-weight: bold;
-                z-index: 500;
-                border-radius: 10px;
-            }
-            .side-ad.visible {
-                display: flex;
-            }
-            .ad-left {
-                left: 20px;
-            }
-            .ad-right {
-                right: 20px;
-            }
 
+            /* 모바일 헤더 우측 버튼 영역 */
+
+
+            /* 모바일 위치 버튼 (검색창 옆) */
+            .mobile-location-btn {
+                display: none;
+                background: #fff1f1;
+                border: 1.5px solid rgba(220,38,38,0.2);
+                border-radius: 10px;
+                padding: 8px 10px;
+                font-size: 1.1rem;
+                cursor: pointer;
+                flex-shrink: 0;
+                transition: background 0.2s;
+            }
+            .mobile-location-btn:hover { background: #ffe0e0; }
 
             /* ===== 반응형 (태블릿/모바일) ===== */
             @media (max-width: 900px) {
+                main { padding-top: 130px !important; }
+
+                /* 헤더: 2행 그리드
+                   1행: [header-left(햄버거+로고)] [header-right(버튼들)]
+                   2행: [header-center(검색창) - 전체 너비] */
                 .header {
+                    display: grid;
                     grid-template-columns: 1fr auto;
-                    padding: 10px 16px;
-                    gap: 8px;
+                    grid-template-rows: auto auto;
+                    grid-template-areas:
+                        "left right"
+                        "center center";
+                    padding: 8px 12px;
+                    gap: 6px 8px;
+                    align-items: center;
+                }
+                .header-left {
+                    grid-area: left;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+                .header-right {
+                    grid-area: right;
+                    display: flex !important;
+                    align-items: center;
+                    gap: 4px;
+                    justify-content: flex-end;
                 }
                 .header-center {
-                    grid-column: 1 / -1;
-                    grid-row: 2;
-                    width: 100%;
-                    order: 3;
+                    grid-area: center;
+                    padding: 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
                 }
-                .header-left { grid-column: 1; }
-                .header-right { grid-column: 2; }
-                .menu-bar { display: none; }
-                .header-logo { font-size: 1.3rem; }
-                .main-title { font-size: 2rem; margin-top: 30px; }
+                .header-center .search-box { flex: 1; overflow: visible; position: relative; }
+                .header-center .search-box input { padding-right: 50px; }
+                .mobile-location-btn { display: flex; }
+                .header-logo { font-size: 1.2rem; }
+                .menu-bar { display: none !important; }
+                .login-btn { padding: 6px 10px; font-size: 0.78rem; white-space: nowrap; }
+                .nickname-avatar { width: 30px; height: 30px; font-size: 0.8rem; }
+                .current-location { padding: 5px 7px; font-size: 0.72rem; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+                .main-title { font-size: 2rem; margin-top: 20px; }
                 .main-buttons { flex-direction: column; align-items: center; gap: 12px; }
                 .main-btn { padding: 16px 40px; font-size: 1.1rem; width: 80%; }
                 .community-container { flex-direction: column; padding: 0 16px; }
                 .community-card { width: 100%; box-sizing: border-box; height: auto; min-height: 140px; }
-                .side-ad { display: none !important; }
-                .login-btn { padding: 8px 10px; font-size: 0.8rem; }
-                .current-location { padding: 6px 8px; font-size: 0.78rem; }
             }
 
             @media (max-width: 480px) {
@@ -492,7 +510,33 @@
         </style>
     </head>
     <body>
+    <!-- 광고 배너 -->
+    <style>
+        .side-ad {
+            position: fixed; top: 150px; width: 160px; height: 600px;
+            background: #f4f4f4; border: 1px solid #ddd; display: flex;
+            align-items: center; justify-content: center; color: #999;
+            font-weight: bold; z-index: 100; border-radius: 10px;
+            font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box;
+        }
+        .ad-left  { left: 20px; }
+        .ad-right { right: 20px; }
+        .mobile-top-ad {
+            display: none; position: fixed; top: 100px; left: 0; right: 0;
+            height: 55px; background: #f4f4f4; border-bottom: 1px solid #ddd;
+            align-items: center; justify-content: center; color: #999;
+            font-weight: bold; font-size: 0.9rem; z-index: 100;
+            pointer-events: none;
+        }
+        @media (max-width: 1200px) { .side-ad { display: none; } }
+        @media (max-width: 900px)  { .mobile-top-ad { display: flex; } }
+    </style>
+    <div class="side-ad ad-left">광고 영역 (좌)</div>
+    <div class="side-ad ad-right">광고 영역 (우)</div>
+    <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
         <header class="header">
+            <!-- 데스크탑: header-left / header-center / header-right (grid) -->
+            <!-- 모바일: header-top-row (1행) + header-center (2행) -->
             <div class="header-left">
                 <button class="hamburger-btn" id="hamburgerBtn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
@@ -523,23 +567,13 @@
                     />
                     <button class="search-submit-btn" onclick="handleSearch()">🔍</button>
                 </div>
+                <button class="mobile-location-btn" id="mobile-gps-btn" onclick="getMobileGPSLocation()">📍</button>
             </div>
 
-            <div class="header-right" id="headerRightArea">
-                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
-                <button
-                    class="login-btn"
-                    style="background: #fff; color: #dc2626; border: 1.5px solid #dc2626"
-                    onclick="location.href = '/signup'"
-                >
-                    회원가입
-                </button>
-            </div>
+            <div class="header-right" id="headerRightArea"></div>
         </header>
 
         <main style="padding-top: 120px; padding-bottom: 100px; position: relative">
-            <div class="side-ad ad-left">광고 영역 (좌)</div>
-            <div class="side-ad ad-right">광고 영역 (우)</div>
 
             <div class="main-title">🍽️ <span>테이스트메이트</span></div>
 
@@ -574,14 +608,14 @@
                     style="cursor: pointer"
                     onclick="handleThemeRecommendClick()"
                 >
-                    <div class="card-title">✨ <span id="theme-title">오늘의 테마</span></div>
+                    <div class="card-title"><span id="theme-title">날씨 분석 중...</span></div>
                     <div class="card-info">
                         <div class="card-count" id="theme-subtitle" style="color: #dc2626; font-weight: 800">
-                            분석 중...
+                            데이터 로딩 중...
                         </div>
-                        <div class="card-recent" id="theme-desc">가장 잘 어울리는 장소</div>
+                        <div class="card-recent" id="theme-desc">기온 맞춤형 메뉴 추천</div>
                     </div>
-                    <div class="card-tag" id="theme-tag">#테마맛집</div>
+                    <div class="card-tag" id="theme-tag">#날씨맛집</div>
                 </div>
 
                 <div
@@ -746,7 +780,7 @@
                     navigator.geolocation.getCurrentPosition(async (pos) => {
                         try {
                             const res = await fetch(
-                                `/api/reverse_geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                                `/api/reverse-geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
                             );
                             const data = await res.json();
                             // 시(city)와 구(district) 조합
@@ -786,7 +820,7 @@
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(async (pos) => {
                         const res = await fetch(
-                            `/api/reverse_geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                            `/api/reverse-geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
                         );
                         const data = await res.json();
                         const neighborhood = data.address.suburb || data.address.neighbourhood || '내 주변';
@@ -798,7 +832,7 @@
 
                         document.getElementById('realtime-recommend-card').onclick = () => {
                             window.open(
-                                `https://map.naver.com/v5/search/${encodeURIComponent(neighborhood + ' ' + selected.search)}`,
+                                `https://map.naver.com/v5/search/${encodeURIComponent(selected.search)}`,
                                 '_blank',
                             );
                         };
@@ -811,87 +845,41 @@
                 const themeSubtitle = document.getElementById('theme-subtitle');
                 const themeDesc = document.getElementById('theme-desc');
                 const themeTag = document.getElementById('theme-tag');
+                const themeCard = document.getElementById('theme-recommend-card');
 
-                const now = new Date();
-                const hour = now.getHours();
-                const day = now.getDay();
-
-                let config = {
-                    title: '오늘의 테마',
-                    subtitle: '맛집 탐방',
-                    desc: '주변 맛집을 확인하세요',
-                    search: '맛집',
-                    tag: '#테마추천',
-                };
-
-                if (day === 0) {
-                    config = {
-                        title: '평화로운 일요일',
-                        subtitle: '여유로운 브런치',
-                        desc: '분위기 좋은 카페와 브런치',
-                        search: '브런치 카페',
-                        tag: '#일요일브런치',
-                    };
-                } else if ((day === 5 || day === 6) && hour >= 17) {
-                    config = {
-                        title: '신나는 불금/불토',
-                        subtitle: '분위기 끝판왕 맛집',
-                        desc: '데이트나 모임하기 좋은 곳',
-                        search: '분위기 맛집',
-                        tag: '#불금데이트',
-                    };
-                } else if (day >= 1 && day <= 5 && hour >= 11 && hour <= 15) {
-                    config = {
-                        title: '바쁜 평일 점심',
-                        subtitle: '빠르고 든든한 혼밥',
-                        desc: '직장인이 선호하는 식당',
-                        search: '혼밥 맛집',
-                        tag: '#직장인점심',
-                    };
-                } else if (hour >= 16 && hour <= 21) {
-                    const dinnerMenus = [
-                        '삼겹살',
-                        '파스타',
-                        '불고기',
-                        '치킨',
-                        '마라탕',
-                        '초밥',
-                        '돈카츠',
-                        '제육볶음',
-                        '수제버거',
-                        '짬뽕',
-                    ];
-                    const randomIdx = Math.floor(Math.random() * dinnerMenus.length);
-                    const dinnerMenu = dinnerMenus[randomIdx];
-                    config = {
-                        title: '고생한 하루 끝',
-                        subtitle: `맛있는 저녁 식사 (${dinnerMenu})`,
-                        desc: `든든하게 먹고 푹 쉬세요. 오늘은 '${dinnerMenu}' 어떠세요?`,
-                        search: dinnerMenu,
-                        tag: '#오늘의저녁',
-                    };
+                async function fetchWeather(latitude, longitude) {
+                    try {
+                        const res = await fetch(`/api/weather-recommend?lat=${latitude}&lon=${longitude}`);
+                        if (!res.ok) {
+                            console.error('[날씨] API 응답 오류:', res.status, await res.text());
+                            return;
+                        }
+                        const data = await res.json();
+                        console.log('[날씨] 응답:', data);
+                        themeTitle.innerText = data.title;
+                        themeSubtitle.innerText = data.menu || data.subtitle;
+                        themeDesc.innerText = data.reason || data.desc;
+                        themeTag.innerText = data.tag;
+                        themeCard.onclick = () => {
+                            location.href = `/search?keyword=${encodeURIComponent(data.search)}`;
+                        };
+                    } catch (e) {
+                        console.error('[날씨] fetch 오류:', e);
+                    }
                 }
 
                 if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(async (pos) => {
-                        const res = await fetch(
-                            `/api/reverse_geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
-                        );
-                        const data = await res.json();
-                        const neighborhood = data.address.suburb || data.address.neighbourhood || '내 주변';
-
-                        themeTitle.innerText = config.title;
-                        themeSubtitle.innerText = config.subtitle;
-                        themeDesc.innerText = `${neighborhood} ${config.desc}`;
-                        themeTag.innerText = config.tag;
-
-                        document.getElementById('theme-recommend-card').onclick = () => {
-                            window.open(
-                                `https://map.naver.com/v5/search/${encodeURIComponent(neighborhood + ' ' + config.search)}`,
-                                '_blank',
-                            );
-                        };
-                    });
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+                        (err) => {
+                            console.warn('[날씨] GPS 거부/오류, 서울 기본값 사용:', err.message);
+                            fetchWeather(37.5665, 126.9780); // 서울 기본값
+                        },
+                        { timeout: 5000 }
+                    );
+                } else {
+                    console.warn('[날씨] geolocation 미지원, 서울 기본값 사용');
+                    fetchWeather(37.5665, 126.9780);
                 }
             }
 
@@ -918,19 +906,28 @@
             document.addEventListener('DOMContentLoaded', () => {
                 const nickname = localStorage.getItem('nickname');
                 const isAdmin = localStorage.getItem('is_admin');
+
+                // 로그인 상태에 따라 헤더 우측 렌더링
+                const headerRightArea = document.getElementById('headerRightArea');
                 if (nickname) {
-                    let adminButton = '';
-                    if (isAdmin === '1') {
-                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`;
-                    }
-                    document.getElementById('headerRightArea').innerHTML = `
+                    let adminButton = isAdmin === '1'
+                        ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자</button>`
+                        : '';
+                    headerRightArea.innerHTML = `
                         <span class="nickname-avatar" onclick="location.href='/mypage'">${nickname.slice(0, 2)}</span>
                         ${adminButton}
-                        <button class="login-btn" onclick="localStorage.clear(); location.reload();" style="background: #666; margin-left:8px;">로그아웃</button>
+                        <button class="login-btn" onclick="localStorage.clear(); location.reload();" style="background: #666;">로그아웃</button>
                         <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 위치 로딩...</span>
                     `;
                     getGPSLocation();
+                } else {
+                    headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href='/login'">로그인</button>
+                        <button class="login-btn" style="background:#fff; color:#dc2626; border:1.5px solid #dc2626;" onclick="location.href='/signup'">회원가입</button>
+                    `;
                 }
+
+
 
                 updateRealtimeRecommendation();
                 updateThemeRecommendation();
@@ -942,19 +939,6 @@
                 setInterval(updateCounts, 60000);
 
                 // 광고 배너: CSS 미디어쿼리 대신 JS로 제어 (ngrok iframe 환경 대응)
-                function updateAdVisibility() {
-                    const realWidth = window.screen.width;
-                    const ads = document.querySelectorAll('.side-ad');
-                    ads.forEach(ad => {
-                        if (realWidth >= 1200) {
-                            ad.classList.add('visible');
-                        } else {
-                            ad.classList.remove('visible');
-                        }
-                    });
-                }
-                updateAdVisibility();
-                window.addEventListener('resize', updateAdVisibility);
             });
         </script>
     
