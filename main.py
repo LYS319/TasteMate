@@ -511,7 +511,51 @@ def get_posts_popular(category: str, db: Session = Depends(get_db)):
         for post in posts
     ]
 
-@app.get("/test/users")
+# 위치 기반 근처 게시글 (하버사인 공식)
+@app.get("/api/posts/{category}/nearby")
+def get_posts_nearby(
+    category: str,
+    lat: float = Query(...),
+    lon: float = Query(...),
+    radius: float = Query(5.0),  # km 단위, 기본 5km
+    db: Session = Depends(get_db)
+):
+    import math
+
+    def haversine(lat1, lon1, lat2, lon2):
+        R = 6371.0
+        d_lat = math.radians(lat2 - lat1)
+        d_lon = math.radians(lon2 - lon1)
+        a = math.sin(d_lat/2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(d_lon/2)**2
+        return R * 2 * math.asin(math.sqrt(a))
+
+    # 위치 정보 있는 글만 조회
+    posts = db.query(Post).filter(
+        Post.category == category.upper(),
+        Post.lat != None,
+        Post.lon != None
+    ).order_by(Post.is_notice.desc(), Post.created_at.desc()).all()
+
+    nearby = []
+    for post in posts:
+        dist = haversine(lat, lon, post.lat, post.lon)
+        if dist <= radius:
+            nearby.append({
+                "id": post.id,
+                "title": post.title,
+                "content": post.content,
+                "nickname": post.owner.nickname if post.owner else "",
+                "created_at": post.created_at,
+                "comment_count": len(post.comments),
+                "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0,
+                "is_notice": getattr(post, 'is_notice', 0),
+                "distance": round(dist, 2),
+                "place_name": getattr(post, 'place_name', None),
+            })
+
+    # 거리순 정렬 (공지는 맨 위)
+    nearby.sort(key=lambda x: (x['is_notice'] == 0, x['distance']))
+    return nearby
 def test_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
     return [{"id": u.id, "email": u.email, "nickname": u.nickname, "hashed_password": u.hashed_password} for u in users]
@@ -1034,99 +1078,122 @@ async def get_weather(lat: float = Query(...), lon: float = Query(...)):
 
 @app.get("/api/weather-recommend")
 async def get_weather_recommendation(lat: float = Query(...), lon: float = Query(...)):
-    temp_menu_data = {
-        -10: ["사골만두국", "얼큰육개장", "부대찌개", "김치찌개", "순두부찌개", "감자탕", "내장탕", "떡국", "칼국수", "수제비"],
-        -5:  ["나베요리", "알탕", "동태탕", "도가니탕", "설렁탕", "우거지해장국", "뼈해장국", "콩나물국밥", "어묵탕", "우동"],
-        0:   ["샤브샤브", "스키야키", "매운탕", "추어탕", "순대국", "돼지국밥", "잔치국수", "해물파전", "삼계탕", "곰탕"],
-        5:   ["돈까스나베", "가츠동", "라멘", "쌀국수", "짬뽕", "짜장면", "부침개", "만두전골", "온소바", "육회비빔밥"],
-        10:  ["제육볶음", "불고기", "쌈밥", "된장찌개", "청국장", "비빔밥", "돈까스", "햄버거", "샌드위치", "파스타"],
-        15:  ["초밥", "텐동", "연어덮밥", "스테이크", "리조또", "피자", "오므라이스", "카레", "생선구이", "간장게장"],
-        20:  ["월남쌈", "포케", "샐러드", "타코", "회덮밥", "물회", "막국수", "비빔국수", "쫄면", "냉우동"],
-        25:  ["냉소바", "콩국수", "냉면", "비빔냉면", "묵사발", "냉채족발", "훈제오리샐러드", "김치말이국수", "참치회", "모밀"],
-        30:  ["평양냉면", "함흥냉면", "초계국수", "물회", "산낙지", "메밀소바", "얼음동동미역국", "열무국수", "빙수", "아이스크림"],
-        35:  ["삼계탕(이열치열)", "전복삼계탕", "장어구이", "보쌈", "족발", "치킨", "피자", "아이스커피", "냉녹차", "수박"],
-        40:  ["살얼음맥주", "생과일주스", "팥빙수", "망고빙수", "냉파스타", "샐러드파스타", "아사이볼", "스무디", "젤라또"],
-    }
 
+    def dfs_xy_conv(lat, lon):
+        RE, GRID = 6371.00877, 5.0
+        SLAT1, SLAT2, OLON, OLAT, XO, YO = 30.0, 60.0, 126.0, 38.0, 43, 136
+        DEGRAD = math.pi / 180.0
+        re = RE / GRID
+        slat1, slat2 = SLAT1 * DEGRAD, SLAT2 * DEGRAD
+        olon, olat = OLON * DEGRAD, OLAT * DEGRAD
+        sn = math.log(math.cos(slat1) / math.cos(slat2)) / math.log(
+            math.tan(math.pi * 0.25 + slat2 * 0.5) / math.tan(math.pi * 0.25 + slat1 * 0.5))
+        sf = math.pow(math.tan(math.pi * 0.25 + slat1 * 0.5), sn) * math.cos(slat1) / sn
+        ro = re * sf / math.pow(math.tan(math.pi * 0.25 + olat * 0.5), sn)
+        ra = re * sf / math.pow(math.tan(math.pi * 0.25 + lat * DEGRAD * 0.5), sn)
+        theta = (lon * DEGRAD - olon) * sn
+        if theta > math.pi: theta -= 2.0 * math.pi
+        if theta < -math.pi: theta += 2.0 * math.pi
+        return int(ra * math.sin(theta) + XO + 0.5), int(ro - ra * math.cos(theta) + YO + 0.5)
+
+    # ── 1. 기상청 초단기실황 API 호출 (기온/습도/바람/강수/하늘) ──
+    weather_info = {"temp": 20.0, "humidity": 50, "wind": 0.0, "rain": 0.0, "sky": "맑음"}
     try:
-        def dfs_xy_conv(lat, lon):
-            RE = 6371.00877
-            GRID = 5.0
-            SLAT1 = 30.0
-            SLAT2 = 60.0
-            OLON = 126.0
-            OLAT = 38.0
-            XO = 43
-            YO = 136
-            DEGRAD = math.pi / 180.0
-            re = RE / GRID
-            slat1 = SLAT1 * DEGRAD
-            slat2 = SLAT2 * DEGRAD
-            olon = OLON * DEGRAD
-            olat = OLAT * DEGRAD
-            sn = math.tan(math.pi * 0.25 + slat2 * 0.5) / math.tan(math.pi * 0.25 + slat1 * 0.5)
-            sn = math.log(math.cos(slat1) / math.cos(slat2)) / math.log(sn)
-            sf = math.tan(math.pi * 0.25 + slat1 * 0.5)
-            sf = math.pow(sf, sn) * math.cos(slat1) / sn
-            ro = math.tan(math.pi * 0.25 + olat * 0.5)
-            ro = re * sf / math.pow(ro, sn)
-            ra = math.tan(math.pi * 0.25 + lat * DEGRAD * 0.5)
-            ra = re * sf / math.pow(ra, sn)
-            theta = lon * DEGRAD - olon
-            if theta > math.pi:
-                theta -= 2.0 * math.pi
-            if theta < -math.pi:
-                theta += 2.0 * math.pi
-            theta *= sn
-            x = (ra * math.sin(theta)) + XO + 0.5
-            y = (ro - ra * math.cos(theta)) + YO + 0.5
-            return int(x), int(y)
-
+        from urllib.parse import unquote
         x, y = dfs_xy_conv(lat, lon)
         now = datetime.datetime.now()
-        base_date = now.strftime('%Y%m%d')
-        base_time = (now - datetime.timedelta(hours=1) if now.minute < 45 else now).strftime('%H00')
-        params = {
-            'serviceKey': settings.KMA_API_KEY,
-            'numOfRows': 10,
-            'pageNo': 1,
-            'dataType': 'JSON',
-            'base_date': base_date,
-            'base_time': base_time,
-            'nx': x,
-            'ny': y
-        }
-        url = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst'
-        resp = requests.get(url, params=params, timeout=5)
-        temp = 20
+        base_dt = now - datetime.timedelta(hours=1) if now.minute < 40 else now
+        url = (
+            f'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst'
+            f'?serviceKey={unquote(settings.KMA_API_KEY)}&numOfRows=20&pageNo=1&dataType=JSON'
+            f'&base_date={now.strftime("%Y%m%d")}&base_time={base_dt.strftime("%H00")}&nx={x}&ny={y}'
+        )
+        resp = requests.get(url, timeout=5)
+        logging.info(f"[날씨] 기상청 status={resp.status_code}, nx={x}, ny={y}")
+
         if resp.ok:
+            sky_code = {"1": "맑음", "3": "구름 많음", "4": "흐림"}
+            pty_code  = {"0": "", "1": "비", "2": "비/눈", "3": "눈", "5": "빗방울", "6": "빗방울/눈날림", "7": "눈날림"}
             items = resp.json().get('response', {}).get('body', {}).get('items', {}).get('item', [])
+            pty_val = ""
             for item in items:
-                if item.get('category') == 'T1H':
-                    temp = float(item.get('obsrValue'))
-                    break
-        base_temp = (int(temp) // 5) * 5
-        base_temp = max(-10, min(40, base_temp))
-        selected_menu = random.choice(temp_menu_data[base_temp])
-        if base_temp <= 0:
-            title, desc = "🥶 꽁꽁 얼어붙는 추위", "몸을 녹여줄 따뜻한"
-        elif base_temp >= 30:
-            title, desc = "🥵 숨막히는 폭염주의", "더위를 날려줄 시원한"
-        else:
-            title, desc = "☀️ 기분 좋은 날씨", "오늘 날씨와 잘 어울리는"
+                cat, val = item.get('category'), str(item.get('obsrValue', ''))
+                if cat == 'T1H':  weather_info['temp']     = float(val)
+                elif cat == 'REH': weather_info['humidity'] = int(float(val))
+                elif cat == 'WSD': weather_info['wind']     = float(val)
+                elif cat == 'RN1': weather_info['rain']     = float(val) if val != '강수없음' else 0.0
+                elif cat == 'SKY': weather_info['sky']      = sky_code.get(val, '맑음')
+                elif cat == 'PTY': pty_val = pty_code.get(val, '')
+            if pty_val:
+                weather_info['sky'] = pty_val  # 강수 있으면 sky 덮어쓰기
+            logging.info(f"[날씨] 수신 완료: {weather_info}")
+    except Exception as e:
+        logging.warning(f"[날씨] 기상청 API 실패, 기본값 사용: {e}")
+
+    # ── 2. Gemini AI 메뉴 추천 ──
+    try:
+        temp     = weather_info['temp']
+        humidity = weather_info['humidity']
+        wind     = weather_info['wind']
+        rain     = weather_info['rain']
+        sky      = weather_info['sky']
+        now_hour = datetime.datetime.now().hour
+        meal_time = "아침" if now_hour < 10 else "점심" if now_hour < 15 else "저녁" if now_hour < 21 else "야식"
+
+        # 매 요청마다 다른 추천을 위한 랜덤 힌트
+        food_styles = ["한식", "분식", "일식", "중식", "양식", "국물요리", "면요리", "구이", "찜/조림", "디저트/음료"]
+        avoid_hint = random.choice(food_styles)
+        seed = random.randint(1, 9999)
+
+        prompt = f"""당신은 날씨와 음식을 잘 아는 한국 맛집 전문가입니다.
+지금 날씨 정보:
+- 기온: {temp}℃
+- 날씨: {sky}
+- 습도: {humidity}%
+- 바람: {wind}m/s
+- 강수량: {rain}mm
+- 식사 시간대: {meal_time}
+- 추천 번호: {seed}번째 추천 (매번 반드시 다른 음식을 추천할 것)
+- 이번엔 "{avoid_hint}" 계열 외의 음식을 우선 고려해주세요
+
+이 날씨와 시간대에 잘 어울리는 한국 음식 1가지를 추천하고, 왜 이 날씨에 어울리는지 한 줄로 설명해주세요.
+절대 매번 같은 음식을 추천하지 마세요. 다양한 음식 중에서 오늘 날씨에 맞는 것을 골라주세요.
+
+반드시 아래 JSON 형식으로만 답하세요. 다른 텍스트는 절대 포함하지 마세요:
+{{
+  "title": "날씨를 표현하는 짧은 제목 (이모지 포함, 15자 이내)",
+  "menu": "추천 메뉴 1개",
+  "reason": "이 날씨에 이 음식이 어울리는 이유 (1문장, 30자 이내)",
+  "search": "추천 메뉴 1개",
+  "tag": "#해시태그"
+}}"""
+
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+        model = genai.GenerativeModel(
+            "gemini-2.5-flash",
+            generation_config={"temperature": 1.8, "top_p": 0.95, "top_k": 64}
+        )
+        response = model.generate_content(prompt)
+        raw = response.text.strip().replace("```json", "").replace("```", "").strip()
+
+        import json
+        result = json.loads(raw)
+        result["title"] = f"{result['title']} ({temp}℃)"
+        logging.info(f"[날씨] Gemini 추천 완료: {result.get('menu')}")
+        return result
+
+    except Exception as e:
+        logging.error(f"[날씨] Gemini 추천 실패: {e}", exc_info=True)
+        temp = weather_info['temp']
+        if temp <= 0:    title, menu, reason = "🥶 꽁꽁 얼어붙는 추위", "감자탕", "칼바람 부는 날엔 뜨끈한 국물이 최고예요"
+        elif temp <= 10: title, menu, reason = "🧥 쌀쌀한 날씨", "부대찌개", "쌀쌀한 날씨엔 얼큰하고 든든한 한 끼가 필요해요"
+        elif temp <= 20: title, menu, reason = "🌤️ 기분 좋은 날씨", "비빔밥", "선선한 날씨에 가볍고 균형 잡힌 비빔밥 어떠세요"
+        elif temp <= 28: title, menu, reason = "☀️ 따뜻한 날씨", "냉면", "더위가 오기 전 시원한 냉면으로 기분 전환해요"
+        else:            title, menu, reason = "🥵 숨막히는 폭염", "팥빙수", "이 더위엔 달콤한 팥빙수 한 그릇이 답이에요"
         return {
             "title": f"{title} ({temp}℃)",
-            "subtitle": f"오늘의 추천: {selected_menu}",
-            "desc": f"{desc} '{selected_menu}' 어떠세요?",
-            "search": selected_menu,
-            "tag": f"#{base_temp}도_맞춤추천"
-        }
-    except Exception as e:
-        logging.error(f"날씨 API 오류: {e}")
-        return {
-            "title": "🍽️ 테이스트메이트 추천",
-            "subtitle": "맛있는 식사 하세요!",
-            "desc": "주변의 맛집을 찾아보세요.",
-            "search": "맛집",
+            "menu": menu,
+            "reason": reason,
+            "search": menu,
             "tag": "#오늘의메뉴"
         }
