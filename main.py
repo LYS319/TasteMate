@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 import os
 import google.generativeai as genai
 import logging
+import random
 logging.basicConfig(level=logging.INFO)
 
 from Database import Like, User, Post, Comment, get_db
@@ -55,6 +56,9 @@ class TopPlaceRequest(BaseModel):
     category: str
     lat: float
     lon: float
+    profile: dict = {}
+    user_id: int | None = None
+    current_hour: int = -1
 
 
 # 🔥 카테고리별 인기 장소 API (프론트와 구조 맞춤)
@@ -67,7 +71,11 @@ def kakao_top_places(request: TopPlaceRequest):
     keyword_map = {
         "혼밥": "혼밥 맛집",
         "데이트": "데이트 맛집",
-        "술집": "술집"
+        "술집": "술집",
+        "추천": "맛집",
+        "소맥": "안주 맛있는 술집",
+        "와인": "와인바",
+        "맥주": "수제맥주 펍"
     }
 
     keyword = keyword_map.get(request.category, request.category)
@@ -91,14 +99,67 @@ def kakao_top_places(request: TopPlaceRequest):
         resp.raise_for_status()
         data = resp.json()
 
+        documents = data.get("documents", [])
+
+        db = next(get_db())
+        scored = []
+
+        for doc in documents:
+
+            place_name = doc.get("place_name", "")
+            score = 0
+
+    # --------------------------
+    # 1️⃣ 커뮤니티 인기 점수
+    # --------------------------
+            related_posts = db.query(Post).filter(
+                Post.place_name.contains(place_name)
+            ).all()
+
+            for post in related_posts:
+                like_count = len(getattr(post, "likes", []))
+                comment_count = len(post.comments)
+                score += like_count * 2
+                score += comment_count
+
+    # --------------------------
+    # 2️⃣ 유저 취향 점수
+    # --------------------------
+            profile = request.profile or {}
+
+            preferred_alcohol = profile.get("preferred_alcohol")
+            preferred_snack = profile.get("preferred_snack")
+
+            if preferred_alcohol and preferred_alcohol in place_name:
+                score += 5
+
+            if preferred_snack and preferred_snack in place_name:
+                score += 3
+
+    # --------------------------
+    # 3️⃣ 시간대 점수
+    # --------------------------
+            if request.current_hour >= 18:
+                if "술" in place_name or "펍" in place_name:
+                    score += 2
+
+            scored.append({
+                "doc": doc,
+                "score": score
+            })
+
+# 점수 높은 순 정렬
+        scored.sort(key=lambda x: x["score"], reverse=True)
+
         places = []
 
-        for doc in data.get("documents", []):
+        for item in scored[:5]:
+            doc = item["doc"]
             places.append({
                 "name": doc.get("place_name"),
                 "address": doc.get("road_address_name") or doc.get("address_name"),
                 "map_url": doc.get("place_url")
-            })
+            })      
 
         return {"places": places}
 
@@ -1021,3 +1082,7 @@ def reverse_geocode(lat: float = Query(...), lon: float = Query(...)):
     except Exception as e:
         logging.error(f"Kakao API 에러: {e}")
         return {"address": None}
+#추가했음
+@app.get("/report", response_class=HTMLResponse)
+def report_page(request: Request):
+    return templates.TemplateResponse("report.html", {"request": request})
