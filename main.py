@@ -1,26 +1,25 @@
+import json
 import requests
 import logging
 import random
 import math
 import datetime
 from pydantic import BaseModel
-from typing import List
-from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile, Body, Query
+from typing import List, Optional
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, File, UploadFile, Body, Query, WebSocket, WebSocketDisconnect
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
 from starlette.responses import JSONResponse
-from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, text, func
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, text, func, desc
 from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
 from dotenv import load_dotenv
 import os
 import google.generativeai as genai
-import logging
 logging.basicConfig(level=logging.INFO)
 
-from Database import Like, User, Post, Comment, get_db
+from Database import Like, User, Post, Comment, Friend, ChatMessage, get_db
 from config import settings
 from game_ideal_router import router as ideal_router
 
@@ -28,6 +27,7 @@ app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 templates = Jinja2Templates(directory="templates")
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 # --- 인기글 라우터 (AI 코드 건드리지 않음) ---
 @app.get("/SOLO", response_class=HTMLResponse)
@@ -52,6 +52,39 @@ async def add_ngrok_skip_header(request: Request, call_next):
     response.headers["ngrok-skip-browser-warning"] = "true"
     return response
 =======
+>>>>>>> feature/App_DB-LYS
+=======
+# =============================================
+# WebSocket 연결 관리자
+# =============================================
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: dict[int, WebSocket] = {}
+
+    async def connect(self, user_id: int, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections[int(user_id)] = websocket
+        logging.info(f"[WS] 연결됨: user_id={user_id}")
+
+    def disconnect(self, user_id: int):
+        uid = int(user_id)
+        if uid in self.active_connections:
+            del self.active_connections[uid]
+            logging.info(f"[WS] 연결 종료: user_id={uid}")
+
+    async def send_personal_message(self, message: dict, user_id: int):
+        uid = int(user_id)
+        if uid in self.active_connections:
+            try:
+                await self.active_connections[uid].send_json(message)
+            except Exception as e:
+                logging.error(f"[WS] 메시지 전송 실패: to={uid}, error={e}")
+                self.disconnect(uid)
+        else:
+            logging.warning(f"[WS] 수신자 오프라인: user_id={uid}")
+
+manager = ConnectionManager()
+
 >>>>>>> feature/App_DB-LYS
 
 # --- 인기글 라우터 (AI 코드 건드리지 않음) ---
@@ -1252,3 +1285,126 @@ async def get_weather_recommendation(lat: float = Query(...), lon: float = Query
             "search": menu,
             "tag": "#오늘의메뉴"
         }
+
+
+# =============================================
+# 친구 API
+# =============================================
+@app.post("/api/friends/request")
+async def friend_request(nickname: str = Form(...), from_user: int = Form(...), db: Session = Depends(get_db)):
+    target = db.query(User).filter(User.nickname == nickname).first()
+    if not target:
+        return JSONResponse(status_code=404, content={"message": "닉네임을 다시 확인해주세요."})
+    if target.id == int(from_user):
+        return JSONResponse(status_code=400, content={"message": "본인에게는 신청할 수 없습니다."})
+    already_friend = db.query(Friend).filter(
+        (((Friend.user_id == from_user) & (Friend.friend_id == target.id)) |
+         ((Friend.user_id == target.id) & (Friend.friend_id == from_user))) &
+        (Friend.status == "accepted")
+    ).first()
+    if already_friend:
+        return JSONResponse(status_code=400, content={"message": "이미 친구 관계입니다."})
+    already_pending = db.query(Friend).filter(
+        (((Friend.user_id == from_user) & (Friend.friend_id == target.id)) |
+         ((Friend.user_id == target.id) & (Friend.friend_id == from_user))) &
+        (Friend.status == "pending")
+    ).first()
+    if already_pending:
+        return JSONResponse(status_code=400, content={"message": "이미 친구 신청을 보냈거나 받은 상태입니다."})
+    new_req = Friend(user_id=int(from_user), friend_id=target.id, status="pending")
+    db.add(new_req)
+    db.commit()
+    return {"message": f"{nickname}님에게 친구신청이 완료됐습니다!"}
+
+@app.get("/api/friends/status/{user_id}")
+async def get_friends_status(user_id: int, db: Session = Depends(get_db)):
+    friends_rows = db.query(Friend).filter(
+        ((Friend.user_id == user_id) | (Friend.friend_id == user_id)) & (Friend.status == "accepted")
+    ).all()
+    friend_ids = [f.friend_id if f.user_id == user_id else f.user_id for f in friends_rows]
+    friend_users = db.query(User).filter(User.id.in_(friend_ids)).all() if friend_ids else []
+    pending_rows = db.query(Friend).filter(Friend.friend_id == user_id, Friend.status == "pending").all()
+    request_list = []
+    for row in pending_rows:
+        sender = db.query(User).filter(User.id == row.user_id).first()
+        if sender:
+            request_list.append({"id": sender.id, "nickname": sender.nickname})
+    return {
+        "friends": [{"id": u.id, "nickname": u.nickname} for u in friend_users],
+        "requests": request_list
+    }
+
+@app.post("/api/friends/action")
+async def friend_action(
+    user_id: int = Form(...), target_id: int = Form(...), action: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    req = db.query(Friend).filter(
+        Friend.user_id == target_id, Friend.friend_id == user_id, Friend.status == "pending"
+    ).first()
+    if not req:
+        return JSONResponse(status_code=404, content={"message": "친구 요청을 찾을 수 없습니다."})
+    if action == "accept":
+        req.status = "accepted"; db.commit()
+        return {"message": "친구 요청을 수락했습니다."}
+    elif action == "reject":
+        db.delete(req); db.commit()
+        return {"message": "친구 요청을 거절했습니다."}
+    return JSONResponse(status_code=400, content={"message": "잘못된 action입니다."})
+
+@app.post("/api/friends/delete")
+async def delete_friend(user_id: int = Form(...), friend_id: int = Form(...), db: Session = Depends(get_db)):
+    deleted = db.query(Friend).filter(
+        (((Friend.user_id == user_id) & (Friend.friend_id == friend_id)) |
+         ((Friend.user_id == friend_id) & (Friend.friend_id == user_id))) &
+        (Friend.status == "accepted")
+    ).all()
+    if not deleted:
+        return JSONResponse(status_code=404, content={"message": "친구 관계를 찾을 수 없습니다."})
+    for row in deleted:
+        db.delete(row)
+    db.commit()
+    return {"message": "친구를 삭제했습니다."}
+
+
+# =============================================
+# 채팅 API & WebSocket
+# =============================================
+@app.get("/api/chat/history")
+async def get_chat_history(user1: int, user2: int, db: Session = Depends(get_db)):
+    messages = db.query(ChatMessage).filter(
+        ((ChatMessage.sender_id == user1) & (ChatMessage.receiver_id == user2)) |
+        ((ChatMessage.sender_id == user2) & (ChatMessage.receiver_id == user1))
+    ).order_by(ChatMessage.created_at.asc()).all()
+    return [{"sender_id": m.sender_id, "message": m.message} for m in messages]
+
+@app.websocket("/ws/chat/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: int):
+    await manager.connect(user_id, websocket)
+    db = next(get_db())
+    try:
+        while True:
+            data = await websocket.receive_text()
+            try:
+                msg_data = json.loads(data)
+            except json.JSONDecodeError:
+                continue
+            msg_type = msg_data.get('type', '')
+            if msg_type in ('ping', 'pong', 'typing'):
+                continue
+            receiver_id  = int(msg_data.get('receiver_id', 0))
+            message_text = msg_data.get('message', '').strip()
+            if not receiver_id or not message_text:
+                continue
+            new_msg = ChatMessage(sender_id=user_id, receiver_id=receiver_id, message=message_text)
+            db.add(new_msg)
+            db.commit()
+            await manager.send_personal_message(
+                {"sender_id": user_id, "receiver_id": receiver_id, "message": message_text},
+                receiver_id
+            )
+    except WebSocketDisconnect:
+        manager.disconnect(user_id)
+    except Exception as e:
+        logging.error(f"[WS] 예외: user_id={user_id}, error={e}")
+        manager.disconnect(user_id)
