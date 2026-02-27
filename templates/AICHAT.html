@@ -138,16 +138,19 @@
             to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         .ai-avatar {
-            width: 50px; height: 50px; border-radius: 50%;
+            width: 36px; height: 36px; border-radius: 16%;
             background: linear-gradient(135deg, #e53e3e, #fc8181);
             display: flex; align-items: center; justify-content: center;
             font-size: 22px; flex-shrink: 0; margin-top: 2px;
             box-shadow: 0 3px 10px var(--red-glow);
         }
         .bubble {
-            max-width: 68%; padding: 18px 24px; border-radius: 22px;
-            font-size: 17px; line-height: 1.85; white-space: pre-wrap; word-break: break-word;
-        }
+    max-width: 75%;
+    padding: 24px 32px;
+    border-radius: 26px;
+    font-size: 18px;
+    line-height: 1.9;
+}
         .bubble-ai {
             background: white; border: 1px solid rgba(229,62,62,0.1);
             color: var(--text); border-top-left-radius: 5px;
@@ -164,7 +167,7 @@
             background: white; border: 1px solid rgba(229,62,62,0.1);
             border-radius: 18px; padding: 22px 26px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.05); max-width: 68%;
-            margin-left: 64px;
+            margin-left: 148px;
             animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards; opacity: 0;
             transition: transform 0.2s, box-shadow 0.2s;
         }
@@ -182,23 +185,52 @@
         .fav-btn:hover { transform: scale(1.2); }
 
         /* ── TYPING ── */
-        .typing-row { display: flex; gap: 14px; align-items: flex-end; }
-        .typing-dots {
-            display: inline-flex; align-items: center; gap: 7px; background: white;
-            border: 1px solid rgba(229,62,62,0.1); padding: 16px 24px;
-            border-radius: 22px; border-top-left-radius: 5px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-        }
-        .typing-dots span {
-            width: 10px; height: 10px; background: var(--red); border-radius: 50%;
-            animation: dot 1.3s infinite ease-in-out; opacity: 0.6;
-        }
-        .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
-        .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
-        @keyframes dot {
-            0%,60%,100% { transform: translateY(0); }
-            30% { transform: translateY(-8px); opacity: 1; }
-        }
+.typing-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+    margin-left: 148px;
+}
+
+.typing-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: white;
+    border: 1px solid rgba(229,62,62,0.1);
+    padding: 8px 12px;
+    border-radius: 12px;
+    border-top-left-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.typing-dots span {
+    width: 6px;
+    height: 6px;
+    background: #e53e3e;
+    border-radius: 50%;
+    display: inline-block;
+    animation: dot 1.2s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes dot {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.6;
+    }
+    30% {
+        transform: translateY(-6px);
+        opacity: 1;
+    }
+}
 
         /* ── TASTE TAG ── */
         .taste-tag {
@@ -231,10 +263,16 @@
         }
         .situation-select:focus { border-color: var(--red); }
         .input-field {
-            flex: 1; background: #f4f4f6; border: 1.5px solid var(--border); border-radius: 18px;
-            padding: 14px 24px; font-size: 17px; font-family: inherit; outline: none; height: 62px;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
+    flex: 1;
+    background: #f4f4f6;
+    border: 1.5px solid var(--border);
+    border-radius: 22px;
+    padding: 18px 28px;
+    font-size: 20px;
+    height: 72px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
         .input-field:focus { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-glow); background: white; }
         .input-field::placeholder { color: #a0aec0; }
         .send-btn {
@@ -305,8 +343,8 @@
         .modal-label { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 12px; margin-top: 24px; }
         .option-grid { display: flex; flex-wrap: wrap; gap: 12px; }
         .opt-btn {
-            padding: 11px 22px; border-radius: 50px; border: 1.5px solid var(--border);
-            background: #f8f8f8; color: #555; font-size: 15px; font-weight: 700;
+            padding: 6px 14px; border-radius: 30px; border: 1.5px solid var(--border);
+            background: #f8f8f8; color: #555; font-size: 12px; font-weight: 700;
             cursor: pointer; transition: all 0.18s; font-family: inherit;
         }
         .opt-btn.selected { background: var(--red); color: white; border-color: var(--red); }
@@ -351,11 +389,21 @@
             .cat-inner { padding: 0 16px; gap: 8px; }
             .cat-btn { font-size: 12px; padding: 7px 14px; }
             .chat-inner { padding: 16px 16px; gap: 14px; }
-            .bubble { font-size: 13.5px; padding: 12px 16px; border-radius: 16px; }
-            .ai-avatar { width: 36px; height: 36px; font-size: 16px; }
+            .bubble {
+            font-size: 12px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            }
+            .ai-avatar {
+            width: 36px; height: 36px; border-radius: 16%;
+            background: linear-gradient(135deg, #e53e3e, #fc8181);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0; margin-top: 2px;
+            box-shadow: 0 3px 10px var(--red-glow);
+        }
             .input-inner { padding: 0 14px; gap: 8px; }
-            .situation-select { height: 46px; font-size: 12px; padding: 0 10px; border-radius: 12px; }
-            .input-field { height: 46px; font-size: 13.5px; padding: 10px 14px; border-radius: 14px; }
+            .situation-select { height: 44px; font-size: 12px; padding: 0 10px; border-radius: 12px; }
+            .input-field { height: 44px; font-size: 13px; padding: 10px 14px; border-radius: 14px; }
             .send-btn { width: 46px; height: 46px; border-radius: 14px; }
             .send-btn svg { width: 18px; height: 18px; }
             .nav-item { font-size: 10px; padding: 4px 16px; }
@@ -365,11 +413,31 @@
             .place-name { font-size: 13.5px; }
             .place-addr { font-size: 11px; }
             .place-link { font-size: 12px; padding: 6px 14px; }
-            .taste-tag { margin-left: 48px; font-size: 12px; }
-            #welcome-card-body { padding: 24px 20px 20px 20px !important; }
-        }
+            .taste-tag { padding: 4px 10px; font-size: 11px; }
+            #welcome-card-body { padding: 14px  !important; }
+            #welcome-card-body {
+        padding: 18px !important;
+        border-radius: 18px !important;
+    }
 
+    #welcome-card-body > div:first-child {
+        font-size: 18px !important;
+        line-height: 1.4 !important;
+    }
+
+    #welcome-card-body > div:nth-child(2) {
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+    }
+
+    #welcome-card-body .opt-btn {
+        font-size: 12px !important;
+        padding: 6px 14px !important;
+    }
+
+}
         
+     
 
         /* ── 프로필 드롭다운 ── */
         .profile-dropdown {
@@ -536,7 +604,7 @@
 
     /* 전체 폰트 살짝 축소 */
     html, body {
-        font-size: 14px;
+        font-size: 12.5px;
     }
 
     /* ───── HEADER ───── */
@@ -583,24 +651,25 @@
         gap: 14px;
     }
 
-    .bubble {
-        max-width: 85%;
-        font-size: 13px;
-        padding: 12px 14px;
-        border-radius: 16px;
-    }
+    
 
     .ai-avatar {
-        width: 34px;
-        height: 34px;
-        font-size: 14px;
-    }
+            width: 36px; height: 36px; border-radius: 16%;
+            background: linear-gradient(135deg, #e53e3e, #fc8181);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0; margin-top: 2px;
+            box-shadow: 0 3px 10px var(--red-glow);
+        }
 
     /* ───── PLACE CARD ───── */
     .place-card {
-        max-width: 85%;
-        margin-left: 44px;
-        padding: 14px;
+    max-width: 78%;
+    margin-left: 40px;
+    padding: 12px;
+    }
+
+    .msg-row {
+    gap: 8px;  /* 아바타 간격 줄임 */
     }
 
     .place-name {
@@ -676,6 +745,31 @@
     }
 }
 
+/* 🔥 PC에서는 모바일 검색 버튼 숨김 */
+.mobile-search-btn {
+    display: none;
+}
+
+/* 🔥 모바일에서만 보이게 */
+@media (max-width: 768px) {
+    .mobile-search-btn {
+        display: flex !important;
+    }
+}
+
+@media (max-width:768px) {
+    .typing-row {
+        margin-left: 0 !important;
+    }
+}
+@media (max-width: 768px) {
+
+    #welcome-card-body {
+        transform: scale(0.85);
+        transform-origin: top left;
+    }
+
+}
 
         </style>
 </head>
@@ -827,10 +921,10 @@
         <button class="cat-btn" onclick="showTopPlaces('혼밥')">🍚 혼밥 맛집</button>
         <button class="cat-btn" onclick="showTopPlaces('데이트')">👩‍❤️‍👨 데이트 코스</button>
         <button class="cat-btn" onclick="showTopPlaces('술집')">🍻 분위기 술집</button>
-        <button class="cat-btn" onclick="fillInput('오늘 추천 안주 뭐가 좋을까?')">⭐ 오늘의 추천</button>
-        <button class="cat-btn" onclick="fillInput('소맥이랑 어울리는 안주 추천해줘')">🥃 소맥 안주</button>
-        <button class="cat-btn" onclick="fillInput('와인이랑 잘 어울리는 음식 추천해줘')">🍷 와인 페어링</button>
-        <button class="cat-btn" onclick="fillInput('맥주 안주 추천해줘')">🍺 맥주 안주</button>
+        <button class="cat-btn" onclick="showTopPlaces('추천')">⭐ 오늘의 추천</button>
+        <button class="cat-btn" onclick="showTopPlaces('소맥')">🥃 소맥 안주</button>
+        <button class="cat-btn" onclick="showTopPlaces('와인')">🍷 와인 페어링</button>
+        <button class="cat-btn" onclick="showTopPlaces('맥주')">🍺 맥주 안주</button>
         <button class="cat-btn" onclick="clearChat()">🗑 대화 초기화</button>
     </div>
 </div>
@@ -853,9 +947,49 @@
 </div>
 
 <div class="history-panel" id="historyPanel" onclick="event.stopPropagation()">
-    <div class="h-title">📂 내 기록</div>
-    <div class="h-section">⭐ 즐겨찾기</div>
-    <div id="favList"><div style="font-size:11px;color:#bbb;padding:2px;">아직 없어요</div></div>
+    <div class="h-title">내 채팅</div>
+
+    <button onclick="startNewChat()" 
+    style="
+    margin:10px 0 14px 0;
+    padding:10px 12px;
+    background:#1a1a2e;
+    border:none;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:700;
+    color:white;
+    cursor:pointer;
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    justify-content:center;
+">
+    ✏️ 새 채팅
+</button>
+
+    <div 
+    onclick="toggleFavGroup()"
+    style="
+        font-size:16px;
+        font-weight:800;
+        color:var(--text);
+        margin:16px 0 8px;
+        cursor:pointer;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    ">
+    <span>⭐ 즐겨찾기</span>
+    <span id="favArrow">▾</span>
+</div>
+
+<div id="favListWrapper">
+    <div id="favList">
+        <div style="font-size:11px;color:#bbb;padding:2px;">아직 없어요</div>
+    </div>
+</div>
     <div class="h-section">💬 최근 대화</div>
     <div id="chatHistoryList"><div style="font-size:11px;color:#bbb;padding:2px;">아직 없어요</div></div>
 </div>
@@ -1022,13 +1156,16 @@ function showTasteTag(tasteData) {
 /* ── 채팅 히스토리 저장 ── */
 function saveChatRecord(userMsg, aiReply) {
     if (!isLoggedIn()) return;
+
     let list = load('chatHistory', []);
+
     list.unshift({
-    q: userMsg,
-    a: aiReply,
-    date: new Date().toLocaleDateString('ko-KR', {month:'short',day:'numeric'})
-});
-    save('chatHistory', list.slice(0, 30));
+        q: userMsg,
+        a: aiReply,
+        timestamp: Date.now()   // 🔥 이거 필수
+    });
+
+    save('chatHistory', list.slice(0, 50));
     renderHistory();
 }
 
@@ -1068,36 +1205,91 @@ function renderHistory() {
 
     // chat history
     const hist = load('chatHistory',[]);
-    const hEl = document.getElementById('chatHistoryList');
-    if (hist.length) {
-        // 전체 삭제 버튼
-        const clearBtn = `<button onclick="clearAllHistory()" style="width:100%;margin-bottom:6px;padding:5px 8px;background:#fff0f0;border:1px solid #fca5a5;border-radius:8px;color:var(--red);font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;">🗑 전체 삭제</button>`;
-        hEl.innerHTML = clearBtn + hist.slice(0,15).map((h,i)=>`
-            <div class="h-item">
-                <div style="flex:1;cursor:pointer;" onclick="loadChatFromHistory(${i})">
-                    <div>${esc(h.q)}${h.q.length>=40?'…':''}</div>
-                    <div class="h-date">${h.date}</div>
-                </div>
-                <button class="h-del" title="삭제" onclick="delChatHistory(${i})">×</button>
-            </div>
-        `).join('');
-    } else {
-        hEl.innerHTML = '<div style="font-size:14px;color:#999;padding:6px 4px;">아직 없어요</div>';
-    }
+const hEl = document.getElementById('chatHistoryList');
+
+if (!hist.length) {
+    hEl.innerHTML = '<div style="font-size:14px;color:#999;padding:6px 4px;">아직 없어요</div>';
+    return;
 }
 
+// 🔥 날짜별 그룹화
+const grouped = {};
+
+hist.forEach(item => {
+
+    const time = item.timestamp || Date.now();
+    const dateObj = new Date(time);
+
+    const today = new Date();
+
+    let label;
+
+    // 🔥 오늘만 따로 표시
+    if (dateObj.toDateString() === today.toDateString()) {
+        label = "📅 오늘";
+    } else {
+        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const dd = String(dateObj.getDate()).padStart(2, '0');
+        label = `📅 ${mm}-${dd}`;
+    }
+
+    if (!grouped[label]) grouped[label] = [];
+    grouped[label].push(item);
+});
+
+let html = '';
+
+Object.keys(grouped).forEach(label => {
+
+    const groupId = `group_${label.replace(/[^0-9a-z]/gi,'')}`;
+
+html += `
+<div 
+    onclick="toggleHistoryGroup('${groupId}')"
+    style="font-size:13px;font-weight:800;color:#666;margin:12px 0 6px 4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+    <span>${label}</span>
+    <span id="arrow_${groupId}">▾</span>
+</div>
+<div id="${groupId}">
+`;
+
+    grouped[label].forEach((h, i) => {
+        const globalIndex = hist.indexOf(h);
+
+        html += `
+        <div class="h-item">
+            <div style="flex:1;cursor:pointer;" onclick="loadChatFromHistory(${globalIndex})">
+                <div>${esc(h.q).slice(0,35)}${h.q.length>35?'…':''}</div>
+                <div class="h-date">
+                    ${new Date(h.timestamp || Date.now())
+   .toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
+                </div>
+            </div>
+            <button class="h-del" onclick="delChatHistory(${globalIndex})">×</button>
+        </div>
+        `;
+    });
+    
+    html += `</div>`;   // 🔥 이 줄 추가
+
+});
+
+hEl.innerHTML = html; }
+
 function delChatHistory(idx) {
+
+    const confirmDelete = confirm("이 대화를 삭제하시겠어요?");
+
+    if (!confirmDelete) return;
+
     let list = load('chatHistory', []);
     list.splice(idx, 1);
     save('chatHistory', list);
+
     renderHistory();
+    showToast("🗑 대화가 삭제됐어요");
 }
-function clearAllHistory() {
-    if (!confirm('최근 대화를 모두 삭제할까요?')) return;
-    save('chatHistory', []);
-    renderHistory();
-    showToast('🗑 대화 기록이 모두 삭제됐어요');
-}
+
 let selectedAlcohol = [], selectedSnack = [], selectedSitu = [];
 
 function openOnboarding() {
@@ -1171,10 +1363,18 @@ function esc(s) {
 
 function showTyping() {
     const r = document.createElement('div');
-    r.className='typing-row'; r.id='typing-indicator';
-    r.innerHTML=`<div class="ai-avatar" style="width:32px;height:32px;font-size:13px;">🍷</div>
-        <div class="typing-dots"><span></span><span></span><span></span></div>`;
-    document.getElementById('chat-container').appendChild(r); scrollToBottom();
+    r.className = 'typing-row';
+    r.id = 'typing-indicator';
+
+    r.innerHTML = `
+        <div class="ai-avatar">🍷</div>
+        <div class="typing-dots large-typing">
+            <span></span><span></span><span></span>
+        </div>
+    `;
+
+    document.getElementById('chat-container').appendChild(r);
+    scrollToBottom();
 }
 function hideTyping() { const t=document.getElementById('typing-indicator'); if(t) t.remove(); }
 
@@ -1182,6 +1382,10 @@ function addMsg(role, html, rawText='') {
     const isAI = role==='ai';
     const row = document.createElement('div');
     row.className = `msg-row${isAI?'':' user-row'}`;
+
+    if (isAI && window.matchMedia("(min-width: 769px)").matches) {
+    row.style.marginLeft = "148px";
+}
     if (isAI) {
         row.innerHTML=`<div class="ai-avatar">🍷</div><div class="bubble bubble-ai">${html}</div>`;
     } else {
@@ -1190,6 +1394,8 @@ function addMsg(role, html, rawText='') {
     document.getElementById('chat-container').appendChild(row);
     // 세션 히스토리에 추가
     chatHistory.push({role: isAI?'ai':'user', content: rawText || html.replace(/<[^>]+>/g,'')});
+    save('currentSessionLive', chatHistory);
+    
     scrollToBottom();
 }
 
@@ -1282,41 +1488,103 @@ if (hour >= 5 && hour < 12) {
     })() : `<div onclick="openOnboarding()" style="display:inline-flex;align-items:center;gap:8px;background:white;border:1.5px dashed #fecaca;border-radius:14px;padding:11px 18px;font-size:14px;font-weight:600;color:#e53e3e;margin-bottom:24px;cursor:pointer;">
         <span>🎯</span><span>취향 설정하기</span>
     </div>`;
-
+//웰컴카드 사이즈
     const welcomeHtml = `
-        <div style="font-size:26px;font-weight:900;color:#1a1a2e;margin-bottom:28px;line-height:1.4;text-align:left;">${greeting}</div>
-        <div style="font-size:18px;color:#718096;line-height:1.85;margin-bottom:32px;text-align:left;"><br>오늘의 술자리, 제가 도와드릴게요.<br>어떤 상황인지 알려주시면 딱 맞는 주류·안주를 추천해드려요.<br></div>
-        ${profileTag}
-        <div style="display:flex;flex-wrap:wrap;gap:12px;">
-            <button class="opt-btn selected" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('오늘 기분에 맞는 술과 안주 추천해줘')">✨ 오늘의 추천</button>
-            <button class="opt-btn" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('혼술하기 좋은 조합 추천해줘')">🙋 혼술</button>
-            <button class="opt-btn" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('회식 자리에서 인기 많은 술과 안주 추천해줘')">👔 회식</button>
-            <button class="opt-btn" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('데이트할 때 분위기 있는 술과 어울리는 안주 추천해줘')">💑 데이트</button>
-            <button class="opt-btn" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('가족 모임에 어울리는 술과 안주 추천해줘')">👨‍👩‍👧 가족</button>
-        </div>`;
+    <div style="
+        font-size:28px;
+        font-weight:900;
+        color:#1a1a2e;
+        margin-bottom:24px;
+        line-height:1.5;
+        text-align:left;">
+        ${greeting}
+    </div>
 
-    // 이미 웰컴 카드가 있으면 내용만 교체 (새로 추가 X)
-    const existingCard = document.getElementById('welcome-card-body');
-    if (existingCard) {
-        existingCard.style.opacity = '0.5';
-        existingCard.style.transition = 'opacity 0.15s';
-        setTimeout(() => {
-            existingCard.innerHTML = welcomeHtml;
-            existingCard.style.opacity = '1';
-        }, 150);
-        return;
-    }
+    <div style="
+        font-size:18px;
+        color:#718096;
+        line-height:1.85;
+        margin-bottom:30px;
+        text-align:left;">
+        오늘의 술자리, 제가 도와드릴게요.<br>
+        어떤 상황인지 알려주시면 딱 맞는 주류·안주를 추천해드려요.
+    </div>
 
-    const row = document.createElement('div');
-    row.className = 'msg-row';
-    row.style.cssText = 'opacity:1;animation:none;';
-    row.innerHTML = `
-        <div class="ai-avatar">🍷</div>
-        <div id="welcome-card-body" style="max-width:82%;background:linear-gradient(180deg,#fce8e8 0%,#fdf3f3 35%,#fdf8f8 60%,#ffffff 100%);border:1px solid rgba(229,62,62,0.1);border-radius:28px;border-top-left-radius:5px;box-shadow:0 4px 20px rgba(229,62,62,0.08);padding:40px 38px 36px 38px;text-align:left;">
-            ${welcomeHtml}
-        </div>`;
-    document.getElementById('chat-container').appendChild(row);
-    scrollToBottom();
+    ${profileTag}
+
+    <div style="
+        display:flex;
+        flex-wrap:wrap;
+        gap:12px;">
+        
+        <button class="opt-btn selected"
+            style="font-size:16px;padding:12px 24px;border-radius:40px;"
+            onclick="fillInput('오늘 기분에 맞는 술과 안주 추천해줘')">
+            ✨ 오늘의 추천
+        </button>
+
+        <button class="opt-btn"
+            style="font-size:16px;padding:12px 24px;border-radius:40px;"
+            onclick="fillInput('혼술하기 좋은 조합 추천해줘')">
+            🙋 혼술
+        </button>
+
+        <button class="opt-btn"
+            style="font-size:16px;padding:12px 24px;border-radius:40px;"
+            onclick="fillInput('회식 자리에서 인기 많은 술과 안주 추천해줘')">
+            👔 회식
+        </button>
+
+        <button class="opt-btn"
+            style="font-size:16px;padding:12px 24px;border-radius:40px;"
+            onclick="fillInput('데이트할 때 분위기 있는 술과 어울리는 안주 추천해줘')">
+            💑 데이트
+        </button>
+
+        <button class="opt-btn"
+            style="font-size:16px;padding:12px 24px;border-radius:40px;"
+            onclick="fillInput('가족 모임에 어울리는 술과 안주 추천해줘')">
+            👨‍👩‍👧 가족
+        </button>
+    </div>
+`;
+
+// 이미 웰컴 카드가 있으면 내용만 교체 (새로 추가 X)
+const existingCard = document.getElementById('welcome-card-body');
+if (existingCard) {
+    existingCard.style.opacity = '0.5';
+    existingCard.style.transition = 'opacity 0.15s';
+    setTimeout(() => {
+        existingCard.innerHTML = welcomeHtml;
+        existingCard.style.opacity = '1';
+    }, 150);
+    return;
+}
+
+const row = document.createElement('div');
+row.className = 'msg-row';
+row.style.cssText = 'opacity:1;animation:none;';
+
+if (window.matchMedia("(min-width: 769px)").matches) {
+    row.style.marginLeft = "148px";
+}
+row.innerHTML = `
+    <div class="ai-avatar">🍷</div>
+    <div id="welcome-card-body" style="
+    max-width:78%;
+    background:linear-gradient(180deg,#fce8e8 0%,#fdf3f3 40%,#ffffff 100%);
+    border:1px solid rgba(229,62,62,0.1);
+    border-radius:32px;
+    border-top-left-radius:8px;
+    box-shadow:0 10px 40px rgba(229,62,62,0.12);
+    padding:48px;
+    text-align:left;">
+        ${welcomeHtml}
+    </div>
+`;
+
+document.getElementById('chat-container').appendChild(row);
+scrollToBottom();
 }
 
 /* ══════════════════════════════════════════
@@ -1398,7 +1666,11 @@ async function fetchTopPlaces(category) {
         hideTyping();
         addMsg('ai', `📍 내 위치 기준 <b>${esc(category)}</b> 인기 장소 TOP5`);
         const cc = document.getElementById('chat-container');
-        data.places.forEach((place, i) => {
+        const favList = load('favorites', []);
+        const favNames = favList.map(f => f.name);
+        const filteredPlaces = data.places.filter(p => !favNames.includes(p.name));
+
+        filteredPlaces.forEach((place, i) => {
             setTimeout(() => {
                 const favd = isFav(place.name);
                 const card = document.createElement('div');
@@ -1642,29 +1914,30 @@ function closeMobileHistory() {
     overlay.style.display = 'none';
 }
 
-let currentSessionBackup = [];
+
 
 function loadChatFromHistory(index) {
     const hist = load('chatHistory', []);
     const record = hist[index];
     if (!record) return;
 
-    // 🔥 현재 진행 중 세션 백업
-    currentSessionBackup = [...chatHistory];
+    // ✅ 현재 진행 중 세션 백업
+    save('currentSessionBackup', chatHistory);
 
     // 채팅창 초기화
     chatHistory = [];
     document.getElementById('chat-container').innerHTML = '';
 
-    // 세션 히스토리 복원
+    // 기록 로드
     addMsg('user', esc(record.q), record.q);
     addMsg('ai', esc(record.a).replace(/\n/g, '<br>'), record.a);
 
     showToast("이전 대화를 불러왔어요");
 
-    // 모바일이면 닫기
+
     closeMobileHistory();
 }
+
 
 function toggleMobileGameMenu(e) {
     e.preventDefault();
@@ -1746,6 +2019,89 @@ document.addEventListener('click', function (e) {
     closeMobileHistory();
 
 }, true);  // 🔥 캡처 단계 사용
+
+function startNewChat() {
+
+    // 🔥 현재 세션이 있으면 세션 기록에 저장
+    if (chatHistory.length > 0) {
+
+        let sessions = load('chatSessions', []);
+
+        sessions.unshift({
+            id: Date.now(),
+            date: new Date().toLocaleString('ko-KR'),
+            messages: [...chatHistory]
+        });
+
+        save('chatSessions', sessions);
+    }
+
+    // 🔥 새로운 세션 시작
+    chatHistory = [];
+    save('currentSessionLive', []);
+
+    document.getElementById('chat-container').innerHTML = '';
+
+    startChat(); 
+
+    renderHistory();
+
+    showToast("✨ 새 채팅이 시작됐어요");
+}
+
+function renderSessionHistory() {
+
+    const sessions = load('chatSessions', []);
+    const hEl = document.getElementById('chatHistoryList');
+
+    if (!sessions.length) {
+        hEl.innerHTML = '<div style="font-size:14px;color:#999;padding:6px;">아직 없어요</div>';
+        return;
+    }
+
+    hEl.innerHTML = sessions.map((s, i) => `
+        <div class="h-item" onclick="loadSession(${i})">
+            <div style="flex:1;">
+                <div>💬 ${s.messages[0]?.content?.slice(0,25) || '새 채팅'}</div>
+                <div class="h-date">${s.date}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleHistoryGroup(id) {
+
+    const group = document.getElementById(id);
+    const arrow = document.getElementById("arrow_" + id);
+
+    if (!group) return;
+
+    const isOpen = group.style.display !== "none";
+
+    if (isOpen) {
+        group.style.display = "none";
+        if (arrow) arrow.textContent = "▸";
+    } else {
+        group.style.display = "block";
+        if (arrow) arrow.textContent = "▾";
+    }
+}
+
+function toggleFavGroup() {
+
+    const wrapper = document.getElementById("favListWrapper");
+    const arrow   = document.getElementById("favArrow");
+
+    const isOpen = wrapper.style.display !== "none";
+
+    if (isOpen) {
+        wrapper.style.display = "none";
+        arrow.textContent = "▸";
+    } else {
+        wrapper.style.display = "block";
+        arrow.textContent = "▾";
+    }
+}
 
     </script>
 <div id="historyOverlay" 
