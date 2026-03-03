@@ -27,33 +27,13 @@ app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 templates = Jinja2Templates(directory="templates")
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-# --- 인기글 라우터 (AI 코드 건드리지 않음) ---
-@app.get("/SOLO", response_class=HTMLResponse)
-def solo_page(request: Request):
-    return templates.TemplateResponse("SOLO.html", {"request": request})
-
-@app.get("/DATE", response_class=HTMLResponse)
-def date_page(request: Request):
-    return templates.TemplateResponse("DATE.html", {"request": request})
-
-@app.get("/WORK", response_class=HTMLResponse)
-def work_page(request: Request):
-    return templates.TemplateResponse("WORK.html", {"request": request})
-
-@app.get("/ETC", response_class=HTMLResponse)
-def etc_page(request: Request):
-    return templates.TemplateResponse("ETC.html", {"request": request})
-# --- Nominatim Reverse Geocoding Proxy (CORS 우회용) ---
+# --- ngrok 브라우저 경고 스킵 미들웨어 ---
 @app.middleware("http")
 async def add_ngrok_skip_header(request: Request, call_next):
     response = await call_next(request)
     response.headers["ngrok-skip-browser-warning"] = "true"
     return response
-=======
->>>>>>> feature/App_DB-LYS
-=======
+
 # =============================================
 # WebSocket 연결 관리자
 # =============================================
@@ -85,7 +65,6 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
->>>>>>> feature/App_DB-LYS
 
 # --- 인기글 라우터 (AI 코드 건드리지 않음) ---
 @app.get("/SOLO", response_class=HTMLResponse)
@@ -289,35 +268,6 @@ async def chat(request: ChatRequest):
     try:
         genai.configure(api_key=settings.GEMINI_API_KEY)
         model = genai.GenerativeModel("gemini-2.5-flash")
-<<<<<<< HEAD
-        prompt = f"""
-            당신은 모바일 서비스 '테이스트메이트 AI'입니다.
-
-            ⚠️ 반드시 아래 형식으로만 답변하세요.
-            - 블로그 스타일 금지
-            - 길게 설명 금지
-            - 한눈에 보이도록 간결하게 작성
-            - 모바일 화면에 맞게 줄 간격 유지
-
-            형식:
-
-            🍺 추천 주류:
-            - 한 줄 설명
-
-            🌶 추천 안주 TOP3:
-            1. 안주명 – 한 줄 이유
-            2. 안주명 – 한 줄 이유
-            3. 안주명 – 한 줄 이유
-
-            💡 페어링 포인트:
-            - 두 줄 이내 요약
-
-            사용자 질문:
-            {request.message}
-            """
-        response = model.generate_content(prompt)
-        return {"reply": response.text}
-=======
 
         # ── 시간대 문구 ──
         hour = request.current_hour
@@ -443,7 +393,6 @@ TASTE_DATA:{{
             "taste_data": taste_data  # 프론트에서 취향 프로필 업데이트에 사용
         }
 
->>>>>>> feature/App_DB-LYS
     except Exception as e:
         logging.error(f"Gemini 에러: {e}")
         return {"reply": "AI 연결에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.", "taste_data": {}}
