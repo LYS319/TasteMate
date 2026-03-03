@@ -11,6 +11,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 글쓰기</title>
+        <link rel="stylesheet" href="/static/css/header.css" />
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
             body {
@@ -398,21 +399,9 @@
                     flex: 1;
                 }
             }
-        
-            /* ── 광고 배너 CSS ── */
-            .side-ad { position: fixed; top: 150px; width: 160px; height: 600px; background: #f4f4f4; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; color: #999; font-weight: bold; z-index: 100; border-radius: 10px; font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box; }
-            .ad-left  { left: 20px; }
-            .ad-right { right: 20px; }
-            .mobile-top-ad { display: none; position: fixed; top: 60px; left: 0; right: 0; height: 55px; background: #f4f4f4; border-bottom: 1px solid #ddd; align-items: center; justify-content: center; color: #999; font-weight: bold; font-size: 0.9rem; z-index: 100; pointer-events: none; }
-            @media (max-width: 1200px) { .side-ad { display: none; } }
-            @media (max-width: 900px)  { .mobile-top-ad { display: flex; } }
         </style>
     </head>
     <body>
-                <!-- 광고 배너 -->
-        <div class="side-ad ad-left">광고 영역 (좌)</div>
-        <div class="side-ad ad-right">광고 영역 (우)</div>
-        <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
         <header class="header">
             <div class="header-left">
                 <button class="menu-toggle-btn" onclick="openMobileNav()">☰</button>
@@ -821,57 +810,5 @@
             }
         </script>
         <script src="/static/js/avatar-sync.js"></script>
-    
-        <!-- 💬 친구 FAB -->
-        <button class="panel-fab" onclick="togglePanel()" id="panelFab">💬</button>
-        <div class="panel-overlay" id="panelOverlay"></div>
-        <div class="panel-panel" id="panelPanel">
-            <div class="panel-header">
-                <div class="panel-header-title">🍽️ 나의 메이트</div>
-                <div class="panel-header-sub" id="panel-login-hint"></div>
-            </div>
-            <div class="panel-tabs">
-                <button class="tab-btn active" onclick="showTab('list')">친구목록</button>
-                <button class="tab-btn" onclick="showTab('add')">친구추가</button>
-                <button class="tab-btn" id="req-tab-btn" onclick="showTab('req')">요청<span id="req-dot" class="req-dot" style="display:none"></span></button>
-            </div>
-            <div id="tab-list" class="tab-content active">
-                <div id="panel-list-container"><div class="empty-state"><div class="empty-icon">👥</div>아직 친구가 없어요.<br/>친구를 추가해보세요!</div></div>
-            </div>
-            <div id="tab-add" class="tab-content">
-                <div class="add-friend-section">
-                    <div style="font-size:0.9rem;color:#666;margin-bottom:12px;line-height:1.5">👥 닉네임으로 친구를 찾아보세요</div>
-                    <input type="text" id="panelSearch" class="add-friend-input" placeholder="친구 닉네임을 입력하세요" onkeyup="if(event.keyCode==13)requestFriend();" />
-                    <button class="add-friend-btn" onclick="requestFriend()">🙋 친구 신청 보내기</button>
-                    <div id="add-friend-result" style="font-size:0.88rem;margin-top:12px;min-height:20px;text-align:center"></div>
-                </div>
-            </div>
-            <div id="tab-req" class="tab-content">
-                <div id="panel-req-container"><div class="empty-state"><div class="empty-icon">📭</div>받은 친구 요청이 없어요.</div></div>
-            </div>
-        </div>
-        <div class="confirm-modal-bg" id="confirmModalBg" style="display:none">
-            <div class="confirm-modal">
-                <div class="confirm-modal-icon">🗑️</div>
-                <div class="confirm-modal-title" id="confirmModalTitle">친구를 삭제할까요?</div>
-                <div class="confirm-modal-desc" id="confirmModalDesc">삭제하면 서로의 친구 목록에서<br/>사라집니다.</div>
-                <div class="confirm-modal-btns">
-                    <button class="confirm-cancel" onclick="closeConfirmModal()">취소</button>
-                    <button class="confirm-ok" id="confirmOkBtn">삭제</button>
-                </div>
-            </div>
-        </div>
-        <div id="chat-windows-container"></div>
-        <div class="toast" id="toast"></div>
-        <script src="/static/js/friend-chat.js"></script>
-        <script src="/static/js/avatar-sync.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                if (typeof initFriendChatPanel === 'function') initFriendChatPanel();
-                var overlay = document.getElementById('panelOverlay');
-                if (overlay) overlay.addEventListener('click', function() { if(typeof togglePanel==='function') togglePanel(); });
-            });
-        </script>
-
-</body>
+    </body>
 </html>
