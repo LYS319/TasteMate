@@ -1,0 +1,1460 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <script>
+            // ngrok iframe 탈출 - 경고 페이지 없이 직접 접속
+            if (window.top !== window.self) {
+                window.top.location.href = window.self.location.href;
+            }
+        </script>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>기타 커뮤니티 | TasteMate</title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+            /* --- Animations --- */
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(25px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            @keyframes noticeGlow {
+                0% {
+                    box-shadow: 0 4px 6px rgba(220, 38, 38, 0.05);
+                }
+                50% {
+                    box-shadow: 0 4px 20px rgba(220, 38, 38, 0.15);
+                    border-color: #dc2626;
+                }
+                100% {
+                    box-shadow: 0 4px 6px rgba(220, 38, 38, 0.05);
+                }
+            }
+
+            .fade-in-card {
+                opacity: 0;
+                animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            }
+
+            body {
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: #fdfdfd;
+                word-break: keep-all;
+                color: #333;
+            }
+
+            /* --- Header Style (기본 유지) --- */
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 32px;
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08);
+                backdrop-filter: blur(15px);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+            }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+            .header-logo {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 1.6rem;
+                font-weight: 900;
+                color: #dc2626;
+                text-decoration: none;
+            }
+            .menu-toggle-btn {
+                background: none;
+                border: none;
+                font-size: 1.8rem;
+                cursor: pointer;
+                border-radius: 8px;
+                padding: 4px 10px;
+            }
+            #mainNavMenu {
+                min-width: 140px;
+                position: absolute;
+                top: 65px;
+                left: 32px;
+                background: #fff;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
+                border-radius: 12px;
+                padding: 15px;
+                display: none;
+            }
+            .nav-emoji-btn {
+                background: none;
+                border: none;
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin-bottom: 5px;
+                cursor: pointer;
+                width: 100%;
+                text-align: left;
+                padding: 10px;
+            }
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            /* --- Avatar & Buttons --- */
+            .nickname-avatar {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: #222;
+                color: #fff;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                cursor: pointer;
+            }
+            .current-location {
+                font-size: 0.85rem;
+                color: #dc2626;
+                background: #fff1f1;
+                border: 1px solid rgba(220, 38, 38, 0.1);
+                border-radius: 10px;
+                padding: 8px 14px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+            .login-btn {
+                padding: 10px 18px;
+                background: #dc2626;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                font-size: 0.9rem;
+                font-weight: 700;
+                cursor: pointer;
+            }
+
+            /* --- 카드 UI 디자인 --- */
+            .post-card {
+                background: #fff;
+                border: 1px solid #f1f1f1;
+                border-radius: 20px;
+                padding: 24px;
+                margin-bottom: 20px;
+                list-style: none;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+                cursor: pointer;
+                position: relative;
+            }
+            .post-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 15px 30px rgba(220, 38, 38, 0.1);
+                border-color: #ffe5e5;
+            }
+
+            /* 공지글 전용 스타일 */
+            .post-card.notice-card {
+                border: 2px solid #dc2626;
+                background: #fff8f8;
+                animation: noticeGlow 3s infinite;
+            }
+            .notice-badge {
+                background: #dc2626;
+                color: #fff;
+                font-size: 0.75rem;
+                font-weight: 900;
+                padding: 4px 10px;
+                border-radius: 8px;
+                display: inline-block;
+                margin-bottom: 12px;
+            }
+
+            .post-title {
+                font-size: 1.3rem;
+                font-weight: 800;
+                color: #1a1a1a;
+                text-decoration: none;
+                margin-bottom: 12px;
+                display: block;
+            }
+            .post-content-preview {
+                color: #555;
+                font-size: 1rem;
+                line-height: 1.6;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                margin-bottom: 18px;
+            }
+
+            .category-btn {
+                flex: 1;
+                padding: 12px 0;
+                border-radius: 12px;
+                text-align: center;
+                text-decoration: none;
+                font-weight: 700;
+                border: 1.5px solid #f0f0f0;
+                transition: 0.3s;
+                background: #fff;
+                color: #999;
+            }
+            .category-btn.active {
+                background: #dc2626;
+                color: #fff;
+                border-color: #dc2626;
+                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+            }
+
+            /* 근처 필터 */
+            .nearby-bar {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                justify-content: center;
+                margin-bottom: 14px;
+                flex-wrap: wrap;
+            }
+            .nearby-btn {
+                padding: 8px 16px;
+                border-radius: 20px;
+                border: 1.5px solid #dc2626;
+                background: #fff;
+                color: #dc2626;
+                font-weight: 700;
+                font-size: 0.9rem;
+                cursor: pointer;
+                transition: all 0.2s;
+                font-family: inherit;
+            }
+            .nearby-btn.active {
+                background: #dc2626;
+                color: #fff;
+            }
+            .nearby-btn:hover {
+                background: #dc2626;
+                color: #fff;
+            }
+            .radius-select {
+                padding: 7px 12px;
+                border-radius: 20px;
+                border: 1.5px solid #ddd;
+                font-size: 0.88rem;
+                font-family: inherit;
+                color: #555;
+                cursor: pointer;
+                display: none;
+            }
+            .radius-select.visible {
+                display: block;
+            }
+            .nearby-status {
+                font-size: 0.82rem;
+                color: #888;
+                display: none;
+            }
+            .nearby-status.visible {
+                display: block;
+            }
+            .sort-btn {
+                padding: 8px 20px;
+                border-radius: 25px;
+                border: none;
+                background: #f5f5f5;
+                color: #777;
+                font-weight: 700;
+                font-size: 0.85rem;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+            .sort-btn.active {
+                background: #222;
+                color: #fff;
+            }
+
+            .meta-footer {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 12px;
+                font-size: 0.85rem;
+                color: #aaa;
+                padding-top: 15px;
+                border-top: 1px solid #f8f8f8;
+            }
+
+            /* ===== 반응형 (태블릿/모바일) ===== */
+            @media (max-width: 900px) {
+                .header {
+                    flex-direction: column;
+                    padding: 10px 16px;
+                    gap: 8px;
+                    position: sticky;
+                }
+                .header-left {
+                    width: 100%;
+                    justify-content: space-between;
+                }
+                .header-center {
+                    width: 100%;
+                }
+                .header-right {
+                    width: 100%;
+                    justify-content: flex-end;
+                }
+                .menu-bar {
+                    display: none;
+                }
+                .header-logo {
+                    font-size: 1.3rem;
+                }
+                .login-btn {
+                    padding: 8px 10px;
+                    font-size: 0.8rem;
+                }
+                .current-location {
+                    padding: 6px 8px;
+                    font-size: 0.78rem;
+                }
+                .nickname-avatar {
+                    width: 32px;
+                    height: 32px;
+                    font-size: 0.85rem;
+                }
+                .container,
+                .write-container,
+                .community-wrap {
+                    padding: 16px;
+                    margin: 10px auto;
+                }
+                .post-card,
+                .board-card {
+                    padding: 14px 12px;
+                }
+                table {
+                    font-size: 0.85rem;
+                }
+                th,
+                td {
+                    padding: 8px 6px;
+                }
+            }
+            @media (max-width: 480px) {
+                .header {
+                    padding: 8px 10px;
+                }
+                .header-logo {
+                    font-size: 1.1rem;
+                }
+                .search-box input {
+                    font-size: 0.85rem;
+                }
+                body {
+                    font-size: 0.95rem;
+                }
+                h1 {
+                    font-size: 1.4rem;
+                }
+                h2 {
+                    font-size: 1.2rem;
+                }
+                .btn,
+                button[type='submit'] {
+                    width: 100%;
+                }
+            }
+
+            /* ===== 햄버거 메뉴 ===== */
+            .hamburger-btn {
+                display: none;
+                background: none;
+                border: none;
+                font-size: 1.6rem;
+                cursor: pointer;
+                padding: 4px 8px;
+                border-radius: 8px;
+                color: #dc2626;
+                line-height: 1;
+            }
+            .hamburger-btn:hover {
+                background: #fff1f1;
+            }
+            .mobile-nav {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.4);
+                z-index: 2000;
+            }
+            .mobile-nav.open {
+                display: block;
+            }
+            .mobile-nav-panel {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 260px;
+                height: 100%;
+                max-height: 100vh;
+                background: #fff;
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                box-sizing: border-box;
+            }
+            .mobile-nav-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 20px 20px 16px 20px;
+                border-bottom: 1px solid #f1f1f1;
+                flex-shrink: 0;
+            }
+            .mobile-nav-logo {
+                font-size: 1.4rem;
+                font-weight: 900;
+                color: #dc2626;
+                text-decoration: none;
+            }
+            .mobile-nav-close {
+                background: none;
+                border: none;
+                font-size: 1.6rem;
+                cursor: pointer;
+                color: #666;
+                padding: 4px;
+            }
+            .mobile-nav-links {
+                padding: 16px 0;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                overflow-y: auto;
+            }
+            .mobile-nav-links a,
+            .mobile-nav-links button {
+                display: block;
+                padding: 14px 24px;
+                font-size: 1rem;
+                font-weight: 600;
+                color: #333;
+                text-decoration: none;
+                background: none;
+                border: none;
+                text-align: left;
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+            .mobile-nav-links a:hover,
+            .mobile-nav-links button:hover {
+                background: #fff1f1;
+                color: #dc2626;
+            }
+            .mobile-nav-divider {
+                height: 1px;
+                background: #f1f1f1;
+                margin: 8px 0;
+            }
+
+            @media (max-width: 600px) {
+                .search-write-row {
+                    flex-wrap: wrap !important;
+                }
+                .search-write-row input {
+                    width: 100% !important;
+                    flex: none !important;
+                }
+                .search-write-row button {
+                    flex: 1;
+                }
+            }
+
+            /* ── 친구 패널 & 채팅 공통 ── */
+            .panel-fab {
+                position: fixed;
+                bottom: 32px;
+                right: 32px;
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: #fff;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 26px;
+                cursor: pointer;
+                box-shadow: 0 8px 24px rgba(220, 38, 38, 0.45);
+                z-index: 2001;
+                transition:
+                    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                    box-shadow 0.3s;
+                border: none;
+                outline: none;
+                animation: float 3s ease-in-out infinite;
+            }
+            .panel-fab:hover {
+                transform: scale(1.14) rotate(8deg);
+                box-shadow: 0 14px 36px rgba(220, 38, 38, 0.55);
+                animation: none;
+            }
+            @keyframes float {
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-6px);
+                }
+            }
+            .panel-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.28);
+                backdrop-filter: blur(6px);
+                z-index: 2000;
+                display: none;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            .panel-overlay.active {
+                display: block;
+                opacity: 1;
+            }
+            .panel-panel {
+                position: fixed;
+                top: 12px;
+                right: -390px;
+                width: 355px;
+                height: calc(100% - 24px);
+                background: #fff;
+                box-shadow: -12px 0 60px rgba(0, 0, 0, 0.12);
+                transition: right 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+                z-index: 2002;
+                display: flex;
+                flex-direction: column;
+                border-radius: 24px 0 0 24px;
+                overflow: hidden;
+            }
+            .panel-panel.active {
+                right: 0;
+            }
+            .panel-header {
+                padding: 28px 22px 16px;
+                border-bottom: 1px solid #f2f2f2;
+                background: linear-gradient(135deg, #fff, #fafafa);
+            }
+            .panel-header-title {
+                font-size: 1.25rem;
+                font-weight: 900;
+                color: #111;
+                margin-bottom: 2px;
+            }
+            .panel-header-sub {
+                font-size: 0.82rem;
+                color: #aaa;
+                font-weight: 500;
+            }
+            .panel-tabs {
+                display: flex;
+                padding: 14px 14px 0;
+                gap: 6px;
+            }
+            .tab-btn {
+                flex: 1;
+                padding: 10px 0;
+                border-radius: 12px;
+                font-weight: 700;
+                color: #999;
+                border: none;
+                background: #f5f5f5;
+                cursor: pointer;
+                font-size: 0.88rem;
+                transition:
+                    background 0.2s,
+                    color 0.2s,
+                    transform 0.15s;
+                font-family: inherit;
+            }
+            .tab-btn:hover:not(.active) {
+                background: #ebebeb;
+                color: #666;
+                transform: translateY(-1px);
+            }
+            .tab-btn.active {
+                color: #fff;
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            }
+            .tab-content {
+                display: none;
+                padding: 16px;
+                overflow-y: auto;
+                flex: 1;
+            }
+            .tab-content.active {
+                display: flex;
+                flex-direction: column;
+                gap: 9px;
+                animation: fadeIn 0.22s ease;
+            }
+            .friend-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 13px 15px;
+                background: #fff;
+                border: 1px solid #f0f0f0;
+                border-radius: 15px;
+                transition:
+                    background 0.2s,
+                    border-color 0.2s,
+                    transform 0.2s,
+                    box-shadow 0.2s;
+            }
+            .friend-item:hover {
+                background: #fff8f8;
+                border-color: rgba(220, 38, 38, 0.12);
+                transform: translateX(-2px);
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+            }
+            .friend-name {
+                font-weight: 700;
+                font-size: 0.95rem;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .friend-avatar {
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #1a1a2e, #374151);
+                color: #fff;
+                font-weight: 800;
+                font-size: 0.78rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .friend-actions {
+                display: flex;
+                gap: 6px;
+                align-items: center;
+            }
+            .action-btn {
+                padding: 7px 13px;
+                border-radius: 10px;
+                border: none;
+                font-weight: 700;
+                cursor: pointer;
+                font-size: 0.83rem;
+                transition:
+                    transform 0.18s,
+                    box-shadow 0.18s;
+                font-family: inherit;
+            }
+            .btn-accept {
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: white;
+            }
+            .btn-reject {
+                background: #f3f3f3;
+                color: #777;
+            }
+            .btn-chat {
+                background: #fff1f1;
+                color: #dc2626;
+                border: 1px solid rgba(220, 38, 38, 0.18);
+                font-size: 1rem;
+                padding: 6px 10px;
+            }
+            .btn-delete {
+                background: #f9f9f9;
+                color: #bbb;
+                border: 1px solid #ececec;
+                font-size: 0.9rem;
+                padding: 6px 9px;
+            }
+            .btn-delete:hover {
+                background: #fee2e2;
+                color: #dc2626;
+            }
+            .add-friend-input {
+                width: 100%;
+                padding: 13px 16px;
+                border: 1.5px solid #ebebeb;
+                border-radius: 13px;
+                font-size: 0.95rem;
+                outline: none;
+                font-family: inherit;
+                background: #fafafa;
+                margin-bottom: 10px;
+                display: block;
+                box-sizing: border-box;
+            }
+            .add-friend-input:focus {
+                border-color: #dc2626;
+                background: #fff;
+                box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.09);
+            }
+            .add-friend-btn {
+                width: 100%;
+                padding: 14px;
+                border-radius: 14px;
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: #fff;
+                border: none;
+                cursor: pointer;
+                font-weight: 800;
+                font-size: 0.97rem;
+                font-family: inherit;
+                transition:
+                    transform 0.2s,
+                    box-shadow 0.2s;
+                box-shadow: 0 6px 18px rgba(220, 38, 38, 0.28);
+            }
+            .add-friend-section {
+                padding: 4px 0;
+            }
+            .empty-state {
+                text-align: center;
+                color: #bbb;
+                padding: 32px 16px;
+                font-size: 0.9rem;
+                line-height: 1.7;
+            }
+            .empty-icon {
+                font-size: 2.4rem;
+                margin-bottom: 10px;
+            }
+            .req-dot {
+                display: inline-block;
+                width: 7px;
+                height: 7px;
+                background: #ef4444;
+                border-radius: 50%;
+                margin-left: 4px;
+                vertical-align: middle;
+            }
+            .confirm-modal-bg {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.42);
+                backdrop-filter: blur(6px);
+                z-index: 9998;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.22s;
+            }
+            .confirm-modal-bg.show {
+                opacity: 1;
+                pointer-events: all;
+            }
+            .confirm-modal {
+                background: #fff;
+                border-radius: 24px;
+                padding: 32px 28px 26px;
+                width: 290px;
+                text-align: center;
+                box-shadow: 0 24px 72px rgba(0, 0, 0, 0.18);
+                transform: scale(0.88) translateY(12px);
+                transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+            .confirm-modal-bg.show .confirm-modal {
+                transform: scale(1) translateY(0);
+            }
+            .confirm-modal-icon {
+                font-size: 2.6rem;
+                margin-bottom: 12px;
+            }
+            .confirm-modal-title {
+                font-size: 1.08rem;
+                font-weight: 900;
+                color: #111;
+                margin-bottom: 8px;
+            }
+            .confirm-modal-desc {
+                font-size: 0.87rem;
+                color: #999;
+                line-height: 1.55;
+                margin-bottom: 22px;
+            }
+            .confirm-modal-btns {
+                display: flex;
+                gap: 10px;
+            }
+            .confirm-ok {
+                flex: 1;
+                padding: 13px;
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: #fff;
+                border: none;
+                border-radius: 13px;
+                font-weight: 800;
+                font-size: 0.95rem;
+                cursor: pointer;
+                font-family: inherit;
+            }
+            .confirm-cancel {
+                flex: 1;
+                padding: 13px;
+                background: #f4f4f4;
+                color: #666;
+                border: none;
+                border-radius: 13px;
+                font-weight: 700;
+                font-size: 0.95rem;
+                cursor: pointer;
+                font-family: inherit;
+            }
+            .toast {
+                position: fixed;
+                bottom: 105px;
+                left: 50%;
+                transform: translateX(-50%) translateY(16px);
+                background: rgba(20, 20, 20, 0.92);
+                color: #fff;
+                padding: 11px 22px;
+                border-radius: 50px;
+                font-size: 0.88rem;
+                font-weight: 600;
+                z-index: 9999;
+                opacity: 0;
+                pointer-events: none;
+                transition:
+                    opacity 0.25s,
+                    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+                white-space: nowrap;
+            }
+            .toast.success {
+                background: rgba(22, 163, 74, 0.93);
+            }
+            .toast.error {
+                background: rgba(220, 38, 38, 0.93);
+            }
+            .toast.show {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+            #chat-windows-container {
+                position: fixed;
+                bottom: 0;
+                right: 110px;
+                display: flex;
+                flex-direction: row-reverse;
+                align-items: flex-end;
+                gap: 12px;
+                z-index: 1999;
+                pointer-events: none;
+            }
+            .chat-window {
+                pointer-events: all;
+                width: 300px;
+                background: #fff;
+                border-radius: 18px 18px 0 0;
+                box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.14);
+                display: flex;
+                flex-direction: column;
+                max-height: 420px;
+                overflow: hidden;
+            }
+            .chat-window.minimized {
+                max-height: 48px;
+            }
+            .chat-header {
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: #fff;
+                padding: 12px 14px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                border-radius: 18px 18px 0 0;
+            }
+            .chat-target-name {
+                font-weight: 800;
+                font-size: 0.92rem;
+                flex: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .chat-ctrl-btn {
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                color: #fff;
+                border-radius: 7px;
+                padding: 4px 8px;
+                cursor: pointer;
+                font-size: 0.85rem;
+            }
+            .chat-messages {
+                flex: 1;
+                overflow-y: auto;
+                padding: 12px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .chat-input-area {
+                display: flex;
+                padding: 10px 12px;
+                border-top: 1px solid #f0f0f0;
+                gap: 8px;
+            }
+            .chat-input {
+                flex: 1;
+                border: 1px solid #eee;
+                border-radius: 10px;
+                padding: 8px 12px;
+                font-size: 0.88rem;
+                outline: none;
+                font-family: inherit;
+            }
+            .chat-send-btn {
+                background: #dc2626;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                padding: 8px 14px;
+                cursor: pointer;
+                font-weight: 700;
+                font-size: 0.88rem;
+            }
+            @media (max-width: 900px) {
+                .panel-panel {
+                    width: 100%;
+                    top: 0;
+                    height: 100%;
+                    border-radius: 0;
+                    right: -100%;
+                }
+                #chat-windows-container {
+                    right: 0;
+                    left: 0;
+                    bottom: 0;
+                }
+                .chat-window {
+                    width: 100%;
+                    border-radius: 18px 18px 0 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- 광고 배너 -->
+        <style>
+            .side-ad {
+                position: fixed;
+                top: 150px;
+                width: 160px;
+                height: 600px;
+                background: #f4f4f4;
+                border: 1px solid #ddd;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #999;
+                font-weight: bold;
+                z-index: 100;
+                border-radius: 10px;
+                font-size: 0.85rem;
+                text-align: center;
+                padding: 8px;
+                box-sizing: border-box;
+            }
+            .ad-left {
+                left: 20px;
+            }
+            .ad-right {
+                right: 20px;
+            }
+            .mobile-top-ad {
+                display: none;
+                position: fixed;
+                top: 100px;
+                left: 0;
+                right: 0;
+                height: 55px;
+                background: #f4f4f4;
+                border-bottom: 1px solid #ddd;
+                align-items: center;
+                justify-content: center;
+                color: #999;
+                font-weight: bold;
+                font-size: 0.9rem;
+                z-index: 100;
+                pointer-events: none;
+            }
+            @media (max-width: 1200px) {
+                .side-ad {
+                    display: none;
+                }
+            }
+            @media (max-width: 900px) {
+                .mobile-top-ad {
+                    display: flex;
+                }
+            }
+        </style>
+        <div class="side-ad ad-left">광고 영역 (좌)</div>
+        <div class="side-ad ad-right">광고 영역 (우)</div>
+        <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
+        <header class="header">
+            <div class="header-left">
+                <button class="menu-toggle-btn" onclick="openMobileNav()">☰</button>
+                <a href="/main" class="header-logo">TasteMate</a>
+                <nav id="mainNavMenu">
+                    <button class="nav-emoji-btn" onclick="location.href = '/main'">🏠 홈</button>
+                    <button class="nav-emoji-btn" onclick="location.href = '/aichat'">🤖 AI추천</button>
+                    <button class="nav-emoji-btn" onclick="location.href = '/community'">🧑‍🤝‍🧑 커뮤니티</button>
+                </nav>
+            </div>
+            <div class="header-right" id="headerRightArea">
+                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+            </div>
+        </header>
+
+        <main style="padding-top: 110px; max-width: 650px; margin: 0 auto; padding-left: 20px; padding-right: 20px">
+            <div class="fade-in-card" style="display: flex; gap: 10px; margin-bottom: 40px">
+                <a href="/category/solo" class="category-btn">혼밥</a>
+                <a href="/category/date" class="category-btn">데이트</a>
+                <a href="/category/work" class="category-btn">회식</a>
+                <a href="/category/etc" class="category-btn active">기타</a>
+            </div>
+
+            <div class="fade-in-card" style="text-align: center; margin-bottom: 40px; animation-delay: 0.1s">
+                <h1 style="font-size: 2.2rem; font-weight: 900; color: #dc2626; margin: 0">🍽️ 기타 커뮤니티</h1>
+                <p style="color: #b91c1c; font-weight: 500; margin-top: 10px">
+                    자유로운 미식 이야기와 다양한 정보를 나누세요
+                </p>
+            </div>
+
+            <div
+                class="fade-in-card"
+                class="search-write-row"
+                style="
+                    display: flex;
+                    gap: 10px;
+                    align-items: center;
+                    margin-bottom: 30px;
+                    animation-delay: 0.2s;
+                    flex-wrap: wrap;
+                "
+            >
+                <input
+                    id="searchInput"
+                    type="text"
+                    placeholder="궁금한 정보를 검색해보세요"
+                    style="
+                        flex: 1;
+                        padding: 12px 18px;
+                        border-radius: 12px;
+                        border: 2px solid #f0f0f0;
+                        font-size: 1rem;
+                        outline: none;
+                    "
+                />
+                <button
+                    id="searchBtn"
+                    style="
+                        padding: 12px 20px;
+                        border-radius: 12px;
+                        background: #222;
+                        color: #fff;
+                        border: none;
+                        font-weight: 700;
+                        cursor: pointer;
+                    "
+                >
+                    검색
+                </button>
+                <button
+                    onclick="location.href = '/write'"
+                    style="
+                        padding: 12px 20px;
+                        border-radius: 12px;
+                        background: #dc2626;
+                        color: #fff;
+                        border: none;
+                        font-weight: 700;
+                        cursor: pointer;
+                    "
+                >
+                    ✏️ 글쓰기
+                </button>
+            </div>
+
+            <div
+                class="fade-in-card"
+                style="display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; animation-delay: 0.3s"
+            >
+                <button id="popularBtn" class="sort-btn active">인기순</button>
+                <button id="latestBtn" class="sort-btn">최신순</button>
+                <button id="commentBtn" class="sort-btn">댓글순</button>
+            </div>
+
+            <div class="nearby-bar">
+                <button id="nearbyBtn" class="nearby-btn" onclick="toggleNearby()">📍 근처 글만 보기</button>
+                <select id="radiusSelect" class="radius-select" onchange="loadNearbyPosts()">
+                    <option value="1" selected>1km 이내</option>
+                    <option value="3">3km 이내</option>
+                    <option value="5">5km 이내</option>
+                    <option value="10">10km 이내</option>
+                </select>
+                <span id="nearbyStatus" class="nearby-status"></span>
+            </div>
+            <div id="post-container"></div>
+        </main>
+
+        <script>
+            let nearbyMode = false;
+            let userLat = null,
+                userLon = null;
+
+            function toggleNearby() {
+                const btn = document.getElementById('nearbyBtn');
+                const select = document.getElementById('radiusSelect');
+                const status = document.getElementById('nearbyStatus');
+                nearbyMode = !nearbyMode;
+                btn.classList.toggle('active', nearbyMode);
+                select.classList.toggle('visible', nearbyMode);
+                if (nearbyMode) {
+                    status.classList.add('visible');
+                    status.innerText = '📍 위치 확인 중...';
+                    if (userLat && userLon) {
+                        loadNearbyPosts();
+                    } else {
+                        navigator.geolocation.getCurrentPosition(
+                            (pos) => {
+                                userLat = pos.coords.latitude;
+                                userLon = pos.coords.longitude;
+                                loadNearbyPosts();
+                            },
+                            () => {
+                                status.innerText = '위치 권한이 필요합니다.';
+                                nearbyMode = false;
+                                btn.classList.remove('active');
+                                select.classList.remove('visible');
+                            },
+                        );
+                    }
+                } else {
+                    status.classList.remove('visible');
+                    loadPosts();
+                }
+            }
+
+            async function loadNearbyPosts() {
+                if (!userLat || !userLon) return;
+                const radius = document.getElementById('radiusSelect').value;
+                const status = document.getElementById('nearbyStatus');
+                const container = document.getElementById('post-container');
+                container.innerHTML =
+                    '<div style="text-align:center; color:#bbb; padding:40px;">근처 게시글 불러오는 중...</div>';
+                try {
+                    const [nearbyRes, allRes] = await Promise.all([
+                        fetch(`/api/posts/ETC/nearby?lat=${userLat}&lon=${userLon}&radius=${radius}`),
+                        fetch(`/api/posts/ETC/latest`),
+                    ]);
+                    const nearbyPosts = await nearbyRes.json();
+                    const allPosts = await allRes.json();
+                    const nearbyIds = new Set(nearbyPosts.map((p) => p.id));
+                    const otherPosts = allPosts.filter((p) => !nearbyIds.has(p.id));
+
+                    status.innerText = `반경 ${radius}km 내 ${nearbyPosts.length}개`;
+
+                    function renderCard(post, idx, showDist) {
+                        return `<li class="post-card fade-in-card" style="animation-delay:${0.05 * idx}s" onclick="location.href='/post_detail/${post.id}'">
+                            ${post.is_notice == 1 ? '<span style="background:#dc2626;color:#fff;font-size:0.7rem;font-weight:900;padding:3px 8px;border-radius:5px;margin-bottom:6px;display:inline-block;">NOTICE</span>' : ''}
+                            <span class="post-title">${post.title}</span>
+                            ${showDist ? `<div style="font-size:0.8rem;color:#dc2626;margin:4px 0;">📍 ${post.place_name ? post.place_name + ' · ' : ''}${post.distance}km</div>` : ''}
+                            <div class="post-content-preview">${post.content}</div>
+                            <div class="meta-footer">
+                                <span style="color:#dc2626;font-weight:700;">❤️ ${post.like_count || 0}</span>
+                                <span style="color:#b91c1c;font-weight:700;">💬 ${post.comment_count || 0}</span>
+                                <span style="margin-left:auto;color:#666;font-weight:600;">👤 ${post.nickname || '익명'}</span>
+                                <span>${post.created_at || ''}</span>
+                            </div>
+                        </li>`;
+                    }
+
+                    let html =
+                        nearbyPosts.length > 0
+                            ? nearbyPosts.map((p, i) => renderCard(p, i, true)).join('')
+                            : `<div style="text-align:center;padding:40px;color:#bbb;font-size:0.9rem;">반경 ${radius}km 내 위치 기반 게시글이 없어요</div>`;
+
+                    html += `<div style="display:flex;align-items:center;gap:10px;margin:20px 0;">
+                        <hr style="flex:1;border:none;border-top:1.5px dashed #f0d0d0;">
+                        <span style="color:#bbb;font-size:0.8rem;white-space:nowrap;">📌 위치 정보 없는 글</span>
+                        <hr style="flex:1;border:none;border-top:1.5px dashed #f0d0d0;">
+                    </div>`;
+
+                    html +=
+                        otherPosts.length > 0
+                            ? otherPosts.map((p, i) => renderCard(p, i, false)).join('')
+                            : `<div style="text-align:center;padding:16px;color:#ccc;font-size:0.85rem;">위치 정보 없는 게시글이 없어요</div>`;
+
+                    container.innerHTML = html;
+                } catch (e) {
+                    container.innerHTML = '<div style="text-align:center;color:red;">오류가 발생했습니다.</div>';
+                }
+            }
+
+            let currentSort = 'popular';
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+
+                if (nickname && headerRightArea) {
+                    const avatarText = nickname.slice(0, 2);
+                    let adminBtn =
+                        isAdmin === '1'
+                            ? `<button class="login-btn" onclick="location.href='/admin'\" style="background: #222; margin-left:8px;\">관리자 기능</button>`
+                            : '';
+                    headerRightArea.innerHTML = `
+                        <span class="nickname-avatar" onclick="location.href='/mypage'"> ${avatarText}</span>
+                        ${adminBtn}
+                        <button class="login-btn" onclick="logout()\" style="background: #666; margin-left: 8px;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()\" style="margin-left: 8px;">📍 내 위치</span>
+                    `;
+                    getGPSLocation();
+                }
+                loadPosts();
+            });
+
+            async function loadPosts() {
+                const container = document.getElementById('post-container');
+                container.innerHTML =
+                    '<div style="text-align: center; color: #bbb; padding: 40px;">다양한 이야기들을 불러오는 중...</div>';
+
+                try {
+                    const res = await fetch(`/api/posts/ETC/${currentSort}`);
+                    let posts = await res.json();
+
+                    if (!posts || posts.length === 0) {
+                        container.innerHTML =
+                            '<div style="text-align:center; padding:50px; border:2px dashed #eee; border-radius:20px; color:#999;">작성된 게시글이 없습니다.</div>';
+                        return;
+                    }
+
+                    // [정렬] 공지사항을 항상 최상단으로 배치
+                    posts.sort((a, b) => b.is_notice - a.is_notice);
+
+                    container.innerHTML = posts
+                        .map(
+                            (post, idx) => `
+                        <li class="post-card fade-in-card ${post.is_notice == 1 ? 'notice-card' : ''}" 
+                            style="animation-delay: ${0.05 * idx}s" 
+                            onclick="location.href='/post_detail/${post.id}'">
+                            
+                            ${post.is_notice == 1 ? '<span class="notice-badge">📢 공지사항</span>' : ''}
+                            
+                            <span class="post-title" style="${post.is_notice == 1 ? 'color:#dc2626' : ''}">${post.title}</span>
+                            <div class="post-content-preview">${post.content}</div>
+                            
+                            <div class="meta-footer">
+                                <span style="color:#dc2626; font-weight:700;">❤️ ${post.like_count || 0}</span>
+                                <span style="color:#b91c1c; font-weight:700;">💬 ${post.comment_count || 0}</span>
+                                <span style="margin-left:auto; color:#666; font-weight:600;">👤 ${post.nickname || '익명'}</span>
+                                <span>${post.created_at || ''}</span>
+                            </div>
+                        </li>
+                    `,
+                        )
+                        .join('');
+                } catch (e) {
+                    container.innerHTML =
+                        '<div style="text-align:center; color:red; padding:20px;">데이터를 불러오지 못했습니다.</div>';
+                }
+            }
+
+            function toggleMenu() {
+                const menu = document.getElementById('mainNavMenu');
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            }
+
+            const sortBtns = document.querySelectorAll('.sort-btn');
+            sortBtns.forEach((btn) => {
+                btn.onclick = () => {
+                    sortBtns.forEach((b) => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentSort = btn.id.replace('Btn', '');
+                    loadPosts();
+                };
+            });
+
+            function logout() {
+                localStorage.clear();
+                location.href = '/main';
+            }
+            function getGPSLocation() {
+                /* GPS 로직 생략 */
+            }
+        </script>
+
+        <!-- 모바일 햄버거 메뉴 -->
+        <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
+            <div class="mobile-nav-panel">
+                <div class="mobile-nav-header">
+                    <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
+                    <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+                </div>
+                <div class="mobile-nav-links">
+                    <a href="/main">🏠 홈</a>
+                    <a href="/aichat">🤖 AI 맛집추천</a>
+                    <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/SOLO">🍚 혼밥</a>
+                    <a href="/DATE">💑 데이트</a>
+                    <a href="/WORK">🍻 회식</a>
+                    <a href="/ETC">🧩 기타</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/game/pinball">🎯 핀볼</a>
+                    <a href="/game/ladder">🪜 사다리타기</a>
+                    <a href="/game/random_amount">🎰 룰렛 게임</a>
+                    <a href="/game/worldcup">🏆 음식 월드컵</a>
+                    <a href="/game/calculator">🧮 계산기</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/about">ℹ️ 회사소개</a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openMobileNav() {
+                document.getElementById('mobileNav').classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeMobileNav() {
+                document.getElementById('mobileNav').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            function closeMobileNavOutside(e) {
+                if (e.target === document.getElementById('mobileNav')) closeMobileNav();
+            }
+        </script>
+
+        <!-- 친구 FAB -->
+        <button class="panel-fab" onclick="togglePanel()" id="panelFab">💬</button>
+
+        <!-- 오버레이 -->
+        <div class="panel-overlay" id="panelOverlay"></div>
+
+        <!-- 친구 패널 -->
+        <div class="panel-panel" id="panelPanel">
+            <div class="panel-header">
+                <div class="panel-header-title">🍽️ 나의 메이트</div>
+                <div class="panel-header-sub" id="panel-login-hint"></div>
+            </div>
+            <div class="panel-tabs">
+                <button class="tab-btn active" onclick="showTab('list')">친구목록</button>
+                <button class="tab-btn" onclick="showTab('add')">친구추가</button>
+                <button class="tab-btn" id="req-tab-btn" onclick="showTab('req')">
+                    요청<span id="req-dot" class="req-dot" style="display: none"></span>
+                </button>
+            </div>
+            <div id="tab-list" class="tab-content active">
+                <div id="panel-list-container">
+                    <div class="empty-state">
+                        <div class="empty-icon">👥</div>
+                        아직 친구가 없어요.<br />친구를 추가해보세요!
+                    </div>
+                </div>
+            </div>
+            <div id="tab-add" class="tab-content">
+                <div class="add-friend-section">
+                    <div style="font-size: 0.9rem; color: #666; margin-bottom: 12px; line-height: 1.5">
+                        👥 닉네임으로 친구를 찾아보세요
+                    </div>
+                    <input
+                        type="text"
+                        id="panelSearch"
+                        class="add-friend-input"
+                        placeholder="친구 닉네임을 입력하세요"
+                        onkeyup="if (event.keyCode == 13) requestFriend();"
+                    />
+                    <button class="add-friend-btn" onclick="requestFriend()">🙋 친구 신청 보내기</button>
+                    <div
+                        id="add-friend-result"
+                        style="font-size: 0.88rem; margin-top: 12px; min-height: 20px; text-align: center"
+                    ></div>
+                </div>
+            </div>
+            <div id="tab-req" class="tab-content">
+                <div id="panel-req-container">
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        받은 친구 요청이 없어요.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 친구 삭제 모달 -->
+        <div class="confirm-modal-bg" id="confirmModalBg" style="display: none">
+            <div class="confirm-modal">
+                <div class="confirm-modal-icon">🗑️</div>
+                <div class="confirm-modal-title" id="confirmModalTitle">친구를 삭제할까요?</div>
+                <div class="confirm-modal-desc" id="confirmModalDesc">
+                    삭제하면 서로의 친구 목록에서<br />사라집니다.
+                </div>
+                <div class="confirm-modal-btns">
+                    <button class="confirm-cancel" onclick="closeConfirmModal()">취소</button>
+                    <button class="confirm-ok" id="confirmOkBtn">삭제</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 다중 채팅창 -->
+        <div id="chat-windows-container"></div>
+        <div class="toast" id="toast"></div>
+        <script src="/static/js/friend-chat.js"></script>
+        <script src="/static/js/avatar-sync.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof initFriendChatPanel === 'function') {
+                    initFriendChatPanel();
+                }
+            });
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var overlay = document.getElementById('panelOverlay');
+                if (overlay) {
+                    overlay.addEventListener('click', function () {
+                        if (typeof togglePanel === 'function') togglePanel();
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>

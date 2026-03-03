@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+    <script>
+        // ngrok iframe 탈출 - 경고 페이지 없이 직접 접속
+        if (window.top !== window.self) {
+            window.top.location.href = window.self.location.href;
+        }
+    </script>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>내가 쓴 글</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: #fff5f5;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 32px;
+                background: rgba(255, 255, 255, 0.85);
+                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
+            }
+            .header-logo {
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: #dc2626;
+                text-decoration: none;
+            }
+            .container {
+                max-width: 600px;
+                margin: 60px auto;
+                padding: 40px;
+                border-radius: 16px;
+                background: #fff;
+                box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08);
+            }
+            .title {
+                font-size: 2rem;
+                font-weight: 900;
+                color: #dc2626;
+                margin-bottom: 30px;
+                text-align: center;
+            }
+            .list-box {
+                background: #fff8f8;
+                border: 1.5px solid #ffe5e5;
+                border-radius: 12px;
+                padding: 20px;
+                min-height: 200px;
+            }
+            .item {
+                padding: 14px 0;
+                border-bottom: 1px solid #ffe5e5;
+                cursor: pointer;
+            }
+            .item:last-child {
+                border-bottom: none;
+            }
+            .item-title {
+                font-weight: bold;
+                color: #dc2626;
+                font-size: 1.1rem;
+            }
+            .item-content {
+                color: #333;
+                margin: 4px 0 2px 0;
+            }
+            .item-meta {
+                color: #888;
+                font-size: 0.95rem;
+            }
+            .back-btn {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 15px 0;
+                background: #dc2626;
+                color: #fff;
+                font-weight: bold;
+                font-size: 1.2rem;
+                border: none;
+                border-radius: 8px;
+                margin-top: 30px;
+                cursor: pointer;
+                text-decoration: none;
+            }
+        
+            /* ===== 반응형 (태블릿/모바일) ===== */
+            @media (max-width: 600px) {
+                .container, .login-main, .signup-main, .mypage-container {
+                    margin: 20px auto;
+                    padding: 20px 14px;
+                    border-radius: 10px;
+                }
+                .header { padding: 12px 16px; }
+                .header-logo { font-size: 1.2rem; }
+                input, select, textarea { font-size: 1rem !important; }
+                .back-btn, .login-btn-main, .signup-btn-main { font-size: 1rem; padding: 13px 0; }
+                .tab-btn { padding: 8px 16px; font-size: 0.95rem; }
+            }
+
+        </style>
+    </head>
+    <body>
+        <header class="header">
+            <a href="/main" class="header-logo">TasteMate</a>
+        </header>
+        <div class="container">
+            <div class="title">📝 내가 쓴 글</div>
+            <div class="list-box" id="posts-list"></div>
+            <button class="back-btn" onclick="location.href = '/mypage'">마이페이지로 돌아가기</button>
+        </div>
+        <script>
+            async function loadMyPosts() {
+                const userId = localStorage.getItem('user_id');
+                if (!userId) {
+                    alert('로그인이 만료되었습니다.');
+                    window.location.href = '/login';
+                    return;
+                }
+                try {
+                    const res = await fetch(`/api/users/${userId}/my-content`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        renderPosts(data.posts);
+                    }
+                } catch {
+                    alert('데이터를 불러올 수 없습니다.');
+                }
+            }
+            function renderPosts(posts) {
+                const list = document.getElementById('posts-list');
+                if (!posts.length) {
+                    list.innerHTML = '<div style="color:#888; text-align:center;">작성한 글이 없습니다.</div>';
+                    return;
+                }
+                list.innerHTML = posts
+                    .map(
+                        (p) => `
+                <div class="item" onclick="location.href='/post/${p.id}'">
+                    <div class="item-title">${p.title}</div>
+                    <div class="item-content">${p.content.slice(0, 60)}${p.content.length > 60 ? '...' : ''}</div>
+                    <div class="item-meta">카테고리: ${p.category} | 작성일: ${p.created_at}</div>
+                </div>
+            `,
+                    )
+                    .join('');
+            }
+            loadMyPosts();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+    <script>
+        // ngrok iframe 탈출 - 경고 페이지 없이 직접 접속
+        if (window.top !== window.self) {
+            window.top.location.href = window.self.location.href;
+        }
+    </script>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>내 회원정보</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 60%, #fff0f6 100%);
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 32px;
+                background: rgba(255, 255, 255, 0.92);
+                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.07);
+            }
+            .header-logo {
+                font-size: 1.5rem;
+                font-weight: 900;
+                color: #c92a2a;
+                text-decoration: none;
+                letter-spacing: 1.5px;
+                text-shadow: 0 2px 8px #f8fafc;
+            }
+            .container {
+                max-width: 700px;
+                margin: 80px auto;
+                padding: 56px;
+                border-radius: 24px;
+                background: #fff;
+                box-shadow:
+                    0 8px 32px 0 rgba(220, 38, 38, 0.07),
+                    0 1.5px 8px 0 rgba(220, 38, 38, 0.03);
+            }
+            .title {
+                font-size: 2.2rem;
+                font-weight: 900;
+                color: #c92a2a;
+                margin-bottom: 30px;
+                text-align: center;
+                letter-spacing: 1.5px;
+                text-shadow:
+                    0 2px 12px #f8fafc,
+                    0 1px 0 #fff;
+            }
+            .info-box {
+                background: linear-gradient(120deg, #f8fafc 60%, #fff 100%);
+                border: 1.5px solid #e2e8f0;
+                padding: 22px 20px 18px 20px;
+                border-radius: 16px;
+                margin-bottom: 22px;
+                box-shadow: 0 2px 12px #f1f5f9;
+            }
+            /* 입력창 가로 길이를 버튼과 맞추기 위해 box-sizing 추가 */
+            .info-box input[type='text'],
+            .info-box input[type='email'],
+            .info-box input[type='password'] {
+                width: 100%;
+                box-sizing: border-box; /* 패딩과 테두리를 너비에 포함 */
+                padding: 16px 14px;
+                margin-bottom: 14px;
+                border-radius: 8px;
+                border: 2px solid #e2e8f0;
+                font-size: 1.18rem;
+                font-weight: 500;
+                background: #f8fafc;
+                box-shadow: 0 2px 8px #f1f5f9;
+                transition:
+                    border 0.18s,
+                    box-shadow 0.18s;
+            }
+            .info-box input[type='text']:focus,
+            .info-box input[type='email']:focus,
+            .info-box input[type='password']:focus {
+                border: 2.5px solid #c92a2a;
+                outline: none;
+                box-shadow:
+                    0 0 0 3px #f8fafc,
+                    0 2px 8px #c92a2a33;
+            }
+            .info-box button {
+                width: 100%;
+                box-sizing: border-box; /* 버튼도 동일하게 설정 */
+                padding: 15px 0;
+                margin-bottom: 18px;
+                border-radius: 8px;
+                font-size: 1.18rem;
+                font-weight: 700;
+                border: 2px solid #e2e8f0;
+                background: #f8fafc;
+                color: #c92a2a;
+                box-shadow: 0 2px 8px #f1f5f9;
+                letter-spacing: 1px;
+                cursor: pointer;
+                transition:
+                    filter 0.18s,
+                    box-shadow 0.18s,
+                    background 0.18s,
+                    border 0.18s;
+                position: relative;
+                overflow: hidden;
+            }
+            .info-box button:hover {
+                background: #ffe5e5;
+                border: 2px solid #c92a2a;
+                color: #c92a2a;
+                box-shadow:
+                    0 6px 24px #c92a2a22,
+                    0 2px 8px #fbb6ce;
+            }
+            .info-box button:last-child {
+                background: #fff;
+                color: #c92a2a;
+                border: 2px solid #e2e8f0;
+                box-shadow: 0 2px 8px #f1f5f9;
+            }
+            .info-box button:last-child:hover {
+                background: #ffe5e5;
+                color: #c92a2a;
+                border: 2.5px solid #c92a2a;
+            }
+            .info-label {
+                font-weight: 700;
+                color: #64748b;
+                font-size: 1.08rem;
+                margin-bottom: 5px;
+                letter-spacing: 0.5px;
+            }
+            .info-value {
+                font-size: 1.3rem;
+                color: #c92a2a;
+                margin-bottom: 20px;
+                font-weight: 700;
+            }
+            .stats-box {
+                display: flex;
+                gap: 15px;
+            }
+            .stat {
+                flex: 1;
+                background: #f8fafc;
+                padding: 15px;
+                border-radius: 12px;
+                text-align: center;
+                border: 1.5px solid #e2e8f0;
+            }
+            .stat-num {
+                font-size: 1.5rem;
+                font-weight: 900;
+                color: #c92a2a;
+                margin-top: 5px;
+            }
+            .back-btn {
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+                text-align: center;
+                padding: 15px 0;
+                background: #f8fafc;
+                color: #c92a2a;
+                font-weight: 700;
+                font-size: 1.2rem;
+                border: 2px solid #e2e8f0;
+                border-radius: 10px;
+                margin-top: 30px;
+                cursor: pointer;
+                text-decoration: none;
+                box-shadow: 0 2px 8px #f1f5f9;
+                letter-spacing: 1px;
+                transition:
+                    filter 0.18s,
+                    background 0.18s,
+                    border 0.18s;
+            }
+            .back-btn:hover {
+                background: #ffe5e5;
+                color: #c92a2a;
+                border: 2.5px solid #c92a2a;
+                box-shadow:
+                    0 6px 24px #c92a2a22,
+                    0 2px 8px #fbb6ce;
+            }
+        
+            /* ===== 반응형 (태블릿/모바일) ===== */
+            @media (max-width: 600px) {
+                .container, .login-main, .signup-main, .mypage-container {
+                    margin: 20px auto;
+                    padding: 20px 14px;
+                    border-radius: 10px;
+                }
+                .header { padding: 12px 16px; }
+                .header-logo { font-size: 1.2rem; }
+                input, select, textarea { font-size: 1rem !important; }
+                .back-btn, .login-btn-main, .signup-btn-main { font-size: 1rem; padding: 13px 0; }
+                .tab-btn { padding: 8px 16px; font-size: 0.95rem; }
+            }
+
+        </style>
+    </head>
+    <body>
+        <header class="header">
+            <a href="/main" class="header-logo">TasteMate</a>
+        </header>
+        <div class="container">
+            <div class="title">👤 내 회원정보</div>
+            <div class="info-box">
+                <div class="info-label">아바타 색상</div>
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px">
+                    <input
+                        type="color"
+                        id="avatar-color-picker"
+                        style="
+                            width: 36px;
+                            height: 36px;
+                            border: none;
+                            background: none;
+                            cursor: pointer;
+                            box-shadow: 0 2px 8px #ffe5e5;
+                            border-radius: 50%;
+                        "
+                        title="아바타 배경색"
+                    />
+                    <span
+                        id="avatar-color-preview"
+                        style="
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 36px;
+                            height: 36px;
+                            border-radius: 50%;
+                            background: #c92a2a;
+                            color: #fff;
+                            font-weight: 400;
+                            font-size: 1.15rem;
+                            border: 2px solid #fff0f6;
+                            box-shadow: 0 2px 8px #ffe5e5;
+                        "
+                        >AV</span
+                    >
+                </div>
+                <div class="info-label">닉네임</div>
+                <div class="info-value" id="my-nickname">로딩중...</div>
+                <input type="text" id="edit-nickname" placeholder="새 닉네임 입력" />
+                <button onclick="updateNickname()">닉네임 변경</button>
+                <div class="info-label">이메일 (아이디)</div>
+                <div class="info-value" id="my-email">로딩중...</div>
+                <input type="email" id="edit-email" placeholder="새 이메일 입력" />
+                <button onclick="updateEmail()">이메일 변경</button>
+                <div class="info-label">비밀번호 변경</div>
+                <input type="password" id="old-password" placeholder="기존 비밀번호 입력" />
+                <input type="password" id="edit-password" placeholder="새 비밀번호 입력" />
+                <button onclick="updatePassword()">비밀번호 변경</button>
+                <button onclick="withdrawUser()">회원 탈퇴</button>
+            </div>
+            <div class="stats-box">
+                <div class="stat">
+                    <div style="font-size: 1rem; color: #888">내가 쓴 게시글</div>
+                    <div class="stat-num" id="my-posts">0</div>
+                </div>
+                <div class="stat">
+                    <div style="font-size: 1rem; color: #888">내가 쓴 댓글</div>
+                    <div class="stat-num" id="my-comments">0</div>
+                </div>
+            </div>
+            <button class="back-btn" onclick="location.href = '/main'">메인으로 돌아가기</button>
+        </div>
+
+        <script>
+            function updateAvatarPreview() {
+                const nickname = localStorage.getItem('nickname') || '';
+                const preview = document.getElementById('avatar-color-preview');
+                preview.textContent = nickname.slice(0, 2) || 'AV';
+                const color = document.getElementById('avatar-color-picker').value;
+                preview.style.background = color;
+            }
+            function saveAvatarColor() {
+                const color = document.getElementById('avatar-color-picker').value;
+                localStorage.setItem('avatarColor', color);
+                updateAvatarPreview();
+            }
+            document.addEventListener('DOMContentLoaded', () => {
+                const picker = document.getElementById('avatar-color-picker');
+                const preview = document.getElementById('avatar-color-preview');
+                const nickname = localStorage.getItem('nickname') || '';
+                let color = localStorage.getItem('avatarColor') || '#222222';
+                picker.value = color;
+                preview.style.background = color;
+                preview.textContent = nickname.slice(0, 2) || 'AV';
+                picker.addEventListener('input', saveAvatarColor);
+            });
+            async function loadMyInfo() {
+                const userId = localStorage.getItem('user_id');
+                if (!userId) {
+                    alert('로그인이 만료되었습니다.');
+                    window.location.href = '/login';
+                    return;
+                }
+                try {
+                    const res = await fetch(`/api/users/${userId}/me`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        document.getElementById('my-nickname').innerText = data.nickname;
+                        document.getElementById('my-email').innerText = data.email;
+                        document.getElementById('my-posts').innerText = data.post_count + '개';
+                        document.getElementById('my-comments').innerText = data.comment_count + '개';
+                    }
+                } catch (e) {
+                    alert('데이터를 불러올 수 없습니다.');
+                }
+            }
+            loadMyInfo();
+
+            async function updateNickname() {
+                const userId = localStorage.getItem('user_id');
+                const newNickname = document.getElementById('edit-nickname').value.trim();
+                if (!newNickname) {
+                    alert('새 닉네임을 입력하세요.');
+                    return;
+                }
+                const fd = new FormData();
+                fd.append('nickname', newNickname);
+                const res = await fetch(`/api/users/${userId}/nickname`, { method: 'PATCH', body: fd });
+                if (res.ok) {
+                    const result = await res.json();
+                    alert('닉네임이 변경되었습니다.');
+                    localStorage.setItem('nickname', result.nickname);
+                    loadMyInfo();
+                } else {
+                    alert('닉네임 변경 실패');
+                }
+            }
+            async function updateEmail() {
+                const userId = localStorage.getItem('user_id');
+                const newEmail = document.getElementById('edit-email').value.trim();
+                if (!newEmail) {
+                    alert('새 이메일을 입력하세요.');
+                    return;
+                }
+                const fd = new FormData();
+                fd.append('email', newEmail);
+                const res = await fetch(`/api/users/${userId}/email`, { method: 'PATCH', body: fd });
+                if (res.ok) {
+                    alert('이메일이 변경되었습니다.');
+                    loadMyInfo();
+                } else {
+                    alert('이메일 변경 실패');
+                }
+            }
+            async function updatePassword() {
+                const userId = localStorage.getItem('user_id');
+                const oldPw = document.getElementById('old-password').value.trim();
+                const newPw = document.getElementById('edit-password').value.trim();
+                if (!oldPw) {
+                    alert('기존 비밀번호를 입력하세요.');
+                    return;
+                }
+                if (!newPw) {
+                    alert('새 비밀번호를 입력하세요.');
+                    return;
+                }
+                const fd = new FormData();
+                fd.append('old_password', oldPw);
+                fd.append('password', newPw);
+                const res = await fetch(`/api/users/${userId}/password`, { method: 'PATCH', body: fd });
+                if (res.ok) {
+                    alert('비밀번호가 변경되었습니다.');
+                } else {
+                    const data = await res.json();
+                    alert(data.detail || '비밀번호 변경 실패');
+                }
+            }
+            async function withdrawUser() {
+                const userId = localStorage.getItem('user_id');
+                if (!confirm('정말 회원 탈퇴하시겠습니까?')) return;
+                const res = await fetch(`/api/users/${userId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    alert('회원 탈퇴 완료');
+                    localStorage.clear();
+                    window.location.href = '/main';
+                } else {
+                    alert('회원 탈퇴 실패');
+                }
+            }
+        </script>
+    </body>
+</html>

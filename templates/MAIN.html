@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+    <script>
+        // ngrok iframe 탈출 - 경고 페이지 없이 직접 접속
+        if (window.top !== window.self) {
+            window.top.location.href = window.self.location.href;
+        }
+    </script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" />
+        <title>Taste Mate - 메인</title>
+        <style>
+            body {
+                font-family: 'Malgun Gothic', sans-serif;
+                margin: 0;
+                background: #f9f9f9;
+            }
+            header {
+                background: #3498db;
+                color: white;
+                padding: 20px;
+                text-align: center;
+                font-size: 24px;
+                font-weight: bold;
+                position: relative;
+            }
+            .container {
+                max-width: 1000px;
+                margin: 30px auto;
+                padding: 20px;
+                text-align: center;
+            }
+            .card {
+                background: white;
+                border-radius: 12px;
+                padding: 40px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            }
+            .user-nickname {
+                position: absolute;
+                right: 30px;
+                top: 20px;
+                font-size: 18px;
+                font-weight: 600;
+                color: #fffbe7;
+            }
+        
+            /* ===== 반응형 (태블릿/모바일) ===== */
+            @media (max-width: 600px) {
+                .container, .login-main, .signup-main, .mypage-container {
+                    margin: 20px auto;
+                    padding: 20px 14px;
+                    border-radius: 10px;
+                }
+                .header { padding: 12px 16px; }
+                .header-logo { font-size: 1.2rem; }
+                input, select, textarea { font-size: 1rem !important; }
+                .back-btn, .login-btn-main, .signup-btn-main { font-size: 1rem; padding: 13px 0; }
+                .tab-btn { padding: 8px 16px; font-size: 0.95rem; }
+            }
+
+        </style>
+    </head>
+    <body>
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center">
+                <span style="font-size: 24px; font-weight: bold">Taste Mate</span>
+                <div class="header-right" id="headerRightArea">
+                    <!-- 프로필/관리자/로그아웃/위치: JS에서 동적으로 렌더링 -->
+                </div>
+            </div>
+        </header>
+        <div class="container">
+            <div class="card">
+                <h1>환영합니다! 맛메이트님 🍻</h1>
+                <p>오늘도 즐거운 맛집 탐방을 시작해보세요.</p>
+            </div>
+            <div style="display: flex; gap: 20px; margin-top: 30px; justify-content: center; flex-wrap: wrap">
+                <div
+                    style="
+                        background: #fff;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                        padding: 24px;
+                        width: 200px;
+                        cursor: pointer;
+                    "
+                    onclick="location.href = '/game/random_amount'"
+                >
+                    <h2 style="color: #dc2626; margin-bottom: 10px">룰렛게임</h2>
+                    <p style="font-size: 15px; color: #555">운명의 룰렛! 금액을 차등 배분하는 랜덤 게임.</p>
+                </div>
+                <div
+                    style="
+                        background: #fff;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                        padding: 24px;
+                        width: 200px;
+                    "
+                >
+                    <h2 style="color: #3498db; margin-bottom: 10px">혼밥</h2>
+                    <p style="font-size: 15px; color: #555">혼자서도 맛있게! 혼밥족을 위한 맛집과 소통 공간.</p>
+                </div>
+                <div
+                    style="
+                        background: #fff;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                        padding: 24px;
+                        width: 200px;
+                    "
+                >
+                    <h2 style="color: #e74c3c; margin-bottom: 10px">커플</h2>
+                    <p style="font-size: 15px; color: #555">연인과 특별한 추억을! 커플을 위한 맛집 추천과 후기.</p>
+                </div>
+                <div
+                    style="
+                        background: #fff;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                        padding: 24px;
+                        width: 200px;
+                    "
+                >
+                    <h2 style="color: #27ae60; margin-bottom: 10px">회식</h2>
+                    <p style="font-size: 15px; color: #555">동료들과 즐거운 회식! 회식 장소와 후기 공유.</p>
+                </div>
+                <div
+                    style="
+                        background: #fff;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                        padding: 24px;
+                        width: 200px;
+                    "
+                >
+                    <h2 style="color: #8e44ad; margin-bottom: 10px">기타</h2>
+                    <p style="font-size: 15px; color: #555">그 외 다양한 모임과 맛집! 자유로운 소통 공간.</p>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+                if (nickname && headerRightArea) {
+                    let avatarText = nickname.slice(0, 2);
+                    let adminButton =
+                        isAdmin == '1'
+                            ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`
+                            : '';
+                    headerRightArea.innerHTML = `
+                        <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
+                    `;
+                    getGPSLocation && getGPSLocation();
+                } else if (headerRightArea) {
+                    headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                        <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626" onclick="location.href = '/signup'">회원가입</button>
+                    `;
+                }
+            });
+            function logout() {
+                localStorage.clear();
+                alert('안전하게 로그아웃 되었습니다.');
+                window.location.href = '/main';
+            }
+            function getGPSLocation() {
+                const locSpan = document.getElementById('gps-location');
+                if (!locSpan) return;
+                if (navigator.geolocation) {
+                    locSpan.innerText = '📍 위치 찾는 중...';
+                    navigator.geolocation.getCurrentPosition(
+                        async (pos) => {
+                            try {
+                                const res = await fetch(
+                                    `/api/reverse-geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                                );
+                                const data = await res.json();
+                                const addr = data.address.city || data.address.province || '위치 확인됨';
+                                locSpan.innerText = `📍 ${addr}`;
+                            } catch (e) {
+                                locSpan.innerText = '📍 위치 확인됨';
+                            }
+                        },
+                        () => {
+                            locSpan.innerText = '📍 위치 거부됨';
+                        },
+                    );
+                }
+            }
+        </script>
+    </body>
+</html>

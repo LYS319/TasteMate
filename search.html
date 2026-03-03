@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>검색 결과 - 테이스트메이트</title>
+        <style>
+            body {
+                font-family: 'Noto Sans KR', sans-serif;
+                background: #fff;
+                margin: 0;
+            }
+            .container {
+                max-width: 700px;
+                margin: 40px auto;
+                padding: 32px;
+                background: #fff5f5;
+                border-radius: 18px;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.07);
+            }
+            .search-title {
+                font-size: 2rem;
+                font-weight: 800;
+                color: #dc2626;
+                margin-bottom: 18px;
+            }
+            .search-keyword {
+                color: #b91c1c;
+                background: #ffe5e5;
+                border-radius: 8px;
+                padding: 4px 14px;
+                font-size: 1.1rem;
+                font-weight: 700;
+            }
+            .result-list {
+                margin-top: 32px;
+            }
+            .community-card {
+                background: #fff;
+                border: 1.5px solid #ffe5e5;
+                border-radius: 18px;
+                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.07);
+                padding: 22px 28px 18px 28px;
+                margin-bottom: 18px;
+            }
+            .card-title {
+                font-size: 1.18rem;
+                font-weight: 800;
+                color: #dc2626;
+                margin-bottom: 4px;
+            }
+            .card-count {
+                font-size: 0.98rem;
+                color: #b91c1c;
+                font-weight: 600;
+            }
+            .card-recent {
+                font-size: 1.05rem;
+                color: #222;
+                font-weight: 500;
+                margin-bottom: 2px;
+            }
+            .card-tag {
+                font-size: 0.93rem;
+                background: #fff5f5;
+                color: #dc2626;
+                border-radius: 12px;
+                padding: 2px 14px;
+                font-weight: 700;
+                border: 1px solid #ffe5e5;
+            }
+            .no-result {
+                color: #888;
+                font-size: 1.1rem;
+                margin-top: 32px;
+                text-align: center;
+            }
+        
+            /* ===== 반응형 (태블릿/모바일) ===== */
+            @media (max-width: 900px) {
+                .header {
+                    flex-direction: column;
+                    padding: 10px 16px;
+                    gap: 8px;
+                    position: sticky;
+                }
+                .header-left { width: 100%; justify-content: space-between; }
+                .header-center { width: 100%; }
+                .header-right { width: 100%; justify-content: flex-end; }
+                .menu-bar { display: none; }
+                .header-logo { font-size: 1.3rem; }
+                .login-btn { padding: 8px 10px; font-size: 0.8rem; }
+                .current-location { padding: 6px 8px; font-size: 0.78rem; }
+                .nickname-avatar { width: 32px; height: 32px; font-size: 0.85rem; }
+                .container, .write-container, .community-wrap {
+                    padding: 16px;
+                    margin: 10px auto;
+                }
+                .post-card, .board-card {
+                    padding: 14px 12px;
+                }
+                table { font-size: 0.85rem; }
+                th, td { padding: 8px 6px; }
+            }
+            @media (max-width: 480px) {
+                .header { padding: 8px 10px; }
+                .header-logo { font-size: 1.1rem; }
+                .search-box input { font-size: 0.85rem; }
+                body { font-size: 0.95rem; }
+                h1 { font-size: 1.4rem; }
+                h2 { font-size: 1.2rem; }
+                .btn, button[type=submit] { width: 100%; }
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="search-title">🔍 검색 결과</div>
+            <div id="search-keyword" class="search-keyword">{{ keyword }}</div>
+            <div class="result-list" id="result-list"></div>
+            <div class="no-result" id="no-result" style="display: none">검색 결과가 없습니다.</div>
+        </div>
+        <script>
+            // 커뮤니티 카드 데이터 (테이스트메이트.html의 카드 정보와 동일하게 유지)
+            const communityCards = [
+                {
+                    title: '🍽️ 오늘의 추천메뉴',
+                    count: '글 12개',
+                    recent: '최근: "오늘 점심 뭐 먹지?"',
+                    tag: '#추천메뉴',
+                    highlight: '추천',
+                },
+                {
+                    title: '🍚 강남 혼밥 맛집 공유',
+                    count: '글 27개',
+                    recent: '최근: "강남 혼밥 어디가 좋아요?"',
+                    tag: '#강남혼밥',
+                    highlight: '강남 인기',
+                },
+                {
+                    title: '🍜 라멘덕후모임',
+                    count: '글 18개',
+                    recent: '최근: "강남 라멘집 추천 부탁해요!"',
+                    tag: '#라멘덕후',
+                    highlight: '라멘 인기',
+                },
+                {
+                    title: '🎲 근처 맛집 룰렛',
+                    count: '글 9개',
+                    recent: '최근: "근처 맛집 룰렛 돌려봤어요!"',
+                    tag: '#근처맛집룰렛',
+                    highlight: '랜덤 추천',
+                },
+                {
+                    title: '🍚 혼밥 인기글',
+                    count: '글 27개',
+                    recent: '최근: "오늘 점심 어디가 좋을까요?"',
+                    tag: '#혼밥',
+                    highlight: '재방문율 90%',
+                },
+                {
+                    title: '💑 커플 인기글',
+                    count: '글 19개',
+                    recent: '최근: "커플 맛집 추천 부탁해요!"',
+                    tag: '#커플',
+                    highlight: '데이트 인기',
+                },
+                {
+                    title: '🍻 회식 인기글',
+                    count: '글 15개',
+                    recent: '최근: "회식 장소 어디가 좋을까요?"',
+                    tag: '#회식',
+                    highlight: '직장인 인기',
+                },
+                {
+                    title: '🧩 기타 인기글',
+                    count: '글 8개',
+                    recent: '최근: "이색 맛집 공유해요!"',
+                    tag: '#기타',
+                    highlight: '다양한 주제',
+                },
+            ];
+            // Jinja2에서 전달된 검색어 사용
+            const query = document.getElementById('search-keyword').textContent.trim();
+            // 검색어와 일치/유사 카드 필터링 (제목, 태그, 최근글, highlight 모두 포함)
+            const filtered = communityCards.filter((card) => {
+                const text = `${card.title} ${card.count} ${card.recent} ${card.tag} ${card.highlight}`.toLowerCase();
+                return text && query && text.includes(query.toLowerCase());
+            });
+            const resultList = document.getElementById('result-list');
+            if (filtered.length > 0) {
+                filtered.forEach((card) => {
+                    const div = document.createElement('div');
+                    div.className = 'community-card';
+                    div.innerHTML = `<div class=\"card-title\">${card.title} <span style=\"background:#ffe066;color:#b91c1c;font-size:0.95rem;padding:2px 10px;border-radius:8px;margin-left:6px;font-weight:700;vertical-align:middle;\">${card.highlight}</span></div><div class=\"card-count\">${card.count}</div><div class=\"card-recent\">${card.recent}</div><div class=\"card-tag\">${card.tag}</div>`;
+                    resultList.appendChild(div);
+                });
+            } else {
+                document.getElementById('no-result').style.display = '';
+            }
+        </script>
+    </body>
+</html>

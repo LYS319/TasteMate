@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const dropdown = document.querySelector('.game-dropdown');
+                const content = dropdown?.querySelector('.dropdown-content');
+                let dropdownTimer = null;
+                if (dropdown && content) {
+                    dropdown.addEventListener('mouseenter', () => {
+                        clearTimeout(dropdownTimer);
+                        content.style.display = 'block';
+                    });
+                    dropdown.addEventListener('mouseleave', () => {
+                        dropdownTimer = setTimeout(() => {
+                            content.style.display = 'none';
+                        }, 120);
+                    });
+                    content.addEventListener('mouseenter', () => {
+                        clearTimeout(dropdownTimer);
+                        content.style.display = 'block';
+                    });
+                    content.addEventListener('mouseleave', () => {
+                        dropdownTimer = setTimeout(() => {
+                            content.style.display = 'none';
+                        }, 120);
+                    });
+                }
+            });
+        </script>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>테이스트메이트 커뮤니티</title>
+        <link rel="stylesheet" href="/static/css/header.css" />
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+            body {
+                margin: 0;
+                font-family: 'Noto Sans KR', sans-serif;
+                background: #fdfdfd;
+                color: #333;
+                word-break: keep-all;
+            }
+
+            /* --- Community Page Layout --- */
+            .community-main {
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 140px 20px 100px 20px;
+            }
+            .community-header {
+                margin-bottom: 50px;
+            }
+            .community-title {
+                font-size: 2.8rem;
+                font-weight: 900;
+                color: #1a1a1a;
+                margin: 0 0 12px 0;
+                letter-spacing: -1px;
+            }
+            .community-title span {
+                color: #dc2626;
+            }
+            .community-desc {
+                font-size: 1.15rem;
+                color: #666;
+                font-weight: 400;
+                line-height: 1.6;
+            }
+
+            /* --- Category Buttons --- */
+            .category-btn-group {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 40px;
+            }
+            .category-btn {
+                flex: 1;
+                padding: 20px 0;
+                font-size: 1.1rem;
+                font-weight: 800;
+                border: 1px solid rgba(220, 38, 38, 0.1);
+                border-radius: 16px;
+                background: #fff;
+                color: #444;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            }
+            .category-btn:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 10px 20px rgba(220, 38, 38, 0.08);
+                border-color: #dc2626;
+                color: #dc2626;
+            }
+
+            /* --- Post List --- */
+            .post-list {
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+            }
+            .post-card {
+                background: linear-gradient(145deg, #ffffff, #fefefe);
+                border: 1px solid rgba(0, 0, 0, 0.05);
+                border-radius: 24px;
+                padding: 28px 32px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                cursor: pointer;
+                transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+            }
+            .post-card:hover {
+                transform: scale(1.01);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.06);
+                border-color: rgba(220, 38, 38, 0.25);
+            }
+            .post-title {
+                font-size: 1.35rem;
+                font-weight: 800;
+                color: #222;
+                margin: 0;
+            }
+            .post-meta {
+                font-size: 1rem;
+                color: #64748b;
+                line-height: 1.5;
+                font-weight: 400;
+            }
+            .post-tag {
+                align-self: flex-start;
+                font-size: 0.8rem;
+                font-weight: 800;
+                background: rgba(220, 38, 38, 0.05);
+                color: #dc2626;
+                padding: 6px 16px;
+                border-radius: 12px;
+                border: 1px solid rgba(220, 38, 38, 0.1);
+            }
+
+            /* --- Write Button --- */
+            .write-btn {
+                position: fixed;
+                bottom: 40px;
+                right: 110px;
+                padding: 16px 32px;
+                font-size: 1.1rem;
+                font-weight: 800;
+                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+                color: #fff;
+                border: none;
+                border-radius: 50px;
+                cursor: pointer;
+                box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
+                transition: all 0.3s;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                z-index: 2000;
+            }
+
+            /* ── 친구 패널 & 채팅 공통 ── */
+            .panel-fab {
+                position: fixed;
+                bottom: 32px;
+                right: 32px;
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: #fff;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 26px;
+                cursor: pointer;
+                box-shadow: 0 8px 24px rgba(220, 38, 38, 0.45);
+                z-index: 2001;
+                transition:
+                    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                    box-shadow 0.3s;
+                border: none;
+                outline: none;
+                animation: float 3s ease-in-out infinite;
+            }
+            .panel-fab:hover {
+                transform: scale(1.14) rotate(8deg);
+                box-shadow: 0 14px 36px rgba(220, 38, 38, 0.55);
+                animation: none;
+            }
+            @keyframes float {
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-6px);
+                }
+            }
+            .panel-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.28);
+                backdrop-filter: blur(6px);
+                z-index: 2000;
+                display: none;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            .panel-overlay.active {
+                display: block;
+                opacity: 1;
+            }
+            .panel-panel {
+                position: fixed;
+                top: 12px;
+                right: -390px;
+                width: 355px;
+                height: calc(100% - 24px);
+                background: #fff;
+                box-shadow: -12px 0 60px rgba(0, 0, 0, 0.12);
+                transition: right 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+                z-index: 2002;
+                display: flex;
+                flex-direction: column;
+                border-radius: 24px 0 0 24px;
+                overflow: hidden;
+            }
+            .panel-panel.active {
+                right: 0;
+            }
+            .panel-header {
+                padding: 28px 22px 16px;
+                border-bottom: 1px solid #f2f2f2;
+                background: linear-gradient(135deg, #fff, #fafafa);
+            }
+            .panel-header-title {
+                font-size: 1.25rem;
+                font-weight: 900;
+                color: #111;
+                margin-bottom: 2px;
+            }
+            .panel-header-sub {
+                font-size: 0.82rem;
+                color: #aaa;
+                font-weight: 500;
+            }
+            .panel-tabs {
+                display: flex;
+                padding: 14px 14px 0;
+                gap: 6px;
+            }
+            .tab-btn {
+                flex: 1;
+                padding: 10px 0;
+                border-radius: 12px;
+                font-weight: 700;
+                color: #999;
+                border: none;
+                background: #f5f5f5;
+                cursor: pointer;
+                font-size: 0.88rem;
+                transition:
+                    background 0.2s,
+                    color 0.2s,
+                    transform 0.15s;
+                font-family: inherit;
+            }
+            .tab-btn:hover:not(.active) {
+                background: #ebebeb;
+                color: #666;
+                transform: translateY(-1px);
+            }
+            .tab-btn.active {
+                color: #fff;
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            }
+            .tab-content {
+                display: none;
+                padding: 16px;
+                overflow-y: auto;
+                flex: 1;
+            }
+            .tab-content.active {
+                display: flex;
+                flex-direction: column;
+                gap: 9px;
+            }
+            .friend-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 13px 15px;
+                background: #fff;
+                border: 1px solid #f0f0f0;
+                border-radius: 15px;
+                transition:
+                    background 0.2s,
+                    border-color 0.2s,
+                    transform 0.2s;
+            }
+            .friend-item:hover {
+                background: #fff8f8;
+                border-color: rgba(220, 38, 38, 0.12);
+                transform: translateX(-2px);
+            }
+            .friend-name {
+                font-weight: 700;
+                font-size: 0.95rem;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .friend-avatar {
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #1a1a2e, #374151);
+                color: #fff;
+                font-weight: 800;
+                font-size: 0.78rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .friend-actions {
+                display: flex;
+                gap: 6px;
+                align-items: center;
+            }
+            .action-btn {
+                padding: 7px 13px;
+                border-radius: 10px;
+                border: none;
+                font-weight: 700;
+                cursor: pointer;
+                font-size: 0.83rem;
+                transition: transform 0.18s;
+                font-family: inherit;
+            }
+            .btn-accept {
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: white;
+            }
+            .btn-reject {
+                background: #f3f3f3;
+                color: #777;
+            }
+            .btn-chat {
+                background: #fff1f1;
+                color: #dc2626;
+                border: 1px solid rgba(220, 38, 38, 0.18);
+                font-size: 1rem;
+                padding: 6px 10px;
+            }
+            .btn-delete {
+                background: #f9f9f9;
+                color: #bbb;
+                border: 1px solid #ececec;
+                font-size: 0.9rem;
+                padding: 6px 9px;
+            }
+            .btn-delete:hover {
+                background: #fee2e2;
+                color: #dc2626;
+            }
+            .add-friend-input {
+                width: 100%;
+                padding: 13px 16px;
+                border: 1.5px solid #ebebeb;
+                border-radius: 13px;
+                font-size: 0.95rem;
+                outline: none;
+                font-family: inherit;
+                background: #fafafa;
+                margin-bottom: 10px;
+                display: block;
+                box-sizing: border-box;
+            }
+            .add-friend-input:focus {
+                border-color: #dc2626;
+                background: #fff;
+                box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.09);
+            }
+            .add-friend-btn {
+                width: 100%;
+                padding: 14px;
+                border-radius: 14px;
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: #fff;
+                border: none;
+                cursor: pointer;
+                font-weight: 800;
+                font-size: 0.97rem;
+                font-family: inherit;
+                transition:
+                    transform 0.2s,
+                    box-shadow 0.2s;
+                box-shadow: 0 6px 18px rgba(220, 38, 38, 0.28);
+            }
+            .add-friend-section {
+                padding: 4px 0;
+            }
+            .empty-state {
+                text-align: center;
+                color: #bbb;
+                padding: 32px 16px;
+                font-size: 0.9rem;
+                line-height: 1.7;
+            }
+            .empty-icon {
+                font-size: 2.4rem;
+                margin-bottom: 10px;
+            }
+            .req-dot {
+                display: inline-block;
+                width: 7px;
+                height: 7px;
+                background: #ef4444;
+                border-radius: 50%;
+                margin-left: 4px;
+                vertical-align: middle;
+            }
+            .confirm-modal-bg {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.42);
+                backdrop-filter: blur(6px);
+                z-index: 9998;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.22s;
+            }
+            .confirm-modal-bg.show {
+                opacity: 1;
+                pointer-events: all;
+            }
+            .confirm-modal {
+                background: #fff;
+                border-radius: 24px;
+                padding: 32px 28px 26px;
+                width: 290px;
+                text-align: center;
+                box-shadow: 0 24px 72px rgba(0, 0, 0, 0.18);
+                transform: scale(0.88) translateY(12px);
+                transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+            .confirm-modal-bg.show .confirm-modal {
+                transform: scale(1) translateY(0);
+            }
+            .confirm-modal-icon {
+                font-size: 2.6rem;
+                margin-bottom: 12px;
+            }
+            .confirm-modal-title {
+                font-size: 1.08rem;
+                font-weight: 900;
+                color: #111;
+                margin-bottom: 8px;
+            }
+            .confirm-modal-desc {
+                font-size: 0.87rem;
+                color: #999;
+                line-height: 1.55;
+                margin-bottom: 22px;
+            }
+            .confirm-modal-btns {
+                display: flex;
+                gap: 10px;
+            }
+            .confirm-ok {
+                flex: 1;
+                padding: 13px;
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: #fff;
+                border: none;
+                border-radius: 13px;
+                font-weight: 800;
+                font-size: 0.95rem;
+                cursor: pointer;
+                font-family: inherit;
+            }
+            .confirm-cancel {
+                flex: 1;
+                padding: 13px;
+                background: #f4f4f4;
+                color: #666;
+                border: none;
+                border-radius: 13px;
+                font-weight: 700;
+                font-size: 0.95rem;
+                cursor: pointer;
+                font-family: inherit;
+            }
+            .toast {
+                position: fixed;
+                bottom: 105px;
+                left: 50%;
+                transform: translateX(-50%) translateY(16px);
+                background: rgba(20, 20, 20, 0.92);
+                color: #fff;
+                padding: 11px 22px;
+                border-radius: 50px;
+                font-size: 0.88rem;
+                font-weight: 600;
+                z-index: 9999;
+                opacity: 0;
+                pointer-events: none;
+                transition:
+                    opacity 0.25s,
+                    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+                white-space: nowrap;
+            }
+            .toast.success {
+                background: rgba(22, 163, 74, 0.93);
+            }
+            .toast.error {
+                background: rgba(220, 38, 38, 0.93);
+            }
+            .toast.show {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+            #chat-windows-container {
+                position: fixed;
+                bottom: 0;
+                right: 110px;
+                display: flex;
+                flex-direction: row-reverse;
+                align-items: flex-end;
+                gap: 12px;
+                z-index: 1999;
+                pointer-events: none;
+            }
+            .chat-window {
+                pointer-events: all;
+                width: 300px;
+                background: #fff;
+                border-radius: 18px 18px 0 0;
+                box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.14);
+                display: flex;
+                flex-direction: column;
+                max-height: 420px;
+                overflow: hidden;
+            }
+            .chat-window.minimized {
+                max-height: 48px;
+            }
+            .chat-header {
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: #fff;
+                padding: 12px 14px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                border-radius: 18px 18px 0 0;
+            }
+            .chat-target-name {
+                font-weight: 800;
+                font-size: 0.92rem;
+                flex: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .chat-ctrl-btn {
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                color: #fff;
+                border-radius: 7px;
+                padding: 4px 8px;
+                cursor: pointer;
+                font-size: 0.85rem;
+            }
+            .chat-messages {
+                flex: 1;
+                overflow-y: auto;
+                padding: 12px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .chat-input-area {
+                display: flex;
+                padding: 10px 12px;
+                border-top: 1px solid #f0f0f0;
+                gap: 8px;
+            }
+            .chat-input {
+                flex: 1;
+                border: 1px solid #eee;
+                border-radius: 10px;
+                padding: 8px 12px;
+                font-size: 0.88rem;
+                outline: none;
+                font-family: inherit;
+            }
+            .chat-send-btn {
+                background: #dc2626;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                padding: 8px 14px;
+                cursor: pointer;
+                font-weight: 700;
+                font-size: 0.88rem;
+            }
+            @media (max-width: 900px) {
+                .panel-panel {
+                    width: 100%;
+                    top: 0;
+                    height: 100%;
+                    border-radius: 0;
+                    right: -100%;
+                }
+                #chat-windows-container {
+                    right: 0;
+                    left: 0;
+                    bottom: 0;
+                }
+                .chat-window {
+                    width: 100%;
+                }
+                .write-btn {
+                    right: 16px;
+                    bottom: 110px;
+                    padding: 12px 22px;
+                    font-size: 0.95rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header class="header">
+            <div class="header-left">
+                <a href="/main" class="header-logo">TasteMate</a>
+                <nav class="menu-bar">
+                    <a class="menu-item" href="/aichat">AI추천</a>
+                    <a class="menu-item" href="/community">커뮤니티</a>
+                    <div class="menu-item game-dropdown">
+                        <span>게임 ▾</span>
+                        <div class="dropdown-content">
+                            <a href="/game/pinball">핀볼</a>
+                            <a href="/game/ladder">사다리타기</a>
+                            <a href="/game/random_amount">룰렛 게임</a>
+                            <a href="/game/worldcup">음식 월드컵</a>
+                            <a href="/game/calculator">계산기</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div class="header-center"></div>
+            <div class="header-right" id="headerRightArea">
+                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                <button
+                    class="login-btn"
+                    style="background: #fff; color: #dc2626; border: 1.5px solid #dc2626"
+                    onclick="location.href = '/signup'"
+                >
+                    회원가입
+                </button>
+            </div>
+        </header>
+
+        <main class="community-main">
+            <div class="community-header">
+                <div class="community-title">🧑‍🤝‍🧑 <span>커뮤니티</span></div>
+                <div class="community-desc">다양한 맛집, 모임, 질문을 자유롭게 공유하고 소통해보세요!</div>
+            </div>
+
+            <div class="category-btn-group">
+                <button class="category-btn" onclick="location.href = '/category/solo'">🍱 혼밥</button>
+                <button class="category-btn" onclick="location.href = '/category/date'">💑 데이트</button>
+                <button class="category-btn" onclick="location.href = '/category/work'">🍻 회식</button>
+                <button class="category-btn" onclick="location.href = '/category/etc'">✨ 기타</button>
+            </div>
+
+            <div class="post-list">
+                <div class="post-card" onclick="location.href = '/category/solo'">
+                    <div class="post-title">🍱 혼밥 게시판</div>
+                    <div class="post-meta">
+                        혼자서도 즐거운 식사, 나만의 숨은 혼밥 명소를 추천하고 공유하는 공간입니다.
+                    </div>
+                    <div class="post-tag">#SOLO</div>
+                </div>
+                <div class="post-card" onclick="location.href = '/category/date'">
+                    <div class="post-title">💑 데이트 맛집</div>
+                    <div class="post-meta">
+                        연인과 함께하기 좋은 분위기 좋은 곳, 실패 없는 데이트 코스를 이야기해 보세요.
+                    </div>
+                    <div class="post-tag">#DATE</div>
+                </div>
+                <div class="post-card" onclick="location.href = '/category/work'">
+                    <div class="post-title">🍻 회식/모임 공간</div>
+                    <div class="post-meta">
+                        단체 예약이 편한 곳부터 부장님께 칭찬받는 회식 장소까지, 모임 정보를 공유합니다.
+                    </div>
+                    <div class="post-tag">#WORK</div>
+                </div>
+                <div class="post-card" onclick="location.href = '/category/etc'">
+                    <div class="post-title">✨ 자유/기타 이야기</div>
+                    <div class="post-meta">
+                        다양한 미식 경험이나 맛집 질문 등 어떤 이야기든 자유롭게 나눌 수 있습니다.
+                    </div>
+                    <div class="post-tag">#ETC</div>
+                </div>
+            </div>
+
+            <button class="write-btn" onclick="location.href = '/write'"><span>✏️</span> 새 글 쓰기</button>
+        </main>
+
+        <script>
+            function logout() {
+                localStorage.clear();
+                alert('안전하게 로그아웃 되었습니다.');
+                window.location.href = '/main';
+            }
+            function getGPSLocation() {
+                const locSpan = document.getElementById('gps-location');
+                if (!locSpan) return;
+                if (navigator.geolocation) {
+                    locSpan.innerText = '📍 위치 찾는 중...';
+                    navigator.geolocation.getCurrentPosition(
+                        async (pos) => {
+                            try {
+                                const res = await fetch(
+                                    `/api/reverse_geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                                );
+                                const data = await res.json();
+                                const addr = data.address.city || data.address.province || '위치 확인됨';
+                                locSpan.innerText = `📍 ${addr}`;
+                            } catch (e) {
+                                locSpan.innerText = '📍 위치 확인됨';
+                            }
+                        },
+                        () => {
+                            locSpan.innerText = '📍 위치 거부됨';
+                        },
+                    );
+                }
+            }
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+                if (nickname && headerRightArea) {
+                    let avatarText = nickname.slice(0, 2);
+                    let adminBtn =
+                        isAdmin === '1'
+                            ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #222; margin-left:8px;">관리자 기능</button>`
+                            : '';
+                    headerRightArea.innerHTML = `
+                        <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
+                        ${adminBtn}
+                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
+                    `;
+                    getGPSLocation();
+                }
+            });
+        </script>
+
+        <!-- 친구 FAB -->
+        <button class="panel-fab" onclick="togglePanel()" id="panelFab">💬</button>
+        <!-- 오버레이 -->
+        <div class="panel-overlay" id="panelOverlay"></div>
+        <!-- 친구 패널 -->
+        <div class="panel-panel" id="panelPanel">
+            <div class="panel-header">
+                <div class="panel-header-title">🍽️ 나의 메이트</div>
+                <div class="panel-header-sub" id="panel-login-hint"></div>
+            </div>
+            <div class="panel-tabs">
+                <button class="tab-btn active" onclick="showTab('list')">친구목록</button>
+                <button class="tab-btn" onclick="showTab('add')">친구추가</button>
+                <button class="tab-btn" id="req-tab-btn" onclick="showTab('req')">
+                    요청<span id="req-dot" class="req-dot" style="display: none"></span>
+                </button>
+            </div>
+            <div id="tab-list" class="tab-content active">
+                <div id="panel-list-container">
+                    <div class="empty-state">
+                        <div class="empty-icon">👥</div>
+                        아직 친구가 없어요.<br />친구를 추가해보세요!
+                    </div>
+                </div>
+            </div>
+            <div id="tab-add" class="tab-content">
+                <div class="add-friend-section">
+                    <div style="font-size: 0.9rem; color: #666; margin-bottom: 12px; line-height: 1.5">
+                        👥 닉네임으로 친구를 찾아보세요
+                    </div>
+                    <input
+                        type="text"
+                        id="panelSearch"
+                        class="add-friend-input"
+                        placeholder="친구 닉네임을 입력하세요"
+                        onkeyup="if (event.keyCode == 13) requestFriend();"
+                    />
+                    <button class="add-friend-btn" onclick="requestFriend()">🙋 친구 신청 보내기</button>
+                    <div
+                        id="add-friend-result"
+                        style="font-size: 0.88rem; margin-top: 12px; min-height: 20px; text-align: center"
+                    ></div>
+                </div>
+            </div>
+            <div id="tab-req" class="tab-content">
+                <div id="panel-req-container">
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        받은 친구 요청이 없어요.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 친구 삭제 모달 -->
+        <div class="confirm-modal-bg" id="confirmModalBg" style="display: none">
+            <div class="confirm-modal">
+                <div class="confirm-modal-icon">🗑️</div>
+                <div class="confirm-modal-title" id="confirmModalTitle">친구를 삭제할까요?</div>
+                <div class="confirm-modal-desc" id="confirmModalDesc">
+                    삭제하면 서로의 친구 목록에서<br />사라집니다.
+                </div>
+                <div class="confirm-modal-btns">
+                    <button class="confirm-cancel" onclick="closeConfirmModal()">취소</button>
+                    <button class="confirm-ok" id="confirmOkBtn">삭제</button>
+                </div>
+            </div>
+        </div>
+        <!-- 다중 채팅창 -->
+        <div id="chat-windows-container"></div>
+        <div class="toast" id="toast"></div>
+        <script src="/static/js/friend-chat.js"></script>
+        <script src="/static/js/avatar-sync.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof initFriendChatPanel === 'function') {
+                    initFriendChatPanel();
+                }
+            });
+        </script>
+    </body>
+</html>
