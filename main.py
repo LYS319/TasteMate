@@ -88,6 +88,9 @@ class TopPlaceRequest(BaseModel):
     category: str
     lat: float
     lon: float
+    profile: dict = {}
+    user_id: int | None = None
+    current_hour: int = -1
 
 
 # 🔥 카테고리별 인기 장소 API (프론트와 구조 맞춤)
@@ -100,7 +103,11 @@ def kakao_top_places(request: TopPlaceRequest):
     keyword_map = {
         "혼밥": "혼밥 맛집",
         "데이트": "데이트 맛집",
-        "술집": "술집"
+        "술집": "술집",
+        "추천": "맛집",
+        "소맥": "안주 맛있는 술집",
+        "와인": "와인바",
+        "맥주": "수제맥주 펍"
     }
 
     keyword = keyword_map.get(request.category, request.category)
@@ -124,14 +131,67 @@ def kakao_top_places(request: TopPlaceRequest):
         resp.raise_for_status()
         data = resp.json()
 
+        documents = data.get("documents", [])
+
+        db = next(get_db())
+        scored = []
+
+        for doc in documents:
+
+            place_name = doc.get("place_name", "")
+            score = 0
+
+    # --------------------------
+    # 1️⃣ 커뮤니티 인기 점수
+    # --------------------------
+            related_posts = db.query(Post).filter(
+                Post.place_name.contains(place_name)
+            ).all()
+
+            for post in related_posts:
+                like_count = len(getattr(post, "likes", []))
+                comment_count = len(post.comments)
+                score += like_count * 2
+                score += comment_count
+
+    # --------------------------
+    # 2️⃣ 유저 취향 점수
+    # --------------------------
+            profile = request.profile or {}
+
+            preferred_alcohol = profile.get("preferred_alcohol")
+            preferred_snack = profile.get("preferred_snack")
+
+            if preferred_alcohol and preferred_alcohol in place_name:
+                score += 5
+
+            if preferred_snack and preferred_snack in place_name:
+                score += 3
+
+    # --------------------------
+    # 3️⃣ 시간대 점수
+    # --------------------------
+            if request.current_hour >= 18:
+                if "술" in place_name or "펍" in place_name:
+                    score += 2
+
+            scored.append({
+                "doc": doc,
+                "score": score
+            })
+
+# 점수 높은 순 정렬
+        scored.sort(key=lambda x: x["score"], reverse=True)
+
         places = []
 
-        for doc in data.get("documents", []):
+        for item in scored[:5]:
+            doc = item["doc"]
             places.append({
                 "name": doc.get("place_name"),
                 "address": doc.get("road_address_name") or doc.get("address_name"),
                 "map_url": doc.get("place_url")
-            })
+            })      
 
         return {"places": places}
 
@@ -541,51 +601,7 @@ def get_posts_popular(category: str, db: Session = Depends(get_db)):
         for post in posts
     ]
 
-# 위치 기반 근처 게시글 (하버사인 공식)
-@app.get("/api/posts/{category}/nearby")
-def get_posts_nearby(
-    category: str,
-    lat: float = Query(...),
-    lon: float = Query(...),
-    radius: float = Query(5.0),  # km 단위, 기본 5km
-    db: Session = Depends(get_db)
-):
-    import math
-
-    def haversine(lat1, lon1, lat2, lon2):
-        R = 6371.0
-        d_lat = math.radians(lat2 - lat1)
-        d_lon = math.radians(lon2 - lon1)
-        a = math.sin(d_lat/2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(d_lon/2)**2
-        return R * 2 * math.asin(math.sqrt(a))
-
-    # 위치 정보 있는 글만 조회
-    posts = db.query(Post).filter(
-        Post.category == category.upper(),
-        Post.lat != None,
-        Post.lon != None
-    ).order_by(Post.is_notice.desc(), Post.created_at.desc()).all()
-
-    nearby = []
-    for post in posts:
-        dist = haversine(lat, lon, post.lat, post.lon)
-        if dist <= radius:
-            nearby.append({
-                "id": post.id,
-                "title": post.title,
-                "content": post.content,
-                "nickname": post.owner.nickname if post.owner else "",
-                "created_at": post.created_at,
-                "comment_count": len(post.comments),
-                "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0,
-                "is_notice": getattr(post, 'is_notice', 0),
-                "distance": round(dist, 2),
-                "place_name": getattr(post, 'place_name', None),
-            })
-
-    # 거리순 정렬 (공지는 맨 위)
-    nearby.sort(key=lambda x: (x['is_notice'] == 0, x['distance']))
-    return nearby
+@app.get("/test/users")
 def test_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
     return [{"id": u.id, "email": u.email, "nickname": u.nickname, "hashed_password": u.hashed_password} for u in users]
@@ -1098,12 +1114,60 @@ def reverse_geocode(lat: float = Query(...), lon: float = Query(...)):
     except Exception as e:
         logging.error(f"Kakao API 에러: {e}")
         return {"address": None}
+#추가했음
+@app.get("/report", response_class=HTMLResponse)
+def report_page(request: Request):
+    return templates.TemplateResponse("report.html", {"request": request})
 
 # =============================================
-# 날씨별 음식 추천 (기상청 초단기실황 API)
+# 위치 기반 근처 게시글 (하버사인)
 # =============================================
+@app.get("/api/posts/{category}/nearby")
+def get_posts_nearby(
+    category: str,
+    lat: float = Query(...),
+    lon: float = Query(...),
+    radius: float = Query(1.0),
+    db: Session = Depends(get_db)
+):
+    def haversine(lat1, lon1, lat2, lon2):
+        R = 6371.0
+        d_lat = math.radians(lat2 - lat1)
+        d_lon = math.radians(lon2 - lon1)
+        a = math.sin(d_lat/2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(d_lon/2)**2
+        return R * 2 * math.asin(math.sqrt(a))
+
+    posts = db.query(Post).filter(
+        Post.category == category.upper(),
+        Post.lat != None,
+        Post.lon != None
+    ).order_by(Post.is_notice.desc(), Post.created_at.desc()).all()
+
+    nearby = []
+    for post in posts:
+        dist = haversine(lat, lon, post.lat, post.lon)
+        if dist <= radius:
+            nearby.append({
+                "id": post.id, "title": post.title, "content": post.content,
+                "nickname": post.owner.nickname if post.owner else "",
+                "created_at": post.created_at,
+                "comment_count": len(post.comments),
+                "like_count": len(getattr(post, 'likes', [])) if hasattr(post, 'likes') else 0,
+                "is_notice": getattr(post, 'is_notice', 0),
+                "distance": round(dist, 2),
+                "place_name": getattr(post, 'place_name', None),
+            })
+
+    nearby.sort(key=lambda x: (x['is_notice'] == 0, x['distance']))
+    return nearby
+
+
+# =============================================
+# 날씨 기반 AI 메뉴 추천 (Gemini)
+# =============================================
+# /api/weather → /api/weather-recommend 동일 기능 alias
 @app.get("/api/weather")
-async def get_weather(lat: float = Query(...), lon: float = Query(...)):
+async def get_weather_alias(lat: float = Query(...), lon: float = Query(...)):
     return await get_weather_recommendation(lat, lon)
 
 @app.get("/api/weather-recommend")
@@ -1126,7 +1190,6 @@ async def get_weather_recommendation(lat: float = Query(...), lon: float = Query
         if theta < -math.pi: theta += 2.0 * math.pi
         return int(ra * math.sin(theta) + XO + 0.5), int(ro - ra * math.cos(theta) + YO + 0.5)
 
-    # ── 1. 기상청 초단기실황 API 호출 (기온/습도/바람/강수/하늘) ──
     weather_info = {"temp": 20.0, "humidity": 50, "wind": 0.0, "rain": 0.0, "sky": "맑음"}
     try:
         from urllib.parse import unquote
@@ -1139,8 +1202,6 @@ async def get_weather_recommendation(lat: float = Query(...), lon: float = Query
             f'&base_date={now.strftime("%Y%m%d")}&base_time={base_dt.strftime("%H00")}&nx={x}&ny={y}'
         )
         resp = requests.get(url, timeout=5)
-        logging.info(f"[날씨] 기상청 status={resp.status_code}, nx={x}, ny={y}")
-
         if resp.ok:
             sky_code = {"1": "맑음", "3": "구름 많음", "4": "흐림"}
             pty_code  = {"0": "", "1": "비", "2": "비/눈", "3": "눈", "5": "빗방울", "6": "빗방울/눈날림", "7": "눈날림"}
@@ -1148,19 +1209,18 @@ async def get_weather_recommendation(lat: float = Query(...), lon: float = Query
             pty_val = ""
             for item in items:
                 cat, val = item.get('category'), str(item.get('obsrValue', ''))
-                if cat == 'T1H':  weather_info['temp']     = float(val)
+                if cat == 'T1H':   weather_info['temp']     = float(val)
                 elif cat == 'REH': weather_info['humidity'] = int(float(val))
                 elif cat == 'WSD': weather_info['wind']     = float(val)
                 elif cat == 'RN1': weather_info['rain']     = float(val) if val != '강수없음' else 0.0
                 elif cat == 'SKY': weather_info['sky']      = sky_code.get(val, '맑음')
                 elif cat == 'PTY': pty_val = pty_code.get(val, '')
             if pty_val:
-                weather_info['sky'] = pty_val  # 강수 있으면 sky 덮어쓰기
-            logging.info(f"[날씨] 수신 완료: {weather_info}")
+                weather_info['sky'] = pty_val
+            logging.info(f"[날씨] 수신: {weather_info}")
     except Exception as e:
         logging.warning(f"[날씨] 기상청 API 실패, 기본값 사용: {e}")
 
-    # ── 2. Gemini AI 메뉴 추천 ──
     try:
         temp     = weather_info['temp']
         humidity = weather_info['humidity']
@@ -1170,7 +1230,6 @@ async def get_weather_recommendation(lat: float = Query(...), lon: float = Query
         now_hour = datetime.datetime.now().hour
         meal_time = "아침" if now_hour < 10 else "점심" if now_hour < 15 else "저녁" if now_hour < 21 else "야식"
 
-        # 매 요청마다 다른 추천을 위한 랜덤 힌트
         food_styles = ["한식", "분식", "일식", "중식", "양식", "국물요리", "면요리", "구이", "찜/조림", "디저트/음료"]
         avoid_hint = random.choice(food_styles)
         seed = random.randint(1, 9999)
@@ -1187,7 +1246,7 @@ async def get_weather_recommendation(lat: float = Query(...), lon: float = Query
 - 이번엔 "{avoid_hint}" 계열 외의 음식을 우선 고려해주세요
 
 이 날씨와 시간대에 잘 어울리는 한국 음식 1가지를 추천하고, 왜 이 날씨에 어울리는지 한 줄로 설명해주세요.
-절대 매번 같은 음식을 추천하지 마세요. 다양한 음식 중에서 오늘 날씨에 맞는 것을 골라주세요.
+절대 매번 같은 음식을 추천하지 마세요.
 
 반드시 아래 JSON 형식으로만 답하세요. 다른 텍스트는 절대 포함하지 마세요:
 {{
@@ -1205,28 +1264,20 @@ async def get_weather_recommendation(lat: float = Query(...), lon: float = Query
         )
         response = model.generate_content(prompt)
         raw = response.text.strip().replace("```json", "").replace("```", "").strip()
-
-        import json
         result = json.loads(raw)
         result["title"] = f"{result['title']} ({temp}℃)"
-        logging.info(f"[날씨] Gemini 추천 완료: {result.get('menu')}")
+        logging.info(f"[날씨] Gemini 추천: {result.get('menu')}")
         return result
 
     except Exception as e:
-        logging.error(f"[날씨] Gemini 추천 실패: {e}", exc_info=True)
+        logging.error(f"[날씨] Gemini 실패: {e}", exc_info=True)
         temp = weather_info['temp']
         if temp <= 0:    title, menu, reason = "🥶 꽁꽁 얼어붙는 추위", "감자탕", "칼바람 부는 날엔 뜨끈한 국물이 최고예요"
         elif temp <= 10: title, menu, reason = "🧥 쌀쌀한 날씨", "부대찌개", "쌀쌀한 날씨엔 얼큰하고 든든한 한 끼가 필요해요"
         elif temp <= 20: title, menu, reason = "🌤️ 기분 좋은 날씨", "비빔밥", "선선한 날씨에 가볍고 균형 잡힌 비빔밥 어떠세요"
         elif temp <= 28: title, menu, reason = "☀️ 따뜻한 날씨", "냉면", "더위가 오기 전 시원한 냉면으로 기분 전환해요"
         else:            title, menu, reason = "🥵 숨막히는 폭염", "팥빙수", "이 더위엔 달콤한 팥빙수 한 그릇이 답이에요"
-        return {
-            "title": f"{title} ({temp}℃)",
-            "menu": menu,
-            "reason": reason,
-            "search": menu,
-            "tag": "#오늘의메뉴"
-        }
+        return {"title": f"{title} ({temp}℃)", "menu": menu, "reason": reason, "search": menu, "tag": "#오늘의메뉴"}
 
 
 # =============================================
@@ -1254,8 +1305,7 @@ async def friend_request(nickname: str = Form(...), from_user: int = Form(...), 
     if already_pending:
         return JSONResponse(status_code=400, content={"message": "이미 친구 신청을 보냈거나 받은 상태입니다."})
     new_req = Friend(user_id=int(from_user), friend_id=target.id, status="pending")
-    db.add(new_req)
-    db.commit()
+    db.add(new_req); db.commit()
     return {"message": f"{nickname}님에게 친구신청이 완료됐습니다!"}
 
 @app.get("/api/friends/status/{user_id}")
@@ -1303,8 +1353,7 @@ async def delete_friend(user_id: int = Form(...), friend_id: int = Form(...), db
     ).all()
     if not deleted:
         return JSONResponse(status_code=404, content={"message": "친구 관계를 찾을 수 없습니다."})
-    for row in deleted:
-        db.delete(row)
+    for row in deleted: db.delete(row)
     db.commit()
     return {"message": "친구를 삭제했습니다."}
 
@@ -1339,8 +1388,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: int):
             if not receiver_id or not message_text:
                 continue
             new_msg = ChatMessage(sender_id=user_id, receiver_id=receiver_id, message=message_text)
-            db.add(new_msg)
-            db.commit()
+            db.add(new_msg); db.commit()
             await manager.send_personal_message(
                 {"sender_id": user_id, "receiver_id": receiver_id, "message": message_text},
                 receiver_id
