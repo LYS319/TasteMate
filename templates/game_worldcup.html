@@ -2,33 +2,6 @@
 <html lang="ko">
     <head>
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const dropdown = document.querySelector('.game-dropdown');
-                const content = dropdown?.querySelector('.dropdown-content');
-                let dropdownTimer = null;
-                if (dropdown && content) {
-                    dropdown.addEventListener('mouseenter', () => {
-                        clearTimeout(dropdownTimer);
-                        content.style.display = 'block';
-                    });
-                    dropdown.addEventListener('mouseleave', () => {
-                        dropdownTimer = setTimeout(() => {
-                            content.style.display = 'none';
-                        }, 120);
-                    });
-                    content.addEventListener('mouseenter', () => {
-                        clearTimeout(dropdownTimer);
-                        content.style.display = 'block';
-                    });
-                    content.addEventListener('mouseleave', () => {
-                        dropdownTimer = setTimeout(() => {
-                            content.style.display = 'none';
-                        }, 120);
-                    });
-                }
-            });
-        </script>
-        <script>
             if (window.top !== window.self) {
                 window.top.location.href = window.self.location.href;
             }
@@ -41,12 +14,15 @@
             rel="stylesheet"
         />
         <link rel="stylesheet" href="/static/css/header.css" />
+
         <style>
             :root {
                 --primary-color: #dc2626;
                 --primary-hover: #b91c1c;
                 --bg-gradient: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
+                --glass-bg: rgba(255, 255, 255, 0.85);
             }
+
             body {
                 margin: 0;
                 font-family: 'Noto Sans KR', sans-serif;
@@ -56,6 +32,7 @@
                 overflow-x: hidden;
             }
 
+            /* ===== Layout ===== */
             .game-main {
                 padding: 160px 20px 80px;
             }
@@ -86,6 +63,7 @@
                 display: inline-block;
                 border: 1px solid #ffebeb;
             }
+
             .choices {
                 display: flex;
                 justify-content: center;
@@ -112,6 +90,7 @@
                 transform: translateY(-10px) scale(1.02);
                 box-shadow: 0 15px 30px rgba(220, 38, 38, 0.15);
             }
+
             .choice-img {
                 width: 100%;
                 height: 180px;
@@ -126,6 +105,7 @@
                 font-weight: 900;
                 color: #222;
             }
+
             .result {
                 font-size: 2rem;
                 font-weight: 900;
@@ -150,12 +130,8 @@
                 background: var(--primary-hover);
                 transform: scale(1.05);
             }
-            @media (max-width: 900px) {
-                .game-main {
-                    padding-top: 80px !important;
-                }
-            }
 
+            /* ===== 광고 배너 ===== */
             .side-ad {
                 position: fixed;
                 top: 150px;
@@ -207,6 +183,19 @@
                 .mobile-top-ad {
                     display: flex;
                 }
+                .game-main {
+                    padding-top: 80px !important;
+                }
+                .worldcup-container {
+                    padding: 20px;
+                }
+                .choices {
+                    gap: 15px;
+                }
+                .choice {
+                    width: 100%;
+                    max-width: 320px;
+                }
             }
         </style>
     </head>
@@ -230,7 +219,9 @@
                     </div>
                 </nav>
             </div>
+
             <div class="header-center"></div>
+
             <div class="header-right" id="headerRightArea">
                 <button class="login-btn" onclick="location.href = '/login'">로그인</button>
                 <button
@@ -247,6 +238,7 @@
             <div class="side-ad ad-left">광고 영역 (좌)</div>
             <div class="side-ad ad-right">광고 영역 (우)</div>
             <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
+
             <div class="worldcup-container">
                 <div class="worldcup-title">🍗 메뉴 월드컵</div>
                 <button id="start-btn" class="restart-btn" onclick="onStartClick()">시작하기</button>
@@ -274,6 +266,7 @@
                 alert('안전하게 로그아웃 되었습니다.');
                 window.location.href = '/main';
             }
+
             function getGPSLocation() {
                 const locSpan = document.getElementById('gps-location');
                 if (!locSpan) return;
@@ -286,7 +279,8 @@
                                     `/api/reverse-geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
                                 );
                                 const data = await res.json();
-                                locSpan.innerText = `📍 ${data.address.city || data.address.province || '위치 확인됨'}`;
+                                const addr = data.address.city || data.address.province || '위치 확인됨';
+                                locSpan.innerText = `📍 ${addr}`;
                             } catch (e) {
                                 locSpan.innerText = '📍 위치 확인됨';
                             }
@@ -308,6 +302,7 @@
                 { name: '파스타', img: '/food/파스타.jpeg' },
                 { name: '샐러드', img: '/food/샐러드.webp' },
             ];
+
             let roundMenus = [],
                 nextRound = [],
                 match = 0;
@@ -377,14 +372,23 @@
                 const isAdmin = localStorage.getItem('is_admin');
                 const headerRightArea = document.getElementById('headerRightArea');
                 if (nickname && headerRightArea) {
+                    let avatarText = nickname.slice(0, 2);
                     let adminButton =
                         isAdmin == '1'
                             ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`
                             : '';
-                    headerRightArea.innerHTML = `<span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${nickname.slice(0, 2)}</span>${adminButton}<button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button><span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>`;
+                    headerRightArea.innerHTML = `
+                        <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
+                    `;
                     getGPSLocation && getGPSLocation();
                 } else if (headerRightArea) {
-                    headerRightArea.innerHTML = `<button class="login-btn" onclick="location.href='/login'">로그인</button><button class="login-btn" style="background:#fff;color:#dc2626;border:1px solid #dc2626" onclick="location.href='/signup'">회원가입</button>`;
+                    headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                        <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626" onclick="location.href = '/signup'">회원가입</button>
+                    `;
                 }
                 restartWorldcup();
             });
@@ -397,14 +401,20 @@
                     <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
                 </div>
                 <div class="mobile-nav-links">
-                    <a href="/main">🏠 홈</a><a href="/aichat">🤖 AI 맛집추천</a><a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                    <a href="/main">🏠 홈</a>
+                    <a href="/aichat">🤖 AI 맛집추천</a>
+                    <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
                     <div class="mobile-nav-divider"></div>
-                    <a href="/SOLO">🍚 혼밥</a><a href="/DATE">💑 데이트</a><a href="/WORK">🍻 회식</a
-                    ><a href="/ETC">🧩 기타</a>
+                    <a href="/SOLO">🍚 혼밥</a>
+                    <a href="/DATE">💑 데이트</a>
+                    <a href="/WORK">🍻 회식</a>
+                    <a href="/ETC">🧩 기타</a>
                     <div class="mobile-nav-divider"></div>
-                    <a href="/game/pinball">🎯 핀볼</a><a href="/game/ladder">🪜 사다리타기</a
-                    ><a href="/game/random_amount">🎰 룰렛 게임</a><a href="/game/worldcup">🏆 음식 월드컵</a
-                    ><a href="/game/calculator">🧮 계산기</a>
+                    <a href="/game/pinball">🎯 핀볼</a>
+                    <a href="/game/ladder">🪜 사다리타기</a>
+                    <a href="/game/random_amount">🎰 룰렛 게임</a>
+                    <a href="/game/worldcup">🏆 음식 월드컵</a>
+                    <a href="/game/calculator">🧮 계산기</a>
                     <div class="mobile-nav-divider"></div>
                     <a href="/about">ℹ️ 회사소개</a>
                 </div>
@@ -424,6 +434,33 @@
             }
         </script>
         <script src="/static/js/avatar-sync.js"></script>
-        <script src="/static/js/avatar-sync.js"></script>
+        <script>
+            // 드롭다운 메뉴 hover 유지 (테이스트메이트.html 방식)
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('.game-dropdown').forEach(function (dropdown) {
+                    const dropdownContent = dropdown.querySelector('.dropdown-content');
+                    if (!dropdownContent) return;
+                    let dropdownTimer = null;
+                    dropdown.addEventListener('mouseenter', function () {
+                        clearTimeout(dropdownTimer);
+                        dropdownContent.style.display = 'block';
+                    });
+                    dropdown.addEventListener('mouseleave', function () {
+                        dropdownTimer = setTimeout(function () {
+                            dropdownContent.style.display = '';
+                        }, 120);
+                    });
+                    dropdownContent.addEventListener('mouseenter', function () {
+                        clearTimeout(dropdownTimer);
+                        dropdownContent.style.display = 'block';
+                    });
+                    dropdownContent.addEventListener('mouseleave', function () {
+                        dropdownTimer = setTimeout(function () {
+                            dropdownContent.style.display = '';
+                        }, 120);
+                    });
+                });
+            });
+        </script>
     </body>
 </html>

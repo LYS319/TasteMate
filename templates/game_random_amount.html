@@ -1,46 +1,11 @@
 <!doctype html>
 <html lang="ko">
     <head>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const dropdown = document.querySelector('.game-dropdown');
-                const content = dropdown?.querySelector('.dropdown-content');
-                let dropdownTimer = null;
-                if (dropdown && content) {
-                    dropdown.addEventListener('mouseenter', () => {
-                        clearTimeout(dropdownTimer);
-                        content.style.display = 'block';
-                    });
-                    dropdown.addEventListener('mouseleave', () => {
-                        dropdownTimer = setTimeout(() => {
-                            content.style.display = 'none';
-                        }, 120);
-                    });
-                    content.addEventListener('mouseenter', () => {
-                        clearTimeout(dropdownTimer);
-                        content.style.display = 'block';
-                    });
-                    content.addEventListener('mouseleave', () => {
-                        dropdownTimer = setTimeout(() => {
-                            content.style.display = 'none';
-                        }, 120);
-                    });
-                }
-            });
-        </script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var overlay = document.getElementById('panelOverlay');
-                if (overlay) {
-                    overlay.addEventListener('click', function () {
-                        if (typeof togglePanel === 'function') togglePanel();
-                    });
-                }
-            });
-            if (window.top !== window.self) {
-                window.top.location.href = window.self.location.href;
-            }
-        </script>
+    <script>
+        if (window.top !== window.self) {
+            window.top.location.href = window.self.location.href;
+        }
+    </script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 - 자동 배분 룰렛 Pro</title>
@@ -49,12 +14,15 @@
             rel="stylesheet"
         />
         <link rel="stylesheet" href="/static/css/header.css" />
+
         <style>
             :root {
                 --primary-color: #dc2626;
                 --primary-hover: #b91c1c;
                 --bg-gradient: linear-gradient(135deg, #fdfdfd 0%, #f1f1f1 100%);
+                --glass-bg: rgba(255, 255, 255, 0.85);
             }
+
             body {
                 margin: 0;
                 font-family: 'Noto Sans KR', sans-serif;
@@ -63,6 +31,7 @@
                 min-height: 100vh;
             }
 
+            /* ===== Layout ===== */
             .game-main {
                 padding: 160px 10px 40px;
             }
@@ -74,6 +43,7 @@
                 max-width: 1200px;
                 margin: 0 auto;
             }
+
             .game-container {
                 flex: 1;
                 max-width: 700px;
@@ -84,6 +54,8 @@
                 border: 2px solid var(--primary-color);
                 box-shadow: 0 16px 64px rgba(220, 38, 38, 0.15);
             }
+
+            /* ===== Setup Box ===== */
             .setup-title {
                 font-weight: 900;
                 font-size: 2rem;
@@ -96,6 +68,7 @@
                 margin-bottom: 25px;
                 font-size: 1rem;
             }
+
             input {
                 padding: 12px;
                 border-radius: 10px;
@@ -108,6 +81,7 @@
                 border-color: var(--primary-color);
                 outline: none;
             }
+
             .action-btn {
                 background: var(--primary-color);
                 color: white;
@@ -125,6 +99,7 @@
                 background: var(--primary-hover);
             }
 
+            /* ===== Wheel & Table ===== */
             .wheel-outer {
                 margin: 30px auto;
                 position: relative;
@@ -142,14 +117,14 @@
             }
             .pointer {
                 position: absolute;
-                top: -20px;
-                left: 50%;
+                top: -20px; left: 50%;
                 transform: translateX(-50%);
                 z-index: 10;
                 border-left: 15px solid transparent;
                 border-right: 15px solid transparent;
                 border-top: 30px solid var(--primary-color);
             }
+
             .winner-banner {
                 background: var(--primary-color);
                 color: white;
@@ -160,6 +135,7 @@
                 display: inline-block;
                 margin-bottom: 15px;
             }
+
             table {
                 margin-top: 25px;
                 width: 100%;
@@ -186,69 +162,37 @@
                 font-weight: bold;
                 color: var(--primary-color);
             }
-            @media (max-width: 900px) {
-                .game-main {
-                    padding-top: 80px !important;
-                }
-            }
 
+            /* ===== 광고 배너 ===== */
             .side-ad {
-                position: fixed;
-                top: 150px;
-                width: 160px;
-                height: 600px;
-                background: #f4f4f4;
-                border: 1px solid #ddd;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #999;
-                font-weight: bold;
-                z-index: 100;
-                border-radius: 10px;
-                font-size: 0.85rem;
-                text-align: center;
-                padding: 8px;
-                box-sizing: border-box;
+                position: fixed; top: 150px; width: 160px; height: 600px;
+                background: #f4f4f4; border: 1px solid #ddd; display: flex;
+                align-items: center; justify-content: center; color: #999;
+                font-weight: bold; z-index: 100; border-radius: 10px;
+                font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box;
             }
-            .ad-left {
-                left: 20px;
-            }
-            .ad-right {
-                right: 20px;
-            }
+            .ad-left  { left: 20px; }
+            .ad-right { right: 20px; }
             .mobile-top-ad {
-                display: none;
-                position: fixed;
-                top: 100px;
-                left: 0;
-                right: 0;
-                height: 55px;
-                background: #f4f4f4;
-                border-bottom: 1px solid #ddd;
-                align-items: center;
-                justify-content: center;
-                color: #999;
-                font-weight: bold;
-                font-size: 0.9rem;
-                z-index: 100;
+                display: none; position: fixed; top: 100px; left: 0; right: 0;
+                height: 55px; background: #f4f4f4; border-bottom: 1px solid #ddd;
+                align-items: center; justify-content: center; color: #999;
+                font-weight: bold; font-size: 0.9rem; z-index: 100;
                 pointer-events: none;
             }
-            @media (max-width: 1200px) {
-                .side-ad {
-                    display: none;
-                }
-            }
+            @media (max-width: 1200px) { .side-ad { display: none; } }
             @media (max-width: 900px) {
-                .mobile-top-ad {
-                    display: flex;
-                }
+                .mobile-top-ad { display: flex; }
+                .game-main { padding-top: 80px !important; }
+                .game-container { width: 100% !important; padding: 10px; box-sizing: border-box; }
             }
         </style>
     </head>
+
     <body>
         <header class="header">
             <div class="header-left">
+           
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
                     <a class="menu-item" href="/about">회사소개</a>
@@ -266,7 +210,9 @@
                     </div>
                 </nav>
             </div>
+
             <div class="header-center"></div>
+
             <div class="header-right" id="headerRightArea">
                 <button class="login-btn" onclick="location.href = '/login'">로그인</button>
                 <button
@@ -283,6 +229,7 @@
             <div class="side-ad ad-left">광고 영역 (좌)</div>
             <div class="side-ad ad-right">광고 영역 (우)</div>
             <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
+
             <div class="main-layout-container">
                 <div class="game-container">
                     <div id="inputView">
@@ -297,22 +244,15 @@
 
                     <div id="gameView" style="display: none">
                         <div class="winner-banner" id="winnerBanner">🏁 게임 준비 완료!</div>
+
                         <div class="wheel-outer">
                             <div class="pointer"></div>
                             <div id="wheel" class="wheel"></div>
-                            <div
-                                id="nameLabels"
-                                style="
-                                    position: absolute;
-                                    width: 100%;
-                                    height: 100%;
-                                    top: 0;
-                                    left: 0;
-                                    pointer-events: none;
-                                "
-                            ></div>
+                            <div id="nameLabels" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none"></div>
                         </div>
+
                         <button class="action-btn" id="btnSpin" onclick="startAutoGame()">🏁 게임 시작</button>
+
                         <table>
                             <thead>
                                 <tr>
@@ -323,6 +263,7 @@
                             </thead>
                             <tbody id="resultBody"></tbody>
                         </table>
+
                         <button
                             class="action-btn"
                             style="background: #666; font-size: 0.9rem; margin-top: 20px"
@@ -341,6 +282,7 @@
                 alert('안전하게 로그아웃 되었습니다.');
                 window.location.href = '/main';
             }
+
             function getGPSLocation() {
                 const locSpan = document.getElementById('gps-location');
                 if (!locSpan) return;
@@ -349,43 +291,28 @@
                     navigator.geolocation.getCurrentPosition(
                         async (pos) => {
                             try {
-                                const res = await fetch(
-                                    `/api/reverse-geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
-                                );
+                                const res = await fetch(`/api/reverse-geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
                                 const data = await res.json();
-                                locSpan.innerText = `📍 ${data.address.city || data.address.province || '위치 확인됨'}`;
+                                const addr = data.address.city || data.address.province || '위치 확인됨';
+                                locSpan.innerText = `📍 ${addr}`;
                             } catch (e) {
                                 locSpan.innerText = '📍 위치 확인됨';
                             }
                         },
-                        () => {
-                            locSpan.innerText = '📍 위치 거부됨';
-                        },
+                        () => { locSpan.innerText = '📍 위치 거부됨'; }
                     );
                 }
             }
 
-            let calculatedPrizes = [],
-                remainingNames = [],
-                winnersOrder = [],
-                totalAngle = 0;
-            const colorPalette = [
-                '#FF6B6B',
-                '#4ECDC4',
-                '#45B7D1',
-                '#FFA07A',
-                '#98D8C8',
-                '#F06292',
-                '#AED581',
-                '#FFD54F',
-            ];
+            let calculatedPrizes = [], remainingNames = [], winnersOrder = [], totalAngle = 0;
+            const colorPalette = ['#FF6B6B','#4ECDC4','#45B7D1','#FFA07A','#98D8C8','#F06292','#AED581','#FFD54F'];
 
             function calculateAutoPrizes(total, people) {
                 let step = Math.floor(total / (people * people) / 100) * 100;
                 if (step < 100) step = 100;
-                let prizes = [],
-                    sum = 0;
-                let first = Math.floor((total - ((people * (people - 1)) / 2) * step) / people / 100) * 100;
+                let prizes = [], sum = 0;
+                let first = (total - ((people * (people - 1)) / 2) * step) / people;
+                first = Math.floor(first / 100) * 100;
                 for (let i = 0; i < people; i++) {
                     let p = first + i * step;
                     prizes.push(p);
@@ -422,10 +349,7 @@
                     conic += `${colorPalette[i % colorPalette.length]} ${i * slice}deg ${(i + 1) * slice}deg,`;
                     const lbl = document.createElement('div');
                     lbl.innerText = remainingNames[i];
-                    lbl.style.cssText =
-                        'position:absolute;left:50%;top:50%;font-weight:900;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.5);';
-                    const angle = i * slice + slice / 2;
-                    lbl.style.transform = `translate(-50%,-50%) rotate(${angle}deg) translateY(-110px) rotate(${-angle}deg)`;
+                    lbl.style.cssText = `position:absolute;left:50%;top:50%;font-weight:900;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.5);transform:translate(-50%,-50%) rotate(${i * slice + slice / 2}deg) translateY(-110px) rotate(${-(i * slice + slice / 2)}deg)`;
                     labelDiv.appendChild(lbl);
                 }
                 wheel.style.background = `conic-gradient(${conic.slice(0, -1)})`;
@@ -447,8 +371,8 @@
                     return;
                 }
                 drawWheel();
-                const n = remainingNames.length,
-                    slice = 360 / n;
+                const n = remainingNames.length;
+                const slice = 360 / n;
                 const winIdx = Math.floor(Math.random() * n);
                 const target = 360 - (winIdx * slice + slice / 2);
                 totalAngle += 1440 + target - (totalAngle % 360);
@@ -461,18 +385,19 @@
                     remainingNames.splice(winIdx, 1);
                     updateResult();
                     winnerBanner.innerHTML = `📢 ${winner}님 당첨! (${winnersOrder.length}등)`;
-                    setTimeout(() => {
-                        if (remainingNames.length > 0) nextTurn();
-                    }, 1500);
+                    setTimeout(() => { if (remainingNames.length > 0) nextTurn(); }, 1500);
                 }, 3200);
             }
 
             function updateResult() {
+                const resultBody = document.getElementById('resultBody');
                 let html = '';
                 for (let i = 0; i < winnersOrder.length; i++) {
-                    html += `<tr class="${i === winnersOrder.length - 1 ? 'current-row' : ''}"><td>${i + 1}등</td><td>${winnersOrder[i]}</td><td>${calculatedPrizes[i].toLocaleString()}원</td></tr>`;
+                    html += `<tr class="${i === winnersOrder.length - 1 ? 'current-row' : ''}">
+                        <td>${i + 1}등</td><td>${winnersOrder[i]}</td><td>${calculatedPrizes[i].toLocaleString()}원</td>
+                    </tr>`;
                 }
-                document.getElementById('resultBody').innerHTML = html;
+                resultBody.innerHTML = html;
             }
 
             document.addEventListener('DOMContentLoaded', () => {
@@ -480,14 +405,22 @@
                 const isAdmin = localStorage.getItem('is_admin');
                 const headerRightArea = document.getElementById('headerRightArea');
                 if (nickname && headerRightArea) {
-                    let adminButton =
-                        isAdmin == '1'
-                            ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`
-                            : '';
-                    headerRightArea.innerHTML = `<span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${nickname.slice(0, 2)}</span>${adminButton}<button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button><span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>`;
+                    let avatarText = nickname.slice(0, 2);
+                    let adminButton = isAdmin == '1'
+                        ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`
+                        : '';
+                    headerRightArea.innerHTML = `
+                        <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
+                    `;
                     getGPSLocation && getGPSLocation();
                 } else if (headerRightArea) {
-                    headerRightArea.innerHTML = `<button class="login-btn" onclick="location.href='/login'">로그인</button><button class="login-btn" style="background:#fff;color:#dc2626;border:1px solid #dc2626" onclick="location.href='/signup'">회원가입</button>`;
+                    headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                        <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626" onclick="location.href = '/signup'">회원가입</button>
+                    `;
                 }
             });
         </script>
@@ -499,14 +432,20 @@
                     <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
                 </div>
                 <div class="mobile-nav-links">
-                    <a href="/main">🏠 홈</a><a href="/aichat">🤖 AI 맛집추천</a><a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                    <a href="/main">🏠 홈</a>
+                    <a href="/aichat">🤖 AI 맛집추천</a>
+                    <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
                     <div class="mobile-nav-divider"></div>
-                    <a href="/SOLO">🍚 혼밥</a><a href="/DATE">💑 데이트</a><a href="/WORK">🍻 회식</a
-                    ><a href="/ETC">🧩 기타</a>
+                    <a href="/SOLO">🍚 혼밥</a>
+                    <a href="/DATE">💑 데이트</a>
+                    <a href="/WORK">🍻 회식</a>
+                    <a href="/ETC">🧩 기타</a>
                     <div class="mobile-nav-divider"></div>
-                    <a href="/game/pinball">🎯 핀볼</a><a href="/game/ladder">🪜 사다리타기</a
-                    ><a href="/game/random_amount">🎰 룰렛 게임</a><a href="/game/worldcup">🏆 음식 월드컵</a
-                    ><a href="/game/calculator">🧮 계산기</a>
+                    <a href="/game/pinball">🎯 핀볼</a>
+                    <a href="/game/ladder">🪜 사다리타기</a>
+                    <a href="/game/random_amount">🎰 룰렛 게임</a>
+                    <a href="/game/worldcup">🏆 음식 월드컵</a>
+                    <a href="/game/calculator">🧮 계산기</a>
                     <div class="mobile-nav-divider"></div>
                     <a href="/about">ℹ️ 회사소개</a>
                 </div>
@@ -526,6 +465,33 @@
             }
         </script>
         <script src="/static/js/avatar-sync.js"></script>
-        <script src="/static/js/avatar-sync.js"></script>
+        <script>
+        // 드롭다운 메뉴 hover 유지 (테이스트메이트.html 방식)
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.game-dropdown').forEach(function (dropdown) {
+                const dropdownContent = dropdown.querySelector('.dropdown-content');
+                if (!dropdownContent) return;
+                let dropdownTimer = null;
+                dropdown.addEventListener('mouseenter', function () {
+                    clearTimeout(dropdownTimer);
+                    dropdownContent.style.display = 'block';
+                });
+                dropdown.addEventListener('mouseleave', function () {
+                    dropdownTimer = setTimeout(function () {
+                        dropdownContent.style.display = '';
+                    }, 120);
+                });
+                dropdownContent.addEventListener('mouseenter', function () {
+                    clearTimeout(dropdownTimer);
+                    dropdownContent.style.display = 'block';
+                });
+                dropdownContent.addEventListener('mouseleave', function () {
+                    dropdownTimer = setTimeout(function () {
+                        dropdownContent.style.display = '';
+                    }, 120);
+                });
+            });
+        });
+        </script>
     </body>
 </html>

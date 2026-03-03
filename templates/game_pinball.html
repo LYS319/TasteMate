@@ -1,38 +1,11 @@
 <!doctype html>
 <html lang="ko">
     <head>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const dropdown = document.querySelector('.game-dropdown');
-                const content = dropdown?.querySelector('.dropdown-content');
-                let dropdownTimer = null;
-                if (dropdown && content) {
-                    dropdown.addEventListener('mouseenter', () => {
-                        clearTimeout(dropdownTimer);
-                        content.style.display = 'block';
-                    });
-                    dropdown.addEventListener('mouseleave', () => {
-                        dropdownTimer = setTimeout(() => {
-                            content.style.display = 'none';
-                        }, 120);
-                    });
-                    content.addEventListener('mouseenter', () => {
-                        clearTimeout(dropdownTimer);
-                        content.style.display = 'block';
-                    });
-                    content.addEventListener('mouseleave', () => {
-                        dropdownTimer = setTimeout(() => {
-                            content.style.display = 'none';
-                        }, 120);
-                    });
-                }
-            });
-        </script>
-        <script>
-            if (window.top !== window.self) {
-                window.top.location.href = window.self.location.href;
-            }
-        </script>
+    <script>
+        if (window.top !== window.self) {
+            window.top.location.href = window.self.location.href;
+        }
+    </script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 - 핀볼 서바이벌 Pro</title>
@@ -41,6 +14,7 @@
             rel="stylesheet"
         />
         <link rel="stylesheet" href="/static/css/header.css" />
+
         <style>
             :root {
                 --primary-color: #dc2626;
@@ -48,6 +22,7 @@
                 --bg-gradient: linear-gradient(135deg, #fdfdfd 0%, #f1f1f1 100%);
                 --pinball-bg: radial-gradient(circle at center, #2d2d44 0%, #1a1a2e 100%);
             }
+
             body {
                 margin: 0;
                 font-family: 'Noto Sans KR', sans-serif;
@@ -56,6 +31,7 @@
                 min-height: 100vh;
             }
 
+            /* ===== Layout ===== */
             .game-main {
                 padding: 160px 10px 40px;
             }
@@ -67,6 +43,7 @@
                 max-width: 1200px;
                 margin: 0 auto;
             }
+
             .worldcup-container {
                 flex: 1;
                 max-width: 700px;
@@ -77,13 +54,12 @@
                 border: 2px solid var(--primary-color);
                 box-shadow: 0 16px 64px rgba(220, 38, 38, 0.15);
             }
+
             canvas {
                 background: var(--pinball-bg);
                 border-radius: 25px;
                 cursor: crosshair;
-                box-shadow:
-                    0 20px 50px rgba(0, 0, 0, 0.3),
-                    inset 0 0 60px rgba(0, 0, 0, 0.5);
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), inset 0 0 60px rgba(0, 0, 0, 0.5);
                 margin: 20px auto;
                 border: 10px solid #2d2d3a;
                 display: block;
@@ -121,10 +97,10 @@
                 margin: 5px;
                 text-align: center;
             }
+
             #resultOverlay {
                 position: absolute;
-                top: 50%;
-                left: 50%;
+                top: 50%; left: 50%;
                 transform: translate(-50%, -50%);
                 background: rgba(255, 255, 255, 0.98);
                 color: var(--primary-color);
@@ -154,76 +130,37 @@
                 display: inline-block;
                 font-size: 0.9rem;
             }
-            @media (max-width: 700px) {
-                canvas {
-                    width: 100% !important;
-                    height: auto !important;
-                    max-width: 100vw;
-                }
-            }
-            @media (max-width: 900px) {
-                .game-main {
-                    padding-top: 80px !important;
-                }
-            }
 
+            /* ===== 광고 배너 ===== */
             .side-ad {
-                position: fixed;
-                top: 150px;
-                width: 160px;
-                height: 600px;
-                background: #f4f4f4;
-                border: 1px solid #ddd;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #999;
-                font-weight: bold;
-                z-index: 100;
-                border-radius: 10px;
-                font-size: 0.85rem;
-                text-align: center;
-                padding: 8px;
-                box-sizing: border-box;
+                position: fixed; top: 150px; width: 160px; height: 600px;
+                background: #f4f4f4; border: 1px solid #ddd; display: flex;
+                align-items: center; justify-content: center; color: #999;
+                font-weight: bold; z-index: 100; border-radius: 10px;
+                font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box;
             }
-            .ad-left {
-                left: 20px;
-            }
-            .ad-right {
-                right: 20px;
-            }
+            .ad-left  { left: 20px; }
+            .ad-right { right: 20px; }
             .mobile-top-ad {
-                display: none;
-                position: fixed;
-                top: 100px;
-                left: 0;
-                right: 0;
-                height: 55px;
-                background: #f4f4f4;
-                border-bottom: 1px solid #ddd;
-                align-items: center;
-                justify-content: center;
-                color: #999;
-                font-weight: bold;
-                font-size: 0.9rem;
-                z-index: 100;
+                display: none; position: fixed; top: 100px; left: 0; right: 0;
+                height: 55px; background: #f4f4f4; border-bottom: 1px solid #ddd;
+                align-items: center; justify-content: center; color: #999;
+                font-weight: bold; font-size: 0.9rem; z-index: 100;
                 pointer-events: none;
             }
-            @media (max-width: 1200px) {
-                .side-ad {
-                    display: none;
-                }
-            }
+            @media (max-width: 1200px) { .side-ad { display: none; } }
             @media (max-width: 900px) {
-                .mobile-top-ad {
-                    display: flex;
-                }
+                .mobile-top-ad { display: flex; }
+                .game-main { padding-top: 80px !important; }
+                canvas { width: 100% !important; height: auto !important; max-width: 100vw; }
+                .worldcup-container { width: 100% !important; padding: 10px; box-sizing: border-box; }
             }
         </style>
     </head>
     <body>
         <header class="header">
             <div class="header-left">
+                
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
                     <a class="menu-item" href="/about">회사소개</a>
@@ -241,7 +178,9 @@
                     </div>
                 </nav>
             </div>
+
             <div class="header-center"></div>
+
             <div class="header-right" id="headerRightArea">
                 <button class="login-btn" onclick="location.href = '/login'">로그인</button>
                 <button
@@ -258,6 +197,7 @@
             <div class="side-ad ad-left">광고 영역 (좌)</div>
             <div class="side-ad ad-right">광고 영역 (우)</div>
             <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
+
             <div class="main-layout-container">
                 <div class="worldcup-container">
                     <div id="setupBox">
@@ -269,16 +209,13 @@
                         </p>
                         <div style="margin-bottom: 20px">
                             <input type="number" id="itemCount" value="5" min="2" max="10" style="width: 60px" />
-                            <button
-                                class="action-btn"
-                                onclick="initInputs()"
-                                style="padding: 10px 20px; font-size: 1rem"
-                            >
+                            <button class="action-btn" onclick="initInputs()" style="padding: 10px 20px; font-size: 1rem">
                                 칸 생성
                             </button>
                         </div>
                         <div id="item-inputs"></div>
                     </div>
+
                     <div id="game-container" style="display: none; position: relative">
                         <div id="resultOverlay"></div>
                         <div style="margin-bottom: 10px">
@@ -308,6 +245,7 @@
                 alert('안전하게 로그아웃 되었습니다.');
                 window.location.href = '/main';
             }
+
             function getGPSLocation() {
                 const locSpan = document.getElementById('gps-location');
                 if (!locSpan) return;
@@ -316,18 +254,15 @@
                     navigator.geolocation.getCurrentPosition(
                         async (pos) => {
                             try {
-                                const res = await fetch(
-                                    `/api/reverse-geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
-                                );
+                                const res = await fetch(`/api/reverse-geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
                                 const data = await res.json();
-                                locSpan.innerText = `📍 ${data.address.city || data.address.province || '위치 확인됨'}`;
+                                const addr = data.address.city || data.address.province || '위치 확인됨';
+                                locSpan.innerText = `📍 ${addr}`;
                             } catch (e) {
                                 locSpan.innerText = '📍 위치 확인됨';
                             }
                         },
-                        () => {
-                            locSpan.innerText = '📍 위치 거부됨';
-                        },
+                        () => { locSpan.innerText = '📍 위치 거부됨'; }
                     );
                 }
             }
@@ -336,12 +271,10 @@
             const ctx = canvas.getContext('2d');
             const overlay = document.getElementById('resultOverlay');
             const historyList = document.getElementById('historyList');
-            let pegs = [],
-                slots = [],
-                winHistoryCount = 0;
+
+            let pegs = [], slots = [], winHistoryCount = 0;
             let ball = { x: 0, y: 0, vx: 0, vy: 0, active: false, trail: [] };
-            const gravity = 0.45,
-                friction = 0.985;
+            const gravity = 0.45, friction = 0.985;
 
             function initInputs() {
                 const n = document.getElementById('itemCount').value;
@@ -376,18 +309,12 @@
             }
 
             function draw() {
-                let bgGrad = ctx.createRadialGradient(
-                    canvas.width / 2,
-                    canvas.height / 2,
-                    50,
-                    canvas.width / 2,
-                    canvas.height / 2,
-                    400,
-                );
+                let bgGrad = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 50, canvas.width / 2, canvas.height / 2, 400);
                 bgGrad.addColorStop(0, '#2d2d44');
                 bgGrad.addColorStop(1, '#131325');
                 ctx.fillStyle = bgGrad;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+
                 const slotWidth = canvas.width / slots.length;
                 slots.forEach((text, i) => {
                     ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)';
@@ -395,12 +322,9 @@
                     ctx.fillStyle = '#ffffff';
                     ctx.font = 'bold 13px Noto Sans KR';
                     ctx.textAlign = 'center';
-                    ctx.fillText(
-                        text.length > 5 ? text.substring(0, 4) + '..' : text,
-                        i * slotWidth + slotWidth / 2,
-                        canvas.height - 35,
-                    );
+                    ctx.fillText(text.length > 5 ? text.substring(0, 4) + '..' : text, i * slotWidth + slotWidth / 2, canvas.height - 35);
                 });
+
                 pegs.forEach((p) => {
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -411,6 +335,7 @@
                     ctx.shadowBlur = 0;
                     if (p.hit > 0) p.hit -= 0.05;
                 });
+
                 if (ball.active) {
                     ball.trail.push({ x: ball.x, y: ball.y });
                     if (ball.trail.length > 12) ball.trail.shift();
@@ -438,9 +363,8 @@
                     ball.x = ball.x < 15 ? 15 : canvas.width - 15;
                 }
                 pegs.forEach((p) => {
-                    const dx = ball.x - p.x,
-                        dy = ball.y - p.y,
-                        dist = Math.sqrt(dx * dx + dy * dy);
+                    const dx = ball.x - p.x, dy = ball.y - p.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < 11 + p.r) {
                         p.hit = 1.0;
                         const angle = Math.atan2(dy, dx);
@@ -453,7 +377,8 @@
                 });
                 if (ball.y > canvas.height - 40) {
                     ball.active = false;
-                    handleWin(Math.min(Math.floor(ball.x / (canvas.width / slots.length)), slots.length - 1));
+                    const winIdx = Math.floor(ball.x / (canvas.width / slots.length));
+                    handleWin(Math.min(winIdx, slots.length - 1));
                 }
             }
 
@@ -480,14 +405,10 @@
             }
 
             function updateUI() {
-                const el = document.getElementById('remCount');
-                if (el) el.innerText = slots.length;
+                const remCountElem = document.getElementById('remCount');
+                if (remCountElem) remCountElem.innerText = slots.length;
             }
-            function animate() {
-                updateBall();
-                draw();
-                requestAnimationFrame(animate);
-            }
+            function animate() { updateBall(); draw(); requestAnimationFrame(animate); }
 
             canvas.onclick = function (e) {
                 if (ball.active || overlay.style.display === 'block' || slots.length <= 1) return;
@@ -505,14 +426,22 @@
                 const isAdmin = localStorage.getItem('is_admin');
                 const headerRightArea = document.getElementById('headerRightArea');
                 if (nickname && headerRightArea) {
-                    let adminButton =
-                        isAdmin == '1'
-                            ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`
-                            : '';
-                    headerRightArea.innerHTML = `<span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${nickname.slice(0, 2)}</span>${adminButton}<button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button><span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>`;
+                    let avatarText = nickname.slice(0, 2);
+                    let adminButton = isAdmin == '1'
+                        ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`
+                        : '';
+                    headerRightArea.innerHTML = `
+                        <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
+                    `;
                     getGPSLocation && getGPSLocation();
                 } else if (headerRightArea) {
-                    headerRightArea.innerHTML = `<button class="login-btn" onclick="location.href='/login'">로그인</button><button class="login-btn" style="background:#fff;color:#dc2626;border:1px solid #dc2626" onclick="location.href='/signup'">회원가입</button>`;
+                    headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                        <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626" onclick="location.href = '/signup'">회원가입</button>
+                    `;
                 }
             });
         </script>
@@ -524,14 +453,20 @@
                     <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
                 </div>
                 <div class="mobile-nav-links">
-                    <a href="/main">🏠 홈</a><a href="/aichat">🤖 AI 맛집추천</a><a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                    <a href="/main">🏠 홈</a>
+                    <a href="/aichat">🤖 AI 맛집추천</a>
+                    <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
                     <div class="mobile-nav-divider"></div>
-                    <a href="/SOLO">🍚 혼밥</a><a href="/DATE">💑 데이트</a><a href="/WORK">🍻 회식</a
-                    ><a href="/ETC">🧩 기타</a>
+                    <a href="/SOLO">🍚 혼밥</a>
+                    <a href="/DATE">💑 데이트</a>
+                    <a href="/WORK">🍻 회식</a>
+                    <a href="/ETC">🧩 기타</a>
                     <div class="mobile-nav-divider"></div>
-                    <a href="/game/pinball">🎯 핀볼</a><a href="/game/ladder">🪜 사다리타기</a
-                    ><a href="/game/random_amount">🎰 룰렛 게임</a><a href="/game/worldcup">🏆 음식 월드컵</a
-                    ><a href="/game/calculator">🧮 계산기</a>
+                    <a href="/game/pinball">🎯 핀볼</a>
+                    <a href="/game/ladder">🪜 사다리타기</a>
+                    <a href="/game/random_amount">🎰 룰렛 게임</a>
+                    <a href="/game/worldcup">🏆 음식 월드컵</a>
+                    <a href="/game/calculator">🧮 계산기</a>
                     <div class="mobile-nav-divider"></div>
                     <a href="/about">ℹ️ 회사소개</a>
                 </div>
@@ -551,6 +486,33 @@
             }
         </script>
         <script src="/static/js/avatar-sync.js"></script>
-        <script src="/static/js/avatar-sync.js"></script>
+        <script>
+        // 드롭다운 메뉴 hover 유지 (테이스트메이트.html 방식)
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.game-dropdown').forEach(function (dropdown) {
+                const dropdownContent = dropdown.querySelector('.dropdown-content');
+                if (!dropdownContent) return;
+                let dropdownTimer = null;
+                dropdown.addEventListener('mouseenter', function () {
+                    clearTimeout(dropdownTimer);
+                    dropdownContent.style.display = 'block';
+                });
+                dropdown.addEventListener('mouseleave', function () {
+                    dropdownTimer = setTimeout(function () {
+                        dropdownContent.style.display = '';
+                    }, 120);
+                });
+                dropdownContent.addEventListener('mouseenter', function () {
+                    clearTimeout(dropdownTimer);
+                    dropdownContent.style.display = 'block';
+                });
+                dropdownContent.addEventListener('mouseleave', function () {
+                    dropdownTimer = setTimeout(function () {
+                        dropdownContent.style.display = '';
+                    }, 120);
+                });
+            });
+        });
+        </script>
     </body>
 </html>
