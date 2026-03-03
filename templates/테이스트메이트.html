@@ -248,19 +248,109 @@
                 border: 1px solid #e8e8e8;
                 display: flex; align-items: center; justify-content: center;
                 color: #ccc; font-size: 0.8rem; font-weight: 700;
-                z-index: 100; border-radius: 14px;
+                z-index: 500; border-radius: 14px;
             }
             .ad-left { left: 16px; }
             .ad-right { right: 16px; }
             @media (max-width: 1450px) { .side-ad { display: none; } }
             .mobile-top-ad {
-                display: none; position: fixed; top: 100px; left: 0; right: 0;
-                height: 55px; background: #f4f4f4; border-bottom: 1px solid #ddd;
+                display: none; position: fixed; top: 70px; left: 0; right: 0;
+                height: 55px; background: #f4f4f4; border-bottom: 1px solid #e0e0e0;
                 align-items: center; justify-content: center; color: #999;
                 font-weight: bold; font-size: 0.9rem; z-index: 100;
                 pointer-events: none;
             }
-            @media (max-width: 900px) { .mobile-top-ad { display: flex; } }
+            /* ── 햄버거 & 모바일 헤더 ── */
+            .menu-toggle-btn {
+                display: none;
+                background: none; border: none;
+                font-size: 1.8rem; cursor: pointer;
+                border-radius: 8px; padding: 4px 10px; color: #dc2626;
+            }
+            .nickname-avatar {
+                width: 38px; height: 38px; border-radius: 50%;
+                background: #222; color: #fff;
+                display: inline-flex; align-items: center; justify-content: center;
+                font-weight: 700; cursor: pointer; font-size: 0.9rem;
+            }
+            .current-location {
+                font-size: 0.85rem; color: #dc2626; background: #fff1f1;
+                border: 1px solid rgba(220,38,38,0.1); border-radius: 10px;
+                padding: 8px 14px; font-weight: 700; cursor: pointer;
+            }
+            .mobile-nav {
+                display: none; position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.4); z-index: 9999;
+            }
+            .mobile-nav.open { display: block; }
+            .mobile-nav-panel {
+                position: absolute; top: 0; left: 0;
+                width: 260px; height: 100%;
+                background: #fff; box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+                display: flex; flex-direction: column;
+            }
+            .mobile-nav-header {
+                display: flex; align-items: center; justify-content: space-between;
+                padding: 20px 20px 16px; border-bottom: 1px solid #f1f1f1;
+            }
+            .mobile-nav-logo { font-size: 1.4rem; font-weight: 900; color: #dc2626; text-decoration: none; }
+            .mobile-nav-close { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: #666; }
+            .mobile-nav-links { padding: 16px 0; display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
+            .mobile-nav-links a {
+                display: block; padding: 14px 24px; font-size: 1rem; font-weight: 600;
+                color: #333; text-decoration: none; transition: background 0.15s;
+            }
+            .mobile-nav-links a:hover { background: #fff1f1; color: #dc2626; }
+            .mobile-nav-divider { height: 1px; background: #f1f1f1; margin: 8px 0; }
+
+            @media (max-width: 900px) {
+                .menu-toggle-btn { display: block; }
+                .menu-bar { display: none !important; }
+                .header {
+                    display: flex !important; justify-content: space-between;
+                    align-items: center; padding: 0 16px;
+                    grid-template-columns: none !important;
+                }
+                .header-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+                .header-center { display: none; }
+                .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+                .header-logo { font-size: 1.1rem !important; }
+                .login-btn { padding: 7px 10px; font-size: 0.8rem; }
+                .current-location { padding: 6px 8px; font-size: 0.78rem; display: none; }
+                .nickname-avatar { width: 32px; height: 32px; font-size: 0.82rem; }
+                /* 광고 높이만큼 main 밀어내기 */
+                main { padding-top: 185px !important; }
+                /* 카드 2열 */
+                .community-container {
+                    display: grid !important;
+                    grid-template-columns: 1fr 1fr !important;
+                    gap: 12px !important;
+                    padding: 0 16px !important;
+                }
+                .community-card {
+                    width: 100% !important;
+                    height: auto !important;
+                    min-height: 120px;
+                    padding: 16px !important;
+                }
+                .card-title { font-size: 0.92rem !important; }
+                .card-count { font-size: 0.8rem !important; }
+                .card-recent { font-size: 0.8rem !important; }
+                .main-title { font-size: 2rem !important; }
+                .main-subtitle { font-size: 0.92rem !important; }
+                .main-buttons { flex-direction: column; gap: 10px; }
+                .main-btn { width: 100%; font-size: 1rem !important; padding: 14px 20px !important; }
+            }
+            @media (max-width: 480px) {
+                .community-container {
+                    grid-template-columns: 1fr 1fr !important;
+                    gap: 10px !important;
+                    padding: 0 12px !important;
+                }
+                .community-card { padding: 12px !important; min-height: 110px; }
+                .card-title { font-size: 0.85rem !important; }
+            }
 
             /* ── FAB ── */
             .panel-fab {
@@ -547,6 +637,7 @@
         </script>
         <header class="header">
             <div class="header-left">
+                <button class="menu-toggle-btn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
                     <a class="menu-item" href="/about">회사소개</a>
@@ -576,6 +667,34 @@
                 <button class="login-btn" style="background:#fff; color:#dc2626; border:1.5px solid #dc2626" onclick="location.href='/signup'">회원가입</button>
             </div>
         </header>
+
+        <!-- 모바일 슬라이드 네비게이션 -->
+        <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
+            <div class="mobile-nav-panel">
+                <div class="mobile-nav-header">
+                    <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
+                    <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+                </div>
+                <div class="mobile-nav-links">
+                    <a href="/main">🏠 홈</a>
+                    <a href="/aichat">🤖 AI 맛집추천</a>
+                    <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/SOLO">🍚 혼밥</a>
+                    <a href="/DATE">💑 데이트</a>
+                    <a href="/WORK">🍻 회식</a>
+                    <a href="/ETC">🧩 기타</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/game/pinball">🎯 핀볼</a>
+                    <a href="/game/ladder">🪜 사다리타기</a>
+                    <a href="/game/random_amount">🎰 룰렛 게임</a>
+                    <a href="/game/worldcup">🏆 음식 월드컵</a>
+                    <a href="/game/calculator">🧮 계산기</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/about">ℹ️ 회사소개</a>
+                </div>
+            </div>
+        </div>
 
         <main style="padding-top:120px; padding-bottom:100px; position:relative">
             <div class="side-ad ad-left">광고 영역 (좌)</div>
@@ -734,6 +853,19 @@
         <div class="toast" id="toast"></div>
 
         <script src="/static/js/friend-chat.js"></script>
+        <script>
+            function openMobileNav() {
+                document.getElementById('mobileNav').classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeMobileNav() {
+                document.getElementById('mobileNav').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            function closeMobileNavOutside(e) {
+                if (e.target === document.getElementById('mobileNav')) closeMobileNav();
+            }
+        </script>
 
         <script>
             // =============================================
@@ -845,18 +977,14 @@
                 async function fetchWeather(latitude, longitude) {
                     try {
                         const res = await fetch(`/api/weather-recommend?lat=${latitude}&lon=${longitude}`);
-                        if (!res.ok) {
-                            console.error('[날씨] API 응답 오류:', res.status);
-                            return;
-                        }
+                        if (!res.ok) return;
                         const data = await res.json();
                         console.log('[날씨] 응답:', data);
                         themeTitle.innerText = data.title;
-                        // menu/reason(AI버전) 또는 subtitle/desc(폴백) 모두 대응
                         themeSubtitle.innerText = data.menu || data.subtitle || '';
                         themeDesc.innerText = data.reason || data.desc || '';
                         themeTag.innerText = data.tag;
-                        // 클릭 시 네이버 맛집 검색
+                        // 네이버 맛집 검색으로 이동
                         themeCard.onclick = () => {
                             window.open(`https://map.naver.com/p/search/${encodeURIComponent(data.search + ' 맛집')}`, '_blank');
                         };
@@ -869,7 +997,7 @@
                     navigator.geolocation.getCurrentPosition(
                         (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
                         (err) => {
-                            console.warn('[날씨] GPS 거부/오류, 서울 기본값 사용:', err.message);
+                            console.warn('[날씨] GPS 거부, 서울 기본값 사용');
                             fetchWeather(37.5665, 126.9780);
                         },
                         { timeout: 5000 }

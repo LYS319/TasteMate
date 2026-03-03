@@ -17,7 +17,15 @@
             --header-h: 80px; --cat-h: 68px; --input-h: 92px; --nav-h: 80px;
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Noto Sans KR', sans-serif; background: var(--bg); font-size: 18px; }
+        html, body { 
+    width: 100%; 
+    height: 100%; 
+    overflow-x: hidden;
+    overflow-y: auto;   /* 🔥 이걸로 변경 */
+    font-family: 'Noto Sans KR', sans-serif; 
+    background: var(--bg); 
+    font-size: 18px; 
+}
 
         /* ── HEADER ── */
         .site-header {
@@ -130,16 +138,19 @@
             to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         .ai-avatar {
-            width: 50px; height: 50px; border-radius: 50%;
+            width: 36px; height: 36px; border-radius: 16%;
             background: linear-gradient(135deg, #e53e3e, #fc8181);
             display: flex; align-items: center; justify-content: center;
             font-size: 22px; flex-shrink: 0; margin-top: 2px;
             box-shadow: 0 3px 10px var(--red-glow);
         }
         .bubble {
-            max-width: 68%; padding: 18px 24px; border-radius: 22px;
-            font-size: 17px; line-height: 1.85; white-space: pre-wrap; word-break: break-word;
-        }
+    max-width: 75%;
+    padding: 24px 32px;
+    border-radius: 26px;
+    font-size: 18px;
+    line-height: 1.9;
+}
         .bubble-ai {
             background: white; border: 1px solid rgba(229,62,62,0.1);
             color: var(--text); border-top-left-radius: 5px;
@@ -156,7 +167,7 @@
             background: white; border: 1px solid rgba(229,62,62,0.1);
             border-radius: 18px; padding: 22px 26px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.05); max-width: 68%;
-            margin-left: 64px;
+            margin-left: 148px;
             animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards; opacity: 0;
             transition: transform 0.2s, box-shadow 0.2s;
         }
@@ -174,23 +185,52 @@
         .fav-btn:hover { transform: scale(1.2); }
 
         /* ── TYPING ── */
-        .typing-row { display: flex; gap: 14px; align-items: flex-end; }
-        .typing-dots {
-            display: inline-flex; align-items: center; gap: 7px; background: white;
-            border: 1px solid rgba(229,62,62,0.1); padding: 16px 24px;
-            border-radius: 22px; border-top-left-radius: 5px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-        }
-        .typing-dots span {
-            width: 10px; height: 10px; background: var(--red); border-radius: 50%;
-            animation: dot 1.3s infinite ease-in-out; opacity: 0.6;
-        }
-        .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
-        .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
-        @keyframes dot {
-            0%,60%,100% { transform: translateY(0); }
-            30% { transform: translateY(-8px); opacity: 1; }
-        }
+.typing-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+    margin-left: 148px;
+}
+
+.typing-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: white;
+    border: 1px solid rgba(229,62,62,0.1);
+    padding: 8px 12px;
+    border-radius: 12px;
+    border-top-left-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.typing-dots span {
+    width: 6px;
+    height: 6px;
+    background: #e53e3e;
+    border-radius: 50%;
+    display: inline-block;
+    animation: dot 1.2s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes dot {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.6;
+    }
+    30% {
+        transform: translateY(-6px);
+        opacity: 1;
+    }
+}
 
         /* ── TASTE TAG ── */
         .taste-tag {
@@ -223,10 +263,16 @@
         }
         .situation-select:focus { border-color: var(--red); }
         .input-field {
-            flex: 1; background: #f4f4f6; border: 1.5px solid var(--border); border-radius: 18px;
-            padding: 14px 24px; font-size: 17px; font-family: inherit; outline: none; height: 62px;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
+    flex: 1;
+    background: #f4f4f6;
+    border: 1.5px solid var(--border);
+    border-radius: 22px;
+    padding: 18px 28px;
+    font-size: 20px;
+    height: 72px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
         .input-field:focus { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-glow); background: white; }
         .input-field::placeholder { color: #a0aec0; }
         .send-btn {
@@ -297,8 +343,8 @@
         .modal-label { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 12px; margin-top: 24px; }
         .option-grid { display: flex; flex-wrap: wrap; gap: 12px; }
         .opt-btn {
-            padding: 11px 22px; border-radius: 50px; border: 1.5px solid var(--border);
-            background: #f8f8f8; color: #555; font-size: 15px; font-weight: 700;
+            padding: 6px 14px; border-radius: 30px; border: 1.5px solid var(--border);
+            background: #f8f8f8; color: #555; font-size: 12px; font-weight: 700;
             cursor: pointer; transition: all 0.18s; font-family: inherit;
         }
         .opt-btn.selected { background: var(--red); color: white; border-color: var(--red); }
@@ -343,23 +389,55 @@
             .cat-inner { padding: 0 16px; gap: 8px; }
             .cat-btn { font-size: 12px; padding: 7px 14px; }
             .chat-inner { padding: 16px 16px; gap: 14px; }
-            .bubble { font-size: 13.5px; padding: 12px 16px; border-radius: 16px; }
-            .ai-avatar { width: 36px; height: 36px; font-size: 16px; }
+            .bubble {
+            font-size: 12px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            }
+            .ai-avatar {
+            width: 36px; height: 36px; border-radius: 16%;
+            background: linear-gradient(135deg, #e53e3e, #fc8181);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0; margin-top: 2px;
+            box-shadow: 0 3px 10px var(--red-glow);
+        }
             .input-inner { padding: 0 14px; gap: 8px; }
-            .situation-select { height: 46px; font-size: 12px; padding: 0 10px; border-radius: 12px; }
-            .input-field { height: 46px; font-size: 13.5px; padding: 10px 14px; border-radius: 14px; }
+            .situation-select { height: 44px; font-size: 12px; padding: 0 10px; border-radius: 12px; }
+            .input-field { height: 44px; font-size: 13px; padding: 10px 14px; border-radius: 14px; }
             .send-btn { width: 46px; height: 46px; border-radius: 14px; }
             .send-btn svg { width: 18px; height: 18px; }
             .nav-item { font-size: 10px; padding: 4px 16px; }
             .nav-item svg { width: 22px; height: 22px; }
-            .history-panel { display: none !important; }
+
             .place-card { margin-left: 48px; padding: 14px 16px; }
             .place-name { font-size: 13.5px; }
             .place-addr { font-size: 11px; }
             .place-link { font-size: 12px; padding: 6px 14px; }
-            .taste-tag { margin-left: 48px; font-size: 12px; }
-            #welcome-card-body { padding: 24px 20px 20px 20px !important; }
-        }
+            .taste-tag { padding: 4px 10px; font-size: 11px; }
+            #welcome-card-body { padding: 14px  !important; }
+            #welcome-card-body {
+        padding: 18px !important;
+        border-radius: 18px !important;
+    }
+
+    #welcome-card-body > div:first-child {
+        font-size: 18px !important;
+        line-height: 1.4 !important;
+    }
+
+    #welcome-card-body > div:nth-child(2) {
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+    }
+
+    #welcome-card-body .opt-btn {
+        font-size: 12px !important;
+        padding: 6px 14px !important;
+    }
+
+}
+        
+     
 
         /* ── 프로필 드롭다운 ── */
         .profile-dropdown {
@@ -418,6 +496,32 @@
             display: none; flex-direction: column; gap: 6px;
         }
         .history-panel.show { display: flex; }
+
+        @media (max-width: 768px) {
+
+    .history-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 260px;
+        height: 100vh;
+        background: #fff;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+        z-index: 2500;
+        padding: 20px;
+        overflow-y: auto;
+        border-left: none;
+
+        display: block; /* 🔥 이 줄 추가 */
+    }
+
+    .history-panel.mobile-open {
+        transform: translateX(0);
+    }
+
+}
         .h-title { 
     font-size: 18px;   /* 🔥 키움 */
     font-weight: 900;  /* 🔥 더 굵게 */
@@ -453,7 +557,7 @@
         .mobile-nav {
             display: none; position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4); z-index: 9999;
+            background: rgba(0,0,0,0.4); z-index: 2000;
         }
         .mobile-nav.open { display: block; }
         .mobile-nav-panel {
@@ -473,36 +577,332 @@
         .mobile-nav-links a:hover { background: #fff5f5; color: #e53e3e; }
         .mobile-nav-divider { height: 1px; background: #f1f1f1; margin: 8px 0; }
         @media (max-width: 768px) {
-            .hamburger-btn { display: block !important; }
+            .hamburger-btn { display: block !important; 
+            }
         }
 
+        /* 🔥 모바일에서 데스크탑 햄버거 버튼 숨김 */
+        @media (max-width: 768px) {
+    .loc-btn {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        padding: 6px 10px;
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+        /* ==================================================
+   📱 MOBILE FULL OPTIMIZATION PATCH
+   ================================================== */
+
+@media (max-width: 768px) {
+
+    /* 전체 폰트 살짝 축소 */
+    html, body {
+        font-size: 12.5px;
+    }
+
+    /* ───── HEADER ───── */
+    .header-inner {
+        padding: 0 12px;
+        gap: 8px;
+    }
+
+    .header-center {
+        display: none;   /* 🔥 모바일에서 검색창 숨김 */
+    }
+
+    .logo {
+        font-size: 18px;
+    }
+
+    .loc-btn {
+        display: inline-flex !important;
+        font-size: 11px;
+        padding: 6px 10px;
+        max-width: 120px;
+    }
+
+    .profile-avatar {
+        width: 34px;
+        height: 34px;
+        font-size: 11px;
+    }
+
+    /* ───── CATEGORY BAR ───── */
+    .cat-inner {
+        padding: 0 12px;
+        gap: 6px;
+    }
+
+    .cat-btn {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    /* ───── CHAT PANEL ───── */
+    .chat-inner {
+        padding: 14px 14px;
+        gap: 14px;
+    }
+
+    
+
+    .ai-avatar {
+            width: 36px; height: 36px; border-radius: 16%;
+            background: linear-gradient(135deg, #e53e3e, #fc8181);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0; margin-top: 2px;
+            box-shadow: 0 3px 10px var(--red-glow);
+        }
+
+    /* ───── PLACE CARD ───── */
+    .place-card {
+    max-width: 78%;
+    margin-left: 40px;
+    padding: 12px;
+    }
+
+    .msg-row {
+    gap: 8px;  /* 아바타 간격 줄임 */
+    }
+
+    .place-name {
+        font-size: 14px;
+    }
+
+    .place-addr {
+        font-size: 12px;
+    }
+
+    .place-link {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .taste-tag {
+        margin-left: 44px;
+        font-size: 12px;
+    }
+
+    /* ───── INPUT BAR ───── */
+    .input-inner {
+        padding: 0 10px;
+        gap: 6px;
+    }
+
+    .situation-select {
+        height: 44px;
+        font-size: 12px;
+        padding: 0 8px;
+    }
+
+    .input-field {
+        height: 44px;
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    .send-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .send-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* ───── BOTTOM NAV ───── */
+    .bottom-nav {
+        height: 58px;
+    }
+
+    .nav-item {
+        font-size: 10px;
+        padding: 4px 10px;
+    }
+
+    .nav-item svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    #chatScroll {
+        right: 0 !important;
+    }
+
+}
+
+@media (max-width: 768px) {
+    .header-left .icon-btn {
+        display: none !important;
+    }
+}
+
+/* 🔥 PC에서는 모바일 검색 버튼 숨김 */
+.mobile-search-btn {
+    display: none;
+}
+
+/* 🔥 모바일에서만 보이게 */
+@media (max-width: 768px) {
+    .mobile-search-btn {
+        display: flex !important;
+    }
+}
+
+@media (max-width:768px) {
+    .typing-row {
+        margin-left: 0 !important;
+    }
+}
+@media (max-width: 768px) {
+
+    #welcome-card-body {
+        transform: scale(0.85);
+        transform-origin: top left;
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .header-inner {
+        display: grid !important;
+        grid-template-columns: auto 1fr auto;  /* 🔥 이게 핵심 */
+        align-items: center;
+        padding: 0 10px !important;
+    }
+
+    .header-left {
+        justify-self: start;
+    }
+
+    .logo {
+        justify-self: center;
+    }
+
+    .header-right {
+        justify-self: end;
+    }
+}
+
+
+        /* ── 사이드 광고 ── */
+        .side-ad {
+            position: fixed; top: 150px; width: 140px; height: 560px;
+            background: linear-gradient(145deg, #f8f8f8, #f0f0f0);
+            border: 1px solid #e8e8e8;
+            display: flex; align-items: center; justify-content: center;
+            color: #ccc; font-size: 0.8rem; font-weight: 700;
+            z-index: 100; border-radius: 14px;
+        }
+        .ad-left { left: 16px; }
+        .ad-right { right: 16px; }
+        @media (max-width: 1450px) { .side-ad { display: none; } }
+        .mobile-top-ad {
+            display: none; position: fixed; top: 56px; left: 0; right: 0;
+            height: 50px; background: #f4f4f4; border-bottom: 1px solid #e0e0e0;
+            align-items: center; justify-content: center; color: #999;
+            font-weight: bold; font-size: 0.9rem; z-index: 100;
+            pointer-events: none;
+        }
+        @media (max-width: 900px) { .mobile-top-ad { display: flex; } }
+
+        /* ── 친구 패널 & 채팅 공통 ── */
+        .panel-fab {
+            position: fixed; bottom: 32px; right: 32px;
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: #fff; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; cursor: pointer;
+            box-shadow: 0 8px 24px rgba(220,38,38,0.45);
+            z-index: 2600; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+            border: none; outline: none; animation: float 3s ease-in-out infinite;
+        }
+        .panel-fab:hover { transform: scale(1.14) rotate(8deg); box-shadow: 0 14px 36px rgba(220,38,38,0.55); animation: none; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+        .panel-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.28);
+            backdrop-filter: blur(6px); z-index: 2601;
+            display: none; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .panel-overlay.active { display: block; opacity: 1; }
+        .panel-panel {
+            position: fixed; top: 12px; right: -390px; width: 355px;
+            height: calc(100% - 24px); background: #fff;
+            box-shadow: -12px 0 60px rgba(0,0,0,0.12);
+            transition: right 0.42s cubic-bezier(0.22,1,0.36,1);
+            z-index: 2602; display: flex; flex-direction: column;
+            border-radius: 24px 0 0 24px; overflow: hidden;
+        }
+        .panel-panel.active { right: 0; }
+        .panel-header { padding: 28px 22px 16px; border-bottom: 1px solid #f2f2f2; background: linear-gradient(135deg,#fff,#fafafa); }
+        .panel-header-title { font-size: 1.25rem; font-weight: 900; color: #111; margin-bottom: 2px; }
+        .panel-header-sub { font-size: 0.82rem; color: #aaa; font-weight: 500; }
+        .panel-tabs { display: flex; padding: 14px 14px 0; gap: 6px; }
+        .tab-btn { flex:1; padding:10px 0; border-radius:12px; font-weight:700; color:#999; border:none; background:#f5f5f5; cursor:pointer; font-size:0.88rem; transition:background .2s,color .2s,transform .15s; font-family:inherit; }
+        .tab-btn:hover:not(.active) { background:#ebebeb; color:#666; transform:translateY(-1px); }
+        .tab-btn.active { color:#fff; background:linear-gradient(135deg,#dc2626,#ef4444); box-shadow:0 4px 12px rgba(220,38,38,0.3); }
+        .tab-content { display:none; padding:16px; overflow-y:auto; flex:1; }
+        .tab-content.active { display:flex; flex-direction:column; gap:9px; }
+        .friend-item { display:flex; justify-content:space-between; align-items:center; padding:13px 15px; background:#fff; border:1px solid #f0f0f0; border-radius:15px; transition:background .2s,border-color .2s,transform .2s; }
+        .friend-item:hover { background:#fff8f8; border-color:rgba(220,38,38,0.12); transform:translateX(-2px); }
+        .friend-name { font-weight:700; font-size:0.95rem; display:flex; align-items:center; gap:10px; }
+        .friend-avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#1a1a2e,#374151); color:#fff; font-weight:800; font-size:0.78rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .friend-actions { display:flex; gap:6px; align-items:center; }
+        .action-btn { padding:7px 13px; border-radius:10px; border:none; font-weight:700; cursor:pointer; font-size:0.83rem; transition:transform .18s; font-family:inherit; }
+        .btn-accept { background:linear-gradient(135deg,#dc2626,#ef4444); color:white; }
+        .btn-reject { background:#f3f3f3; color:#777; }
+        .btn-chat { background:#fff1f1; color:#dc2626; border:1px solid rgba(220,38,38,0.18); font-size:1rem; padding:6px 10px; }
+        .btn-delete { background:#f9f9f9; color:#bbb; border:1px solid #ececec; font-size:0.9rem; padding:6px 9px; }
+        .btn-delete:hover { background:#fee2e2; color:#dc2626; }
+        .add-friend-input { width:100%; padding:13px 16px; border:1.5px solid #ebebeb; border-radius:13px; font-size:0.95rem; outline:none; font-family:inherit; background:#fafafa; margin-bottom:10px; display:block; box-sizing:border-box; }
+        .add-friend-input:focus { border-color:#dc2626; background:#fff; box-shadow:0 0 0 3px rgba(220,38,38,0.09); }
+        .add-friend-btn { width:100%; padding:14px; border-radius:14px; background:linear-gradient(135deg,#dc2626,#ef4444); color:#fff; border:none; cursor:pointer; font-weight:800; font-size:0.97rem; font-family:inherit; transition:transform .2s,box-shadow .2s; box-shadow:0 6px 18px rgba(220,38,38,0.28); }
+        .add-friend-section { padding: 4px 0; }
+        .empty-state { text-align:center; color:#bbb; padding:32px 16px; font-size:0.9rem; line-height:1.7; }
+        .empty-icon { font-size:2.4rem; margin-bottom:10px; }
+        .req-dot { display:inline-block; width:7px; height:7px; background:#ef4444; border-radius:50%; margin-left:4px; vertical-align:middle; }
+        .confirm-modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.42); backdrop-filter:blur(6px); z-index:9998; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .22s; }
+        .confirm-modal-bg.show { opacity:1; pointer-events:all; }
+        .confirm-modal { background:#fff; border-radius:24px; padding:32px 28px 26px; width:290px; text-align:center; box-shadow:0 24px 72px rgba(0,0,0,0.18); transform:scale(0.88) translateY(12px); transition:transform .28s cubic-bezier(0.34,1.56,0.64,1); }
+        .confirm-modal-bg.show .confirm-modal { transform:scale(1) translateY(0); }
+        .confirm-modal-icon { font-size:2.6rem; margin-bottom:12px; }
+        .confirm-modal-title { font-size:1.08rem; font-weight:900; color:#111; margin-bottom:8px; }
+        .confirm-modal-desc { font-size:0.87rem; color:#999; line-height:1.55; margin-bottom:22px; }
+        .confirm-modal-btns { display:flex; gap:10px; }
+        .confirm-ok { flex:1; padding:13px; background:linear-gradient(135deg,#dc2626,#ef4444); color:#fff; border:none; border-radius:13px; font-weight:800; font-size:0.95rem; cursor:pointer; font-family:inherit; }
+        .confirm-cancel { flex:1; padding:13px; background:#f4f4f4; color:#666; border:none; border-radius:13px; font-weight:700; font-size:0.95rem; cursor:pointer; font-family:inherit; }
+        .toast-friend { position:fixed; bottom:105px; left:50%; transform:translateX(-50%) translateY(16px); background:rgba(20,20,20,0.92); color:#fff; padding:11px 22px; border-radius:50px; font-size:0.88rem; font-weight:600; z-index:9999; opacity:0; pointer-events:none; transition:opacity .25s,transform .25s cubic-bezier(0.34,1.56,0.64,1); white-space:nowrap; }
+        .toast-friend.success { background:rgba(22,163,74,0.93); }
+        .toast-friend.error { background:rgba(220,38,38,0.93); }
+        .toast-friend.show { opacity:1; transform:translateX(-50%) translateY(0); }
+        #chat-windows-container { position:fixed; bottom:0; right:110px; display:flex; flex-direction:row-reverse; align-items:flex-end; gap:12px; z-index:1999; pointer-events:none; }
+        .chat-window { pointer-events:all; width:300px; background:#fff; border-radius:18px 18px 0 0; box-shadow:0 -4px 32px rgba(0,0,0,0.14); display:flex; flex-direction:column; max-height:420px; overflow:hidden; }
+        .chat-window.minimized { max-height:48px; }
+        .chat-header { background:linear-gradient(135deg,#dc2626,#ef4444); color:#fff; padding:12px 14px; display:flex; align-items:center; gap:8px; cursor:pointer; border-radius:18px 18px 0 0; }
+        .chat-target-name { font-weight:800; font-size:0.92rem; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .chat-ctrl-btn { background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:7px; padding:4px 8px; cursor:pointer; font-size:0.85rem; }
+        .chat-messages { flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px; }
+        .chat-input-area { display:flex; padding:10px 12px; border-top:1px solid #f0f0f0; gap:8px; }
+        .chat-input { flex:1; border:1px solid #eee; border-radius:10px; padding:8px 12px; font-size:0.88rem; outline:none; font-family:inherit; }
+        .chat-send-btn { background:#dc2626; color:#fff; border:none; border-radius:10px; padding:8px 14px; cursor:pointer; font-weight:700; font-size:0.88rem; }
+        @media (max-width: 900px) {
+            .panel-panel { width:100%; top:0; height:100%; border-radius:0; right:-100%; }
+            #chat-windows-container { right:0; left:0; bottom:0; }
+            .chat-window { width:100%; border-radius:18px 18px 0 0; }
+        }
         </style>
 </head>
 <body>
-    <!-- 광고 배너 -->
-    <style>
-        .side-ad {
-            position: fixed; top: 150px; width: 160px; height: 600px;
-            background: #f4f4f4; border: 1px solid #ddd; display: flex;
-            align-items: center; justify-content: center; color: #999;
-            font-weight: bold; z-index: 50; border-radius: 10px;
-            font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box;
-        }
-        .ad-left  { left: 20px; }
-        .ad-right { right: 20px; }
-        .mobile-top-ad {
-            display: none; position: fixed; top: 100px; left: 0; right: 0;
-            height: 55px; background: #f4f4f4; border-bottom: 1px solid #ddd;
-            align-items: center; justify-content: center; color: #999;
-            font-weight: bold; font-size: 0.9rem; z-index: 50;
-            pointer-events: none;
-        }
-        @media (max-width: 1200px) { .side-ad { display: none; } }
-        @media (max-width: 900px)  { .mobile-top-ad { display: flex; } }
-    </style>
-    <div class="side-ad ad-left">광고 영역 (좌)</div>
-    <div class="side-ad ad-right">광고 영역 (우)</div>
-    <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
 
 <!-- ── ONBOARDING MODAL ── -->
 <div class="modal-backdrop" id="onboardingModal" style="display:none;">
@@ -548,6 +948,10 @@
         </div>
 
         <button class="modal-submit" onclick="saveOnboarding()">✅ 저장하고 시작하기</button>
+        <button class="modal-skip" onclick="resetTasteData()" 
+        style="color:#e53e3e;font-weight:700;">
+        🗑 취향 데이터 전체 초기화
+        </button>
         <button class="modal-skip" onclick="skipOnboarding()">건너뛰기</button>
     </div>
 </div>
@@ -609,6 +1013,7 @@
 
         <!-- 우측: 위치 + 프로필 -->
         <div class="header-right">
+            <button class="icon-btn mobile-search-btn" onclick="toggleMobileSearch()">🔍</button>
             <button class="loc-btn" id="location-status" onclick="getGPSLocation()">📍 내 위치</button>
             <div style="position:relative;" id="profileWrap">
                 <button class="profile-avatar" id="profileAvatar" onclick="toggleProfileDropdown()">??</button>
@@ -624,6 +1029,19 @@
             </div>
         </div>
     </div>
+    <div id="mobileSearchBar" 
+     style="display:none;position:fixed;top:56px;left:0;right:0;
+     background:white;padding:10px 14px;
+     z-index:210;border-bottom:1px solid #eee;">
+
+    <form onsubmit="handleMobileSearch(event)">
+        <input type="text" id="mobile-search-input"
+               placeholder="지역, 메뉴, 분위기 검색"
+               style="width:100%;padding:10px 14px;
+               border-radius:12px;border:1px solid #ddd;
+               font-size:14px;">
+    </form>
+</div>
 </header>
 
 <!-- ── CATEGORY BAR ── -->
@@ -632,10 +1050,10 @@
         <button class="cat-btn" onclick="showTopPlaces('혼밥')">🍚 혼밥 맛집</button>
         <button class="cat-btn" onclick="showTopPlaces('데이트')">👩‍❤️‍👨 데이트 코스</button>
         <button class="cat-btn" onclick="showTopPlaces('술집')">🍻 분위기 술집</button>
-        <button class="cat-btn" onclick="fillInput('오늘 추천 안주 뭐가 좋을까?')">⭐ 오늘의 추천</button>
-        <button class="cat-btn" onclick="fillInput('소맥이랑 어울리는 안주 추천해줘')">🥃 소맥 안주</button>
-        <button class="cat-btn" onclick="fillInput('와인이랑 잘 어울리는 음식 추천해줘')">🍷 와인 페어링</button>
-        <button class="cat-btn" onclick="fillInput('맥주 안주 추천해줘')">🍺 맥주 안주</button>
+        <button class="cat-btn" onclick="showTopPlaces('추천')">⭐ 오늘의 추천</button>
+        <button class="cat-btn" onclick="showTopPlaces('소맥')">🥃 소맥 안주</button>
+        <button class="cat-btn" onclick="showTopPlaces('와인')">🍷 와인 페어링</button>
+        <button class="cat-btn" onclick="showTopPlaces('맥주')">🍺 맥주 안주</button>
         <button class="cat-btn" onclick="clearChat()">🗑 대화 초기화</button>
     </div>
 </div>
@@ -646,10 +1064,61 @@
 </div>
 
 <!-- ── HISTORY PANEL ── -->
-<div class="history-panel" id="historyPanel">
-    <div class="h-title">📂 내 기록</div>
-    <div class="h-section">⭐ 즐겨찾기</div>
-    <div id="favList"><div style="font-size:11px;color:#bbb;padding:2px;">아직 없어요</div></div>
+
+
+
+<!-- 🔥 모바일 전용 뒤로가기 헤더 (단 하나만!) -->
+<div id="mobileHistoryHeader" style="display:none;margin-bottom:14px;">
+    <button onclick="closeMobileHistory()" 
+        style="background:none;border:none;font-size:14px;font-weight:700;color:#e53e3e;cursor:pointer;">
+        ← 채팅으로 돌아가기
+    </button>
+</div>
+
+<div class="history-panel" id="historyPanel" onclick="event.stopPropagation()">
+    <div class="h-title">내 채팅</div>
+
+    <button onclick="startNewChat()" 
+    style="
+    margin:10px 0 14px 0;
+    padding:10px 12px;
+    background:#1a1a2e;
+    border:none;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:700;
+    color:white;
+    cursor:pointer;
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    justify-content:center;
+">
+    ✏️ 새 채팅
+</button>
+
+    <div 
+    onclick="toggleFavGroup()"
+    style="
+        font-size:16px;
+        font-weight:800;
+        color:var(--text);
+        margin:16px 0 8px;
+        cursor:pointer;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    ">
+    <span>⭐ 즐겨찾기</span>
+    <span id="favArrow">▾</span>
+</div>
+
+<div id="favListWrapper">
+    <div id="favList">
+        <div style="font-size:11px;color:#bbb;padding:2px;">아직 없어요</div>
+    </div>
+</div>
     <div class="h-section">💬 최근 대화</div>
     <div id="chatHistoryList"><div style="font-size:11px;color:#bbb;padding:2px;">아직 없어요</div></div>
 </div>
@@ -728,34 +1197,69 @@ function getProfile() {
 function saveProfile(p) { save('tasteProfile', p); }
 
 /* ── 취향 자동 업데이트 (AI가 감지한 데이터 반영) ── */
-function mergeTasteData(tasteData) {
+function accumulateTasteData(tasteData) {
     if (!tasteData || !isLoggedIn()) return;
-    const p = getProfile();
-    let changed = false;
+
+    let store = load('tasteLearning', {
+        alcohol: {},
+        snack: {},
+        dislike: {}
+    });
+
+    // 🔥 알코올 누적
     if (tasteData.detected_alcohol && tasteData.detected_alcohol !== 'null') {
-        const cur = p.preferred_alcohol ? p.preferred_alcohol.split(',') : [];
-        if (!cur.includes(tasteData.detected_alcohol)) {
-            cur.push(tasteData.detected_alcohol);
-            p.preferred_alcohol = cur.join(',');
-            changed = true;
-        }
+        const key = tasteData.detected_alcohol;
+        store.alcohol[key] = (store.alcohol[key] || 0) + 1;
     }
+
+    // 🔥 안주 누적
     if (tasteData.detected_snack && tasteData.detected_snack !== 'null') {
-        const cur = p.preferred_snack ? p.preferred_snack.split(',') : [];
-        if (!cur.includes(tasteData.detected_snack)) {
-            cur.push(tasteData.detected_snack);
-            p.preferred_snack = cur.join(',');
-            changed = true;
+        const key = tasteData.detected_snack;
+        store.snack[key] = (store.snack[key] || 0) + 1;
+    }
+
+    // 🔥 기피 누적
+    if (tasteData.detected_dislike && tasteData.detected_dislike !== 'null') {
+        const key = tasteData.detected_dislike;
+        store.dislike[key] = (store.dislike[key] || 0) + 1;
+    }
+
+    save('tasteLearning', store);
+
+    applyLearningToProfile();
+}
+
+function applyLearningToProfile() {
+    const store = load('tasteLearning', null);
+    if (!store) return;
+
+    const THRESHOLD = 3; // 🔥 3번 이상 언급되면 취향 반영
+
+    const p = getProfile();
+
+    // 알코올
+    for (let key in store.alcohol) {
+        if (store.alcohol[key] >= THRESHOLD) {
+            const cur = p.preferred_alcohol ? p.preferred_alcohol.split(',') : [];
+            if (!cur.includes(key)) {
+                cur.push(key);
+                p.preferred_alcohol = cur.join(',');
+            }
         }
     }
-    if (tasteData.detected_dislike && tasteData.detected_dislike !== 'null') {
-        p.dislikes = tasteData.detected_dislike;
-        changed = true;
+
+    // 안주
+    for (let key in store.snack) {
+        if (store.snack[key] >= THRESHOLD) {
+            const cur = p.preferred_snack ? p.preferred_snack.split(',') : [];
+            if (!cur.includes(key)) {
+                cur.push(key);
+                p.preferred_snack = cur.join(',');
+            }
+        }
     }
-    if (changed) {
-        saveProfile(p);
-        showTasteTag(tasteData);
-    }
+
+    saveProfile(p);
 }
 
 function showTasteTag(tasteData) {
@@ -781,12 +1285,16 @@ function showTasteTag(tasteData) {
 /* ── 채팅 히스토리 저장 ── */
 function saveChatRecord(userMsg, aiReply) {
     if (!isLoggedIn()) return;
+
     let list = load('chatHistory', []);
+
     list.unshift({
-        q: userMsg.slice(0, 40), a: aiReply.slice(0, 80),
-        date: new Date().toLocaleDateString('ko-KR', {month:'short',day:'numeric'})
+        q: userMsg,
+        a: aiReply,
+        timestamp: Date.now()   // 🔥 이거 필수
     });
-    save('chatHistory', list.slice(0, 30));
+
+    save('chatHistory', list.slice(0, 50));
     renderHistory();
 }
 
@@ -826,36 +1334,91 @@ function renderHistory() {
 
     // chat history
     const hist = load('chatHistory',[]);
-    const hEl = document.getElementById('chatHistoryList');
-    if (hist.length) {
-        // 전체 삭제 버튼
-        const clearBtn = `<button onclick="clearAllHistory()" style="width:100%;margin-bottom:6px;padding:5px 8px;background:#fff0f0;border:1px solid #fca5a5;border-radius:8px;color:var(--red);font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;">🗑 전체 삭제</button>`;
-        hEl.innerHTML = clearBtn + hist.slice(0,15).map((h,i)=>`
-            <div class="h-item">
-                <div style="flex:1;cursor:pointer;" onclick="fillInput('${esc(h.q)}')">
-                    <div>${esc(h.q)}${h.q.length>=40?'…':''}</div>
-                    <div class="h-date">${h.date}</div>
-                </div>
-                <button class="h-del" title="삭제" onclick="delChatHistory(${i})">×</button>
-            </div>
-        `).join('');
-    } else {
-        hEl.innerHTML = '<div style="font-size:14px;color:#999;padding:6px 4px;">아직 없어요</div>';
-    }
+const hEl = document.getElementById('chatHistoryList');
+
+if (!hist.length) {
+    hEl.innerHTML = '<div style="font-size:14px;color:#999;padding:6px 4px;">아직 없어요</div>';
+    return;
 }
 
+// 🔥 날짜별 그룹화
+const grouped = {};
+
+hist.forEach(item => {
+
+    const time = item.timestamp || Date.now();
+    const dateObj = new Date(time);
+
+    const today = new Date();
+
+    let label;
+
+    // 🔥 오늘만 따로 표시
+    if (dateObj.toDateString() === today.toDateString()) {
+        label = "📅 오늘";
+    } else {
+        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const dd = String(dateObj.getDate()).padStart(2, '0');
+        label = `📅 ${mm}-${dd}`;
+    }
+
+    if (!grouped[label]) grouped[label] = [];
+    grouped[label].push(item);
+});
+
+let html = '';
+
+Object.keys(grouped).forEach(label => {
+
+    const groupId = `group_${label.replace(/[^0-9a-z]/gi,'')}`;
+
+html += `
+<div 
+    onclick="toggleHistoryGroup('${groupId}')"
+    style="font-size:13px;font-weight:800;color:#666;margin:12px 0 6px 4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+    <span>${label}</span>
+    <span id="arrow_${groupId}">▾</span>
+</div>
+<div id="${groupId}">
+`;
+
+    grouped[label].forEach((h, i) => {
+        const globalIndex = hist.indexOf(h);
+
+        html += `
+        <div class="h-item">
+            <div style="flex:1;cursor:pointer;" onclick="loadChatFromHistory(${globalIndex})">
+                <div>${esc(h.q).slice(0,35)}${h.q.length>35?'…':''}</div>
+                <div class="h-date">
+                    ${new Date(h.timestamp || Date.now())
+   .toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
+                </div>
+            </div>
+            <button class="h-del" onclick="delChatHistory(${globalIndex})">×</button>
+        </div>
+        `;
+    });
+    
+    html += `</div>`;   // 🔥 이 줄 추가
+
+});
+
+hEl.innerHTML = html; }
+
 function delChatHistory(idx) {
+
+    const confirmDelete = confirm("이 대화를 삭제하시겠어요?");
+
+    if (!confirmDelete) return;
+
     let list = load('chatHistory', []);
     list.splice(idx, 1);
     save('chatHistory', list);
+
     renderHistory();
+    showToast("🗑 대화가 삭제됐어요");
 }
-function clearAllHistory() {
-    if (!confirm('최근 대화를 모두 삭제할까요?')) return;
-    save('chatHistory', []);
-    renderHistory();
-    showToast('🗑 대화 기록이 모두 삭제됐어요');
-}
+
 let selectedAlcohol = [], selectedSnack = [], selectedSitu = [];
 
 function openOnboarding() {
@@ -929,10 +1492,18 @@ function esc(s) {
 
 function showTyping() {
     const r = document.createElement('div');
-    r.className='typing-row'; r.id='typing-indicator';
-    r.innerHTML=`<div class="ai-avatar" style="width:32px;height:32px;font-size:13px;">🍷</div>
-        <div class="typing-dots"><span></span><span></span><span></span></div>`;
-    document.getElementById('chat-container').appendChild(r); scrollToBottom();
+    r.className = 'typing-row';
+    r.id = 'typing-indicator';
+
+    r.innerHTML = `
+        <div class="ai-avatar">🍷</div>
+        <div class="typing-dots large-typing">
+            <span></span><span></span><span></span>
+        </div>
+    `;
+
+    document.getElementById('chat-container').appendChild(r);
+    scrollToBottom();
 }
 function hideTyping() { const t=document.getElementById('typing-indicator'); if(t) t.remove(); }
 
@@ -940,6 +1511,10 @@ function addMsg(role, html, rawText='') {
     const isAI = role==='ai';
     const row = document.createElement('div');
     row.className = `msg-row${isAI?'':' user-row'}`;
+
+    if (isAI && window.matchMedia("(min-width: 769px)").matches) {
+    row.style.marginLeft = "148px";
+}
     if (isAI) {
         row.innerHTML=`<div class="ai-avatar">🍷</div><div class="bubble bubble-ai">${html}</div>`;
     } else {
@@ -948,6 +1523,8 @@ function addMsg(role, html, rawText='') {
     document.getElementById('chat-container').appendChild(row);
     // 세션 히스토리에 추가
     chatHistory.push({role: isAI?'ai':'user', content: rawText || html.replace(/<[^>]+>/g,'')});
+    save('currentSessionLive', chatHistory);
+    
     scrollToBottom();
 }
 
@@ -996,9 +1573,37 @@ if (hour >= 5 && hour < 12) {
         const alc = p.preferred_alcohol ? p.preferred_alcohol.split(',').filter(Boolean) : [];
         const snk = p.preferred_snack   ? p.preferred_snack.split(',').filter(Boolean)   : [];
         const allItems = [...new Set([...alc, ...snk])]; // 중복 제거
-        const chips = allItems.map(item =>
-            `<span style="background:#fff0f0;border:1px solid #fecaca;border-radius:50px;padding:6px 14px;font-size:14px;font-weight:700;color:var(--red);white-space:nowrap;">${esc(item)}</span>`
-        ).join('');
+        const chips = allItems.map(item => {
+    const type = alc.includes(item) ? 'alcohol' : 'snack';
+
+    return `
+    <span style="
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        background:#fff0f0;
+        border:1px solid #fecaca;
+        border-radius:50px;
+        padding:6px 12px;
+        font-size:14px;
+        font-weight:700;
+        color:var(--red);
+        white-space:nowrap;
+    ">
+        ${esc(item)}
+        <button 
+            onclick="removeSpecificTaste('${type}','${esc(item)}')" 
+            style="
+                background:none;
+                border:none;
+                font-size:13px;
+                cursor:pointer;
+                color:#e53e3e;
+                padding:0 2px;
+            "
+        >✕</button>
+    </span>`;
+}).join('');
         return `<div style="background:white;border:1.5px solid #fecaca;border-radius:16px;padding:14px 18px;margin-bottom:28px;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
                 <div style="display:flex;align-items:center;gap:8px;">
@@ -1012,41 +1617,103 @@ if (hour >= 5 && hour < 12) {
     })() : `<div onclick="openOnboarding()" style="display:inline-flex;align-items:center;gap:8px;background:white;border:1.5px dashed #fecaca;border-radius:14px;padding:11px 18px;font-size:14px;font-weight:600;color:#e53e3e;margin-bottom:24px;cursor:pointer;">
         <span>🎯</span><span>취향 설정하기</span>
     </div>`;
-
+//웰컴카드 사이즈
     const welcomeHtml = `
-        <div style="font-size:26px;font-weight:900;color:#1a1a2e;margin-bottom:28px;line-height:1.4;text-align:left;">${greeting}</div>
-        <div style="font-size:18px;color:#718096;line-height:1.85;margin-bottom:32px;text-align:left;"><br>오늘의 술자리, 제가 도와드릴게요.<br>어떤 상황인지 알려주시면 딱 맞는 주류·안주를 추천해드려요.<br></div>
-        ${profileTag}
-        <div style="display:flex;flex-wrap:wrap;gap:12px;">
-            <button class="opt-btn selected" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('오늘 기분에 맞는 술과 안주 추천해줘')">✨ 오늘의 추천</button>
-            <button class="opt-btn" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('혼술하기 좋은 조합 추천해줘')">🙋 혼술</button>
-            <button class="opt-btn" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('회식 자리에서 인기 많은 술과 안주 추천해줘')">👔 회식</button>
-            <button class="opt-btn" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('데이트할 때 분위기 있는 술과 어울리는 안주 추천해줘')">💑 데이트</button>
-            <button class="opt-btn" style="font-size:16px;padding:12px 24px;border-radius:50px;" onclick="fillInput('가족 모임에 어울리는 술과 안주 추천해줘')">👨‍👩‍👧 가족</button>
-        </div>`;
+    <div style="
+        font-size:28px;
+        font-weight:900;
+        color:#1a1a2e;
+        margin-bottom:24px;
+        line-height:1.5;
+        text-align:left;">
+        ${greeting}
+    </div>
 
-    // 이미 웰컴 카드가 있으면 내용만 교체 (새로 추가 X)
-    const existingCard = document.getElementById('welcome-card-body');
-    if (existingCard) {
-        existingCard.style.opacity = '0.5';
-        existingCard.style.transition = 'opacity 0.15s';
-        setTimeout(() => {
-            existingCard.innerHTML = welcomeHtml;
-            existingCard.style.opacity = '1';
-        }, 150);
-        return;
-    }
+    <div style="
+        font-size:18px;
+        color:#718096;
+        line-height:1.85;
+        margin-bottom:30px;
+        text-align:left;">
+        오늘의 술자리, 제가 도와드릴게요.<br>
+        어떤 상황인지 알려주시면 딱 맞는 주류·안주를 추천해드려요.
+    </div>
 
-    const row = document.createElement('div');
-    row.className = 'msg-row';
-    row.style.cssText = 'opacity:1;animation:none;';
-    row.innerHTML = `
-        <div class="ai-avatar">🍷</div>
-        <div id="welcome-card-body" style="max-width:82%;background:linear-gradient(180deg,#fce8e8 0%,#fdf3f3 35%,#fdf8f8 60%,#ffffff 100%);border:1px solid rgba(229,62,62,0.1);border-radius:28px;border-top-left-radius:5px;box-shadow:0 4px 20px rgba(229,62,62,0.08);padding:40px 38px 36px 38px;text-align:left;">
-            ${welcomeHtml}
-        </div>`;
-    document.getElementById('chat-container').appendChild(row);
-    scrollToBottom();
+    ${profileTag}
+
+    <div style="
+        display:flex;
+        flex-wrap:wrap;
+        gap:12px;">
+        
+        <button class="opt-btn selected"
+            style="font-size:16px;padding:12px 24px;border-radius:40px;"
+            onclick="fillInput('오늘 기분에 맞는 술과 안주 추천해줘')">
+            ✨ 오늘의 추천
+        </button>
+
+        <button class="opt-btn"
+            style="font-size:16px;padding:12px 24px;border-radius:40px;"
+            onclick="fillInput('혼술하기 좋은 조합 추천해줘')">
+            🙋 혼술
+        </button>
+
+        <button class="opt-btn"
+            style="font-size:16px;padding:12px 24px;border-radius:40px;"
+            onclick="fillInput('회식 자리에서 인기 많은 술과 안주 추천해줘')">
+            👔 회식
+        </button>
+
+        <button class="opt-btn"
+            style="font-size:16px;padding:12px 24px;border-radius:40px;"
+            onclick="fillInput('데이트할 때 분위기 있는 술과 어울리는 안주 추천해줘')">
+            💑 데이트
+        </button>
+
+        <button class="opt-btn"
+            style="font-size:16px;padding:12px 24px;border-radius:40px;"
+            onclick="fillInput('가족 모임에 어울리는 술과 안주 추천해줘')">
+            👨‍👩‍👧 가족
+        </button>
+    </div>
+`;
+
+// 이미 웰컴 카드가 있으면 내용만 교체 (새로 추가 X)
+const existingCard = document.getElementById('welcome-card-body');
+if (existingCard) {
+    existingCard.style.opacity = '0.5';
+    existingCard.style.transition = 'opacity 0.15s';
+    setTimeout(() => {
+        existingCard.innerHTML = welcomeHtml;
+        existingCard.style.opacity = '1';
+    }, 150);
+    return;
+}
+
+const row = document.createElement('div');
+row.className = 'msg-row';
+row.style.cssText = 'opacity:1;animation:none;';
+
+if (window.matchMedia("(min-width: 769px)").matches) {
+    row.style.marginLeft = "148px";
+}
+row.innerHTML = `
+    <div class="ai-avatar">🍷</div>
+    <div id="welcome-card-body" style="
+    max-width:78%;
+    background:linear-gradient(180deg,#fce8e8 0%,#fdf3f3 40%,#ffffff 100%);
+    border:1px solid rgba(229,62,62,0.1);
+    border-radius:32px;
+    border-top-left-radius:8px;
+    box-shadow:0 10px 40px rgba(229,62,62,0.12);
+    padding:48px;
+    text-align:left;">
+        ${welcomeHtml}
+    </div>
+`;
+
+document.getElementById('chat-container').appendChild(row);
+scrollToBottom();
 }
 
 /* ══════════════════════════════════════════
@@ -1089,7 +1756,7 @@ document.getElementById('chat-form').addEventListener('submit', async (e) => {
         addMsg('ai', replyHtml, data.reply);
 
         // 취향 자동 학습
-        if (data.taste_data) mergeTasteData(data.taste_data);
+        if (data.taste_data) accumulateTasteData(data.taste_data);
 
         // 채팅 기록 저장
         saveChatRecord(msg, data.reply);
@@ -1128,7 +1795,11 @@ async function fetchTopPlaces(category) {
         hideTyping();
         addMsg('ai', `📍 내 위치 기준 <b>${esc(category)}</b> 인기 장소 TOP5`);
         const cc = document.getElementById('chat-container');
-        data.places.forEach((place, i) => {
+        const favList = load('favorites', []);
+        const favNames = favList.map(f => f.name);
+        const filteredPlaces = data.places.filter(p => !favNames.includes(p.name));
+
+        filteredPlaces.forEach((place, i) => {
             setTimeout(() => {
                 const favd = isFav(place.name);
                 const card = document.createElement('div');
@@ -1262,10 +1933,14 @@ document.addEventListener("DOMContentLoaded", () => {
     getGPSLocation();
 
     // 히스토리 패널 (로그인 시)
-    if (isLoggedIn()) {
+    if (isLoggedIn()) 
+    {
+    renderHistory();
+
+    if (window.innerWidth > 768) {
         document.getElementById('historyPanel').classList.add('show');
         document.getElementById('chatScroll').style.right = '280px';
-        renderHistory();
+    }
     }
 
     // 첫 방문 (취향 없음) → 온보딩
@@ -1287,30 +1962,348 @@ document.addEventListener("DOMContentLoaded", () => {
                 <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
             </div>
             <div class="mobile-nav-links">
-                <a href="/main">🏠 홈</a>
-                <a href="/aichat">🤖 AI 맛집추천</a>
-                <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
-                <div class="mobile-nav-divider"></div>
-                <a href="/SOLO">🍚 혼밥</a>
-                <a href="/DATE">💑 데이트</a>
-                <a href="/WORK">🍻 회식</a>
-                <a href="/ETC">🧩 기타</a>
-                <div class="mobile-nav-divider"></div>
-                <a href="/game/pinball">🎯 핀볼</a>
-                <a href="/game/ladder">🪜 사다리타기</a>
-                <a href="/game/random_amount">🎰 룰렛 게임</a>
-                <a href="/game/worldcup">🏆 음식 월드컵</a>
-                <a href="/game/calculator">🧮 계산기</a>
-                <div class="mobile-nav-divider"></div>
-                <a href="/about">ℹ️ 회사소개</a>
-            </div>
+
+    <!-- 🔥 게임 아코디언 -->
+    <div class="mobile-nav-links">
+
+    <a href="#" onclick="toggleMobileHistory()">📂 기록</a>
+
+    <a href="/main">🏠 홈</a>
+
+    <!-- 현재 페이지가 aichat이면 JS로 숨길 수 있음 -->
+    <a href="/aichat" id="mobileAiLink">🤖 AI</a>
+
+    <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+
+    <!-- 🎮 게임 아코디언 -->
+    <div>
+        <a href="#" 
+           onclick="toggleMobileGameMenu(event)" 
+           style="display:flex;justify-content:space-between;align-items:center;">
+            🎮 게임 <span id="mobileGameArrow">▾</span>
+        </a>
+
+        <div id="mobileGameSubMenu" 
+             style="display:none;flex-direction:column;padding-left:18px;">
+
+            <a href="/game/pinball">🎯 핀볼</a>
+            <a href="/game/ladder">🪜 사다리타기</a>
+            <a href="/game/random_amount">🎰 룰렛</a>
+            <a href="/game/worldcup">🏆 음식 월드컵</a>
+            <a href="/game/calculator">🧮 계산기</a>
+
+        </div>
+    </div>
+
+    <!-- ✅ 회사소개는 하나만 -->
+    <a href="/about">🏢 회사소개</a>
+
+</div>
         </div>
     </div>
     <script>
         function openMobileNav() { document.getElementById('mobileNav').classList.add('open'); document.body.style.overflow='hidden'; }
         function closeMobileNav() { document.getElementById('mobileNav').classList.remove('open'); document.body.style.overflow=''; }
         function closeMobileNavOutside(e) { if (e.target===document.getElementById('mobileNav')) closeMobileNav(); }
+        function toggleMobileSearch() {
+    const bar = document.getElementById('mobileSearchBar');
+    bar.style.display = bar.style.display === 'block' ? 'none' : 'block';
+}
+
+function handleMobileSearch(e) {
+    e.preventDefault();
+    const q = document.getElementById('mobile-search-input').value.trim();
+    if (q) {
+        location.href = `/search?query=${encodeURIComponent(q)}`;
+    }
+}
+
+function toggleMobileHistory() {
+    if (window.innerWidth > 768) return;
+
+    const panel = document.getElementById('historyPanel');
+    const overlay = document.getElementById('historyOverlay');
+    const isOpen = panel.classList.contains('mobile-open');
+
+    if (isOpen) {
+        closeMobileHistory();
+    } else {
+        panel.classList.add('mobile-open');
+        overlay.style.display = 'block';
+    }
+
+    closeMobileNav();
+}
+
+function closeMobileHistory() {
+    const panel = document.getElementById('historyPanel');
+    const overlay = document.getElementById('historyOverlay');
+
+    panel.classList.remove('mobile-open');
+    overlay.style.display = 'none';
+}
+
+
+
+function loadChatFromHistory(index) {
+    const hist = load('chatHistory', []);
+    const record = hist[index];
+    if (!record) return;
+
+    // ✅ 현재 진행 중 세션 백업
+    save('currentSessionBackup', chatHistory);
+
+    // 채팅창 초기화
+    chatHistory = [];
+    document.getElementById('chat-container').innerHTML = '';
+
+    // 기록 로드
+    addMsg('user', esc(record.q), record.q);
+    addMsg('ai', esc(record.a).replace(/\n/g, '<br>'), record.a);
+
+    showToast("이전 대화를 불러왔어요");
+
+
+    closeMobileHistory();
+}
+
+
+function toggleMobileGameMenu(e) {
+    e.preventDefault();
+
+    const sub = document.getElementById('mobileGameSubMenu');
+    const arrow = document.getElementById('mobileGameArrow');
+
+    const isOpen = sub.style.display === 'flex';
+
+    if (isOpen) {
+        sub.style.display = 'none';
+        arrow.textContent = '▾';
+    } else {
+        sub.style.display = 'flex';
+        arrow.textContent = '▴';
+    }
+}
+
+function resetTasteData() {
+    if (!confirm("저장된 취향 데이터와 학습 데이터를 모두 삭제할까요?")) return;
+
+    // 확정 프로필 삭제
+    localStorage.removeItem(sKey('tasteProfile'));
+
+    // 학습 누적 데이터 삭제
+    localStorage.removeItem(sKey('tasteLearning'));
+
+    showToast("🗑 취향 데이터가 초기화됐어요");
+
+    // 모달 닫고 새로고침된 느낌 주기
+    document.getElementById('onboardingModal').style.display = 'none';
+    clearChat();
+}
+
+function removeSpecificTaste(type, value) {
+    const p = getProfile();
+    const learning = load('tasteLearning', {
+        alcohol: {},
+        snack: {},
+        dislike: {}
+    });
+
+    if (type === 'alcohol') {
+        const arr = p.preferred_alcohol ? p.preferred_alcohol.split(',') : [];
+        p.preferred_alcohol = arr.filter(v => v !== value).join(',');
+        delete learning.alcohol[value];
+    }
+
+    if (type === 'snack') {
+        const arr = p.preferred_snack ? p.preferred_snack.split(',') : [];
+        p.preferred_snack = arr.filter(v => v !== value).join(',');
+        delete learning.snack[value];
+    }
+
+    saveProfile(p);
+    save('tasteLearning', learning);
+
+    showToast(`❌ ${value} 취향이 삭제됐어요`);
+
+    startChat(); // 카드 즉시 갱신
+}
+
+/* 📂 모바일 히스토리 - 바깥 클릭 시 닫기 */
+document.addEventListener('click', function (e) {
+
+    if (window.innerWidth > 768) return;
+
+    const panel = document.getElementById('historyPanel');
+    const mobileNav = document.getElementById('mobileNav');
+
+    if (!panel.classList.contains('mobile-open')) return;
+
+    // 패널 안 클릭이면 무시
+    if (panel.contains(e.target)) return;
+
+    // 모바일 메뉴 클릭이면 무시
+    if (mobileNav && mobileNav.contains(e.target)) return;
+
+    closeMobileHistory();
+
+}, true);  // 🔥 캡처 단계 사용
+
+function startNewChat() {
+
+    // 🔥 현재 세션이 있으면 세션 기록에 저장
+    if (chatHistory.length > 0) {
+
+        let sessions = load('chatSessions', []);
+
+        sessions.unshift({
+            id: Date.now(),
+            date: new Date().toLocaleString('ko-KR'),
+            messages: [...chatHistory]
+        });
+
+        save('chatSessions', sessions);
+    }
+
+    // 🔥 새로운 세션 시작
+    chatHistory = [];
+    save('currentSessionLive', []);
+
+    document.getElementById('chat-container').innerHTML = '';
+
+    startChat(); 
+
+    renderHistory();
+
+    showToast("✨ 새 채팅이 시작됐어요");
+}
+
+function renderSessionHistory() {
+
+    const sessions = load('chatSessions', []);
+    const hEl = document.getElementById('chatHistoryList');
+
+    if (!sessions.length) {
+        hEl.innerHTML = '<div style="font-size:14px;color:#999;padding:6px;">아직 없어요</div>';
+        return;
+    }
+
+    hEl.innerHTML = sessions.map((s, i) => `
+        <div class="h-item" onclick="loadSession(${i})">
+            <div style="flex:1;">
+                <div>💬 ${s.messages[0]?.content?.slice(0,25) || '새 채팅'}</div>
+                <div class="h-date">${s.date}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleHistoryGroup(id) {
+
+    const group = document.getElementById(id);
+    const arrow = document.getElementById("arrow_" + id);
+
+    if (!group) return;
+
+    const isOpen = group.style.display !== "none";
+
+    if (isOpen) {
+        group.style.display = "none";
+        if (arrow) arrow.textContent = "▸";
+    } else {
+        group.style.display = "block";
+        if (arrow) arrow.textContent = "▾";
+    }
+}
+
+function toggleFavGroup() {
+
+    const wrapper = document.getElementById("favListWrapper");
+    const arrow   = document.getElementById("favArrow");
+
+    const isOpen = wrapper.style.display !== "none";
+
+    if (isOpen) {
+        wrapper.style.display = "none";
+        arrow.textContent = "▸";
+    } else {
+        wrapper.style.display = "block";
+        arrow.textContent = "▾";
+    }
+}
+
     </script>
+<div id="historyOverlay" 
+     onclick="closeMobileHistory()"
+     style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.45);
+        backdrop-filter:blur(2px);
+        z-index:2400;
+     ">
+</div>
+
+
+        <!-- 사이드 광고 -->
+        <div class="side-ad ad-left">광고 영역 (좌)</div>
+        <div class="side-ad ad-right">광고 영역 (우)</div>
+        <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
+
+        <!-- 친구 FAB -->
+        <button class="panel-fab" onclick="togglePanel()" id="panelFab">💬</button>
+
+        <!-- 오버레이 -->
+        <div class="panel-overlay" id="panelOverlay"></div>
+
+        <!-- 친구 패널 -->
+        <div class="panel-panel" id="panelPanel">
+            <div class="panel-header">
+                <div class="panel-header-title">🍽️ 나의 메이트</div>
+                <div class="panel-header-sub" id="panel-login-hint"></div>
+            </div>
+            <div class="panel-tabs">
+                <button class="tab-btn active" onclick="showTab('list')">친구목록</button>
+                <button class="tab-btn" onclick="showTab('add')">친구추가</button>
+                <button class="tab-btn" id="req-tab-btn" onclick="showTab('req')">요청<span id="req-dot" class="req-dot" style="display:none"></span></button>
+            </div>
+            <div id="tab-list" class="tab-content active">
+                <div id="panel-list-container">
+                    <div class="empty-state"><div class="empty-icon">👥</div>아직 친구가 없어요.<br>친구를 추가해보세요!</div>
+                </div>
+            </div>
+            <div id="tab-add" class="tab-content">
+                <div class="add-friend-section">
+                    <div style="font-size:0.9rem;color:#666;margin-bottom:12px;line-height:1.5">👥 닉네임으로 친구를 찾아보세요</div>
+                    <input type="text" id="panelSearch" class="add-friend-input" placeholder="친구 닉네임을 입력하세요" onkeyup="if(event.keyCode==13)requestFriend();" />
+                    <button class="add-friend-btn" onclick="requestFriend()">🙋 친구 신청 보내기</button>
+                    <div id="add-friend-result" style="font-size:0.88rem;margin-top:12px;min-height:20px;text-align:center"></div>
+                </div>
+            </div>
+            <div id="tab-req" class="tab-content">
+                <div id="panel-req-container">
+                    <div class="empty-state"><div class="empty-icon">📭</div>받은 친구 요청이 없어요.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 친구 삭제 모달 -->
+        <div class="confirm-modal-bg" id="confirmModalBg" style="display:none">
+            <div class="confirm-modal">
+                <div class="confirm-modal-icon">🗑️</div>
+                <div class="confirm-modal-title" id="confirmModalTitle">친구를 삭제할까요?</div>
+                <div class="confirm-modal-desc" id="confirmModalDesc">삭제하면 서로의 친구 목록에서<br>사라집니다.</div>
+                <div class="confirm-modal-btns">
+                    <button class="confirm-cancel" onclick="closeConfirmModal()">취소</button>
+                    <button class="confirm-ok" id="confirmOkBtn">삭제</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 다중 채팅창 -->
+        <div id="chat-windows-container"></div>
+        <script src="/static/js/friend-chat.js"></script>
 
 </body>
 </html>
