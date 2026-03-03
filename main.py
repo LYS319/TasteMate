@@ -19,13 +19,25 @@ import os
 import google.generativeai as genai
 logging.basicConfig(level=logging.INFO)
 
-from Database import Like, User, Post, Comment, Friend, ChatMessage, get_db
+from Database import Like, User, Post, Comment, Friend, ChatMessage, FriendRequest, ChatHistory, get_db, create_tables
 from config import settings
 from game_ideal_router import router as ideal_router
 
 app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 templates = Jinja2Templates(directory="templates")
+
+# ── 서버 시작 시 미생성 테이블 자동 생성 ──
+@app.on_event("startup")
+def startup_event():
+    create_tables()
+    logging.info("✅ DB 테이블 생성/확인 완료")
+# --- ngrok 브라우저 경고 스킵 미들웨어 ---
+@app.middleware("http")
+async def add_ngrok_skip_header(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["ngrok-skip-browser-warning"] = "true"
+    return response
 
 # =============================================
 # WebSocket 연결 관리자
@@ -547,12 +559,45 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         return JSONResponse(status_code=404, content={"detail": "사용자를 찾을 수 없습니다."})
-    # 관련 게시글/댓글 삭제
-    db.query(Post).filter(Post.user_id == user_id).delete()
-    db.query(Comment).filter(Comment.user_id == user_id).delete()
-    db.delete(user)
-    db.commit()
-    return {"message": "회원 탈퇴가 완료되었습니다."}
+    try:
+        # 1) 채팅 메시지 (sender / receiver 양쪽)
+        db.query(ChatMessage).filter(
+            (ChatMessage.sender_id == user_id) | (ChatMessage.receiver_id == user_id)
+        ).delete(synchronize_session=False)
+
+        # 2) 친구 요청 (보낸 것 / 받은 것 양쪽)
+        db.query(FriendRequest).filter(
+            (FriendRequest.from_user_id == user_id) | (FriendRequest.to_user_id == user_id)
+        ).delete(synchronize_session=False)
+
+        # 3) 친구 관계 (양방향)
+        db.query(Friend).filter(
+            (Friend.user_id == user_id) | (Friend.friend_id == user_id)
+        ).delete(synchronize_session=False)
+
+        # 4) 좋아요
+        db.query(Like).filter(Like.user_id == user_id).delete(synchronize_session=False)
+
+        # 5) 댓글
+        db.query(Comment).filter(Comment.user_id == user_id).delete(synchronize_session=False)
+
+        # 6) 게시글에 달린 댓글/좋아요 → 게시글 삭제
+        user_posts = db.query(Post).filter(Post.user_id == user_id).all()
+        for post in user_posts:
+            db.query(Like).filter(Like.post_id == post.id).delete(synchronize_session=False)
+            db.query(Comment).filter(Comment.post_id == post.id).delete(synchronize_session=False)
+        db.query(Post).filter(Post.user_id == user_id).delete(synchronize_session=False)
+
+        # 7) AI 채팅 히스토리
+        db.query(ChatHistory).filter(ChatHistory.user_id == user_id).delete(synchronize_session=False)
+
+        # 8) 유저 삭제
+        db.delete(user)
+        db.commit()
+        return {"message": "회원 탈퇴가 완료되었습니다."}
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(status_code=500, content={"detail": f"회원 탈퇴 중 오류가 발생했습니다: {str(e)}"})
 
 # 최신순 게시글 리스트
 @app.get("/api/posts/{category}/latest")

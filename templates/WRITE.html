@@ -1,19 +1,18 @@
 <!doctype html>
 <html lang="ko">
     <head>
-    <script>
-        // ngrok iframe 탈출 - 경고 페이지 없이 직접 접속
-        if (window.top !== window.self) {
-            window.top.location.href = window.self.location.href;
-        }
-    </script>
+        <script>
+            // ngrok iframe 탈출 - 경고 페이지 없이 직접 접속
+            if (window.top !== window.self) {
+                window.top.location.href = window.self.location.href;
+            }
+        </script>
         <script src="https://dapi.kakao.com/v2/maps/sdk.js?autoload=true&appkey=404ef7ad32359a5bae46369ef85f2012&libraries=services"></script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 글쓰기</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
-
             body {
                 margin: 0;
                 font-family: 'Noto Sans KR', sans-serif;
@@ -21,98 +20,12 @@
                 color: #333;
                 word-break: keep-all;
             }
-
-            /* --- Header Style (기존 스타일 계승) --- */
-            .header {
-                display: grid;
-                grid-template-columns: 1fr auto 1fr;
-                align-items: center;
-                padding: 12px 40px;
-                background: rgba(255, 255, 255, 0.85);
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                z-index: 1000;
-                border-bottom: 1px solid rgba(220, 38, 38, 0.05);
-            }
-
-            .header-left {
-                display: flex;
-                align-items: center;
-                gap: 20px;
-                grid-column: 1;
-            }
-            .header-logo {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                font-size: 1.7rem;
-                font-weight: 900;
-                color: #dc2626;
-                text-decoration: none;
-                transition: all 0.3s;
-            }
-
-            .header-right {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                justify-content: flex-end;
-                grid-column: 3;
-            }
-
-            /* 버튼 공통 스타일 */
-            .btn {
-                padding: 10px 18px;
-                border-radius: 10px;
-                font-size: 0.9rem;
-                font-weight: 700;
-                cursor: pointer;
-                transition: all 0.2s;
-                border: none;
-                white-space: nowrap;
-            }
-            .btn-primary {
-                background: #dc2626;
-                color: #fff;
-            }
-            .btn-primary:hover {
-                background: #b91c1c;
-                transform: translateY(-1px);
-            }
-            .btn-outline {
-                background: #fff;
-                color: #dc2626;
-                border: 1.5px solid #dc2626;
-            }
-            .btn-outline:hover {
-                background: #fff1f1;
-            }
-
-            .nickname-avatar {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 38px;
-                height: 38px;
-                border-radius: 50%;
-                background: #222;
-                color: #fff;
-                font-weight: 700;
-                cursor: pointer;
-            }
-
             /* --- Write Page Layout --- */
             .write-container {
                 max-width: 800px;
                 margin: 140px auto 100px;
                 padding: 0 20px;
             }
-
             .write-header {
                 margin-bottom: 40px;
             }
@@ -285,7 +198,7 @@
                 background: #fff1f1;
                 color: #dc2626;
             }
-        
+
             /* ===== 반응형 (태블릿/모바일) ===== */
             @media (max-width: 900px) {
                 .header {
@@ -294,35 +207,79 @@
                     gap: 8px;
                     position: sticky;
                 }
-                .header-left { width: 100%; justify-content: space-between; }
-                .header-center { width: 100%; }
-                .header-right { width: 100%; justify-content: flex-end; }
-                .menu-bar { display: none; }
-                .header-logo { font-size: 1.3rem; }
-                .login-btn { padding: 8px 10px; font-size: 0.8rem; }
-                .current-location { padding: 6px 8px; font-size: 0.78rem; }
-                .nickname-avatar { width: 32px; height: 32px; font-size: 0.85rem; }
-                .container, .write-container, .community-wrap {
+                .header-left {
+                    width: 100%;
+                    justify-content: space-between;
+                }
+                .header-center {
+                    width: 100%;
+                }
+                .header-right {
+                    width: 100%;
+                    justify-content: flex-end;
+                }
+                .menu-bar {
+                    display: none;
+                }
+                .header-logo {
+                    font-size: 1.3rem;
+                }
+                .login-btn {
+                    padding: 8px 10px;
+                    font-size: 0.8rem;
+                }
+                .current-location {
+                    padding: 6px 8px;
+                    font-size: 0.78rem;
+                }
+                .nickname-avatar {
+                    width: 32px;
+                    height: 32px;
+                    font-size: 0.85rem;
+                }
+                .container,
+                .write-container,
+                .community-wrap {
                     padding: 16px;
                     margin: 10px auto;
                 }
-                .post-card, .board-card {
+                .post-card,
+                .board-card {
                     padding: 14px 12px;
                 }
-                table { font-size: 0.85rem; }
-                th, td { padding: 8px 6px; }
+                table {
+                    font-size: 0.85rem;
+                }
+                th,
+                td {
+                    padding: 8px 6px;
+                }
             }
             @media (max-width: 480px) {
-                .header { padding: 8px 10px; }
-                .header-logo { font-size: 1.1rem; }
-                .search-box input { font-size: 0.85rem; }
-                body { font-size: 0.95rem; }
-                h1 { font-size: 1.4rem; }
-                h2 { font-size: 1.2rem; }
-                .btn, button[type=submit] { width: 100%; }
+                .header {
+                    padding: 8px 10px;
+                }
+                .header-logo {
+                    font-size: 1.1rem;
+                }
+                .search-box input {
+                    font-size: 0.85rem;
+                }
+                body {
+                    font-size: 0.95rem;
+                }
+                h1 {
+                    font-size: 1.4rem;
+                }
+                h2 {
+                    font-size: 1.2rem;
+                }
+                .btn,
+                button[type='submit'] {
+                    width: 100%;
+                }
             }
 
-        
             /* ===== 햄버거 메뉴 ===== */
             .hamburger-btn {
                 display: none;
@@ -335,23 +292,31 @@
                 color: #dc2626;
                 line-height: 1;
             }
-            .hamburger-btn:hover { background: #fff1f1; }
+            .hamburger-btn:hover {
+                background: #fff1f1;
+            }
             .mobile-nav {
                 display: none;
                 position: fixed;
-                top: 0; left: 0; right: 0; bottom: 0;
-                background: rgba(0,0,0,0.4);
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.4);
                 z-index: 2000;
             }
-            .mobile-nav.open { display: block; }
+            .mobile-nav.open {
+                display: block;
+            }
             .mobile-nav-panel {
                 position: absolute;
-                top: 0; left: 0;
+                top: 0;
+                left: 0;
                 width: 260px;
                 height: 100%;
                 max-height: 100vh;
                 background: #fff;
-                box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
                 padding: 0;
                 display: flex;
                 flex-direction: column;
@@ -386,7 +351,8 @@
                 flex: 1;
                 overflow-y: auto;
             }
-            .mobile-nav-links a, .mobile-nav-links button {
+            .mobile-nav-links a,
+            .mobile-nav-links button {
                 display: block;
                 padding: 14px 24px;
                 font-size: 1rem;
@@ -399,7 +365,8 @@
                 cursor: pointer;
                 transition: background 0.15s;
             }
-            .mobile-nav-links a:hover, .mobile-nav-links button:hover {
+            .mobile-nav-links a:hover,
+            .mobile-nav-links button:hover {
                 background: #fff1f1;
                 color: #dc2626;
             }
@@ -410,11 +377,15 @@
             }
 
             @media (max-width: 900px) {
-                .hamburger-btn { display: block; }
-                .menu-bar, nav.menu-bar { display: none !important; }
+                .hamburger-btn {
+                    display: block;
+                }
+                .menu-bar,
+                nav.menu-bar {
+                    display: none !important;
+                }
             }
 
-        
             @media (max-width: 600px) {
                 .search-write-row {
                     flex-wrap: wrap !important;
@@ -427,35 +398,61 @@
                     flex: 1;
                 }
             }
-
+        
+            /* ── 광고 배너 CSS ── */
+            .side-ad { position: fixed; top: 150px; width: 160px; height: 600px; background: #f4f4f4; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; color: #999; font-weight: bold; z-index: 100; border-radius: 10px; font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box; }
+            .ad-left  { left: 20px; }
+            .ad-right { right: 20px; }
+            .mobile-top-ad { display: none; position: fixed; top: 60px; left: 0; right: 0; height: 55px; background: #f4f4f4; border-bottom: 1px solid #ddd; align-items: center; justify-content: center; color: #999; font-weight: bold; font-size: 0.9rem; z-index: 100; pointer-events: none; }
+            @media (max-width: 1200px) { .side-ad { display: none; } }
+            @media (max-width: 900px)  { .mobile-top-ad { display: flex; } }
         </style>
     </head>
     <body>
+                <!-- 광고 배너 -->
+        <div class="side-ad ad-left">광고 영역 (좌)</div>
+        <div class="side-ad ad-right">광고 영역 (우)</div>
+        <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
         <header class="header">
             <div class="header-left">
-                <button class="hamburger-btn" id="hamburgerBtn" onclick="openMobileNav()">☰</button>
+                <button class="menu-toggle-btn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
-                <nav style="display: flex; gap: 5px; align-items: center">
-                    <a href="/aichat" style="text-decoration: none; color: #444; font-weight: 600; padding: 10px 14px"
-                        >AI추천</a
-                    >
-                    <a
-                        href="/community"
-                        style="text-decoration: none; color: #444; font-weight: 600; padding: 10px 14px"
-                        >커뮤니티</a
-                    >
-                    <div class="game-dropdown">
+                <nav class="menu-bar">
+                    <a class="menu-item" href="/about">회사소개</a>
+                    <a class="menu-item" href="/aichat">AI추천</a>
+                    <a class="menu-item" href="/community">커뮤니티</a>
+                    <div class="menu-item game-dropdown">
                         <span>게임 ▾</span>
                         <div class="dropdown-content">
                             <a href="/game/pinball">핀볼</a>
                             <a href="/game/ladder">사다리타기</a>
                             <a href="/game/random_amount">룰렛 게임</a>
+                            <a href="/game/worldcup">음식 월드컵</a>
+                            <a href="/game/calculator">계산기</a>
                         </div>
                     </div>
                 </nav>
             </div>
+            <div class="header-center">
+                <div class="search-box">
+                    <input
+                        type="text"
+                        id="mainSearchInput"
+                        placeholder="지역, 메뉴, 분위기로 맛집 검색"
+                        onkeyup="if (window.event.keyCode == 13) handleSearch();"
+                    />
+                    <button class="search-submit-btn" onclick="handleSearch()">🔍</button>
+                </div>
+            </div>
             <div class="header-right" id="headerRightArea">
-                <button class="btn btn-primary" onclick="location.href = '/login'">로그인</button>
+                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                <button
+                    class="login-btn"
+                    style="background: #fff; color: #dc2626; border: 1.5px solid #dc2626"
+                    onclick="location.href = '/signup'"
+                >
+                    회원가입
+                </button>
             </div>
         </header>
 
@@ -726,16 +723,22 @@
                     let avatarText = nickname.slice(0, 2);
                     let adminButton =
                         isAdmin === '1'
-                            ? `<button class="btn btn-primary" onclick="location.href='/admin'" style="background: #222; margin-right:8px;">관리자</button>`
+                            ? `<button class="login-btn" onclick="location.href='/admin'" style="background:#2c3e50">⚙️ 관리자</button>`
                             : '';
-
                     headerRightArea.innerHTML = `
+                        <span class="nickname-avatar" onclick="location.href='/mypage'" title="내 정보">${avatarText}</span>
                         ${adminButton}
-                        <span class="nickname-avatar" onclick="location.href='/mypage'">${avatarText}</span>
-                        <button class="btn" onclick="logout()" style="color:#666; font-weight:600;">로그아웃</button>
+                        <button class="login-btn" onclick="logout()" style="background:#666">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 위치 로딩...</span>
                     `;
-
-                    if (isAdmin === '1') document.getElementById('noticeDiv').style.display = 'flex';
+                    if (isAdmin === '1' && document.getElementById('noticeDiv'))
+                        document.getElementById('noticeDiv').style.display = 'flex';
+                    if (typeof getGPSLocation === 'function') getGPSLocation();
+                } else if (headerRightArea) {
+                    headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href='/login'">로그인</button>
+                        <button class="login-btn" style="background:#fff; color:#dc2626; border:1.5px solid #dc2626" onclick="location.href='/signup'">회원가입</button>
+                    `;
                 }
             });
 
@@ -775,34 +778,34 @@
                 }
             };
         </script>
-    
-    <!-- 모바일 햄버거 메뉴 -->
-    <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
-        <div class="mobile-nav-panel">
-            <div class="mobile-nav-header">
-                <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
-                <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
-            </div>
-            <div class="mobile-nav-links">
-                <a href="/main">🏠 홈</a>
-                <a href="/aichat">🤖 AI 맛집추천</a>
-                <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
-                <div class="mobile-nav-divider"></div>
-                <a href="/SOLO">🍚 혼밥</a>
-                <a href="/DATE">💑 데이트</a>
-                <a href="/WORK">🍻 회식</a>
-                <a href="/ETC">🧩 기타</a>
-                <div class="mobile-nav-divider"></div>
-                <a href="/game/pinball">🎯 핀볼</a>
-                <a href="/game/ladder">🪜 사다리타기</a>
-                <a href="/game/random_amount">🎰 룰렛 게임</a>
-                <a href="/game/worldcup">🏆 음식 월드컵</a>
-                <a href="/game/calculator">🧮 계산기</a>
-                <div class="mobile-nav-divider"></div>
-                <a href="/about">ℹ️ 회사소개</a>
+
+        <!-- 모바일 햄버거 메뉴 -->
+        <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
+            <div class="mobile-nav-panel">
+                <div class="mobile-nav-header">
+                    <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
+                    <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+                </div>
+                <div class="mobile-nav-links">
+                    <a href="/main">🏠 홈</a>
+                    <a href="/aichat">🤖 AI 맛집추천</a>
+                    <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/SOLO">🍚 혼밥</a>
+                    <a href="/DATE">💑 데이트</a>
+                    <a href="/WORK">🍻 회식</a>
+                    <a href="/ETC">🧩 기타</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/game/pinball">🎯 핀볼</a>
+                    <a href="/game/ladder">🪜 사다리타기</a>
+                    <a href="/game/random_amount">🎰 룰렛 게임</a>
+                    <a href="/game/worldcup">🏆 음식 월드컵</a>
+                    <a href="/game/calculator">🧮 계산기</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/about">ℹ️ 회사소개</a>
+                </div>
             </div>
         </div>
-    </div>
 
         <script>
             function openMobileNav() {
@@ -816,6 +819,58 @@
             function closeMobileNavOutside(e) {
                 if (e.target === document.getElementById('mobileNav')) closeMobileNav();
             }
+        </script>
+        <script src="/static/js/avatar-sync.js"></script>
+    
+        <!-- 💬 친구 FAB -->
+        <button class="panel-fab" onclick="togglePanel()" id="panelFab">💬</button>
+        <div class="panel-overlay" id="panelOverlay"></div>
+        <div class="panel-panel" id="panelPanel">
+            <div class="panel-header">
+                <div class="panel-header-title">🍽️ 나의 메이트</div>
+                <div class="panel-header-sub" id="panel-login-hint"></div>
+            </div>
+            <div class="panel-tabs">
+                <button class="tab-btn active" onclick="showTab('list')">친구목록</button>
+                <button class="tab-btn" onclick="showTab('add')">친구추가</button>
+                <button class="tab-btn" id="req-tab-btn" onclick="showTab('req')">요청<span id="req-dot" class="req-dot" style="display:none"></span></button>
+            </div>
+            <div id="tab-list" class="tab-content active">
+                <div id="panel-list-container"><div class="empty-state"><div class="empty-icon">👥</div>아직 친구가 없어요.<br/>친구를 추가해보세요!</div></div>
+            </div>
+            <div id="tab-add" class="tab-content">
+                <div class="add-friend-section">
+                    <div style="font-size:0.9rem;color:#666;margin-bottom:12px;line-height:1.5">👥 닉네임으로 친구를 찾아보세요</div>
+                    <input type="text" id="panelSearch" class="add-friend-input" placeholder="친구 닉네임을 입력하세요" onkeyup="if(event.keyCode==13)requestFriend();" />
+                    <button class="add-friend-btn" onclick="requestFriend()">🙋 친구 신청 보내기</button>
+                    <div id="add-friend-result" style="font-size:0.88rem;margin-top:12px;min-height:20px;text-align:center"></div>
+                </div>
+            </div>
+            <div id="tab-req" class="tab-content">
+                <div id="panel-req-container"><div class="empty-state"><div class="empty-icon">📭</div>받은 친구 요청이 없어요.</div></div>
+            </div>
+        </div>
+        <div class="confirm-modal-bg" id="confirmModalBg" style="display:none">
+            <div class="confirm-modal">
+                <div class="confirm-modal-icon">🗑️</div>
+                <div class="confirm-modal-title" id="confirmModalTitle">친구를 삭제할까요?</div>
+                <div class="confirm-modal-desc" id="confirmModalDesc">삭제하면 서로의 친구 목록에서<br/>사라집니다.</div>
+                <div class="confirm-modal-btns">
+                    <button class="confirm-cancel" onclick="closeConfirmModal()">취소</button>
+                    <button class="confirm-ok" id="confirmOkBtn">삭제</button>
+                </div>
+            </div>
+        </div>
+        <div id="chat-windows-container"></div>
+        <div class="toast" id="toast"></div>
+        <script src="/static/js/friend-chat.js"></script>
+        <script src="/static/js/avatar-sync.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof initFriendChatPanel === 'function') initFriendChatPanel();
+                var overlay = document.getElementById('panelOverlay');
+                if (overlay) overlay.addEventListener('click', function() { if(typeof togglePanel==='function') togglePanel(); });
+            });
         </script>
 
 </body>

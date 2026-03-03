@@ -52,10 +52,12 @@
             menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
         }
     </script>
+<script>/* headerRightArea — login page skip */</script>
 </head>
 <body>
 <header class="header">
     <div class="header-left">
+                <button class="menu-toggle-btn" onclick="openMobileNav()">☰</button>
         <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>
         <a href="/main" class="header-logo">TasteMate</a>
         <nav class="main-nav" id="mainNavMenu">
@@ -114,5 +116,39 @@
         }
     };
 </script>
+
+        <!-- 모바일 햄버거 메뉴 -->
+        <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
+            <div class="mobile-nav-panel">
+                <div class="mobile-nav-header">
+                    <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
+                    <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+                </div>
+                <div class="mobile-nav-links">
+                    <a href="/main">🏠 홈</a>
+                    <a href="/aichat">🤖 AI 맛집추천</a>
+                    <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/SOLO">🍚 혼밥</a>
+                    <a href="/DATE">💑 데이트</a>
+                    <a href="/WORK">🍻 회식</a>
+                    <a href="/ETC">🧩 기타</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/game/pinball">🎯 핀볼</a>
+                    <a href="/game/ladder">🪜 사다리타기</a>
+                    <a href="/game/random_amount">🎰 룰렛 게임</a>
+                    <a href="/game/worldcup">🏆 음식 월드컵</a>
+                    <a href="/game/calculator">🧮 계산기</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/about">ℹ️ 회사소개</a>
+                </div>
+            </div>
+        </div>
+        <script>
+            function openMobileNav() { document.getElementById('mobileNav').classList.add('open'); document.body.style.overflow='hidden'; }
+            function closeMobileNav() { document.getElementById('mobileNav').classList.remove('open'); document.body.style.overflow=''; }
+            function closeMobileNavOutside(e) { if(e.target===document.getElementById('mobileNav')) closeMobileNav(); }
+        </script>
+
 </body>
 </html>
