@@ -102,7 +102,7 @@
             /* ===== 반응형 (태블릿/모바일) ===== */
             @media (max-width: 900px) {
                 .header {
-                    flex-direction: column;
+                    flex-direction: row;
                     padding: 10px 16px;
                     gap: 8px;
                     position: sticky;
@@ -227,29 +227,65 @@
                 .menu-bar, nav.menu-bar { display: none !important; }
             }
 
+        
+            .panel-close-btn { background: #f5f5f5; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer; color: #888; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; flex-shrink: 0; }
+            .panel-close-btn:hover { background: #fee2e2; color: #dc2626; }
+            .panel-header { padding: 24px 20px 16px; border-bottom: 1px solid #f2f2f2; display: flex; justify-content: space-between; align-items: flex-start; }
         </style>
     </head>
     <body>
     <!-- 광고 배너 -->
     <style>
+        /* ── 데스크탑 사이드 광고 ── */
         .side-ad {
-            position: fixed; top: 150px; width: 160px; height: 600px;
-            background: #f4f4f4; border: 1px solid #ddd; display: flex;
-            align-items: center; justify-content: center; color: #999;
-            font-weight: bold; z-index: 100; border-radius: 10px;
-            font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box;
+            position: fixed;
+            top: 150px;
+            width: 160px;
+            height: 600px;
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-weight: bold;
+            z-index: 50;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 8px;
+            box-sizing: border-box;
         }
         .ad-left  { left: 20px; }
         .ad-right { right: 20px; }
+
+        /* ── 모바일 상단 광고 → 하단 고정으로 변경 ── */
         .mobile-top-ad {
-            display: none; position: fixed; top: 100px; left: 0; right: 0;
-            height: 55px; background: #f4f4f4; border-bottom: 1px solid #ddd;
-            align-items: center; justify-content: center; color: #999;
-            font-weight: bold; font-size: 0.9rem; z-index: 100;
-            pointer-events: none;
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 52px;
+            background: #f4f4f4;
+            border-top: 1px solid #ddd;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-weight: bold;
+            font-size: 0.9rem;
+            z-index: 200;
         }
-        @media (max-width: 1200px) { .side-ad { display: none; } }
-        @media (max-width: 900px)  { .mobile-top-ad { display: flex; } }
+
+        /* 1200px 이하: 사이드 광고 숨김 */
+        @media (max-width: 1200px) {
+            .side-ad { display: none; }
+        }
+        /* 900px 이하: 하단 광고 표시 + body에 하단 여백 */
+        @media (max-width: 900px) {
+            .mobile-top-ad { display: flex; }
+            body { padding-bottom: 60px; }
+        }
     </style>
     <div class="side-ad ad-left">광고 영역 (좌)</div>
     <div class="side-ad ad-right">광고 영역 (우)</div>
@@ -581,8 +617,11 @@
         <div class="panel-overlay" id="panelOverlay"></div>
         <div class="panel-panel" id="panelPanel">
             <div class="panel-header">
-                <div class="panel-header-title">🍽️ 나의 메이트</div>
-                <div class="panel-header-sub" id="panel-login-hint"></div>
+                <div>
+                    <div class="panel-header-title">🍽️ 나의 메이트</div>
+                    <div class="panel-header-sub" id="panel-login-hint"></div>
+                </div>
+                <button class="panel-close-btn" onclick="togglePanel()" title="닫기">✕</button>
             </div>
             <div class="panel-tabs">
                 <button class="tab-btn active" onclick="showTab('list')">친구목록</button>
@@ -660,5 +699,14 @@
                 }
             }
 </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var ov = document.getElementById('panelOverlay');
+                if (ov) ov.addEventListener('click', function() {
+                    if (typeof togglePanel === 'function') togglePanel();
+                });
+            });
+        </script>
 </body>
 </html>

@@ -423,6 +423,25 @@
                 .login-btn { padding: 8px 10px; font-size: 0.8rem; }
             }
 
+        
+        /* ── 게임 페이지 모바일 광고: 하단 고정 ── */
+        @media (max-width: 900px) {
+            .mobile-top-ad {
+                display: flex !important;
+                position: fixed !important;
+                top: auto !important;
+                bottom: 0 !important;
+                left: 0;
+                right: 0;
+                height: 50px;
+                border-top: 1px solid #ddd;
+                border-bottom: none;
+                z-index: 100;
+            }
+            .game-main {
+                padding-bottom: 70px !important;
+            }
+        }
         </style>
     </head>
 

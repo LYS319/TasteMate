@@ -231,17 +231,15 @@
             .panel-panel.active {
                 right: 0;
             }
-            .panel-header {
-                padding: 28px 22px 16px;
-                border-bottom: 1px solid #f2f2f2;
-                background: linear-gradient(135deg, #fff, #fafafa);
-            }
+            .panel-header { padding: 24px 20px 16px; border-bottom: 1px solid #f2f2f2; display: flex; justify-content: space-between; align-items: flex-start; }
             .panel-header-title {
                 font-size: 1.25rem;
                 font-weight: 900;
                 color: #111;
                 margin-bottom: 2px;
             }
+            .panel-close-btn { background: #f5f5f5; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer; color: #888; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; flex-shrink: 0; }
+            .panel-close-btn:hover { background: #fee2e2; color: #dc2626; }
             .panel-header-sub {
                 font-size: 0.82rem;
                 color: #aaa;
@@ -660,9 +658,9 @@
             .dropdown-content a { display: block; padding: 10px 14px; color: #333; text-decoration: none; font-size: 0.9rem; font-weight: 600; border-radius: 8px; }
             .dropdown-content a:hover { background: #fff1f1; color: #dc2626; }
             @media (max-width: 900px) {
-                .header { flex-direction: column; padding: 10px 16px; gap: 8px; position: sticky; }
-                .header-left { width: 100%; justify-content: space-between; }
-                .header-right { width: 100%; justify-content: flex-end; }
+                .header { flex-direction: row; padding: 10px 16px; gap: 8px; position: sticky; }
+                .header-left { flex: 1;  justify-content: space-between; }
+                .header-right {  justify-content: flex-end; }
                 .menu-bar { display: none; }
                 .header-logo { font-size: 1.3rem; }
                 .login-btn { padding: 8px 10px; font-size: 0.8rem; }
@@ -682,12 +680,32 @@
             .mobile-nav-divider { height: 1px; background: #f1f1f1; margin: 8px 0; }
 
             /* ── 광고 배너 CSS ── */
-            .side-ad { position: fixed; top: 150px; width: 160px; height: 600px; background: #f4f4f4; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; color: #999; font-weight: bold; z-index: 100; border-radius: 10px; font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box; }
+            .side-ad { position: fixed; top: 150px; width: 160px; height: 600px; background: #f4f4f4; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; color: #999; font-weight: bold; z-index: 50; border-radius: 10px; font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box; }
             .ad-left  { left: 20px; }
             .ad-right { right: 20px; }
-            .mobile-top-ad { display: none; position: fixed; top: 60px; left: 0; right: 0; height: 55px; background: #f4f4f4; border-bottom: 1px solid #ddd; align-items: center; justify-content: center; color: #999; font-weight: bold; font-size: 0.9rem; z-index: 100; pointer-events: none; }
             @media (max-width: 1200px) { .side-ad { display: none; } }
-            @media (max-width: 900px)  { .mobile-top-ad { display: flex; } }
+            .mobile-top-ad {
+                display: none;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 52px;
+                background: #f4f4f4;
+                border-top: 1px solid #ddd;
+                align-items: center;
+                justify-content: center;
+                color: #999;
+                font-weight: bold;
+                font-size: 0.9rem;
+                z-index: 200;
+            }
+            @media (max-width: 1200px) { }
+            @media (max-width: 900px)  { .mobile-top-ad { display: flex;
+                body { padding-bottom: 60px; }
+            } }
+        
+        @media (max-width: 1200px) { .side-ad { display: none; } }
         </style>
     </head>
     <body>
@@ -697,8 +715,10 @@
         <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
         <header class="header">
             <div class="header-left">
+                <button class="menu-toggle-btn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
+                    <a class="menu-item" href="/about">회사소개</a>
                     <a class="menu-item" href="/aichat">AI추천</a>
                     <a class="menu-item" href="/community">커뮤니티</a>
                     <div class="menu-item game-dropdown">
@@ -831,8 +851,11 @@
         <!-- 친구 패널 -->
         <div class="panel-panel" id="panelPanel">
             <div class="panel-header">
-                <div class="panel-header-title">🍽️ 나의 메이트</div>
-                <div class="panel-header-sub" id="panel-login-hint"></div>
+                <div>
+                    <div class="panel-header-title">🍽️ 나의 메이트</div>
+                    <div class="panel-header-sub" id="panel-login-hint"></div>
+                </div>
+                <button class="panel-close-btn" onclick="togglePanel()" title="닫기">✕</button>
             </div>
             <div class="panel-tabs">
                 <button class="tab-btn active" onclick="showTab('list')">친구목록</button>
@@ -937,5 +960,14 @@
             function closeMobileNavOutside(e) { if(e.target===document.getElementById('mobileNav')) closeMobileNav(); }
         </script>
 
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var ov = document.getElementById('panelOverlay');
+                if (ov) ov.addEventListener('click', function() {
+                    if (typeof togglePanel === 'function') togglePanel();
+                });
+            });
+        </script>
 </body>
 </html>

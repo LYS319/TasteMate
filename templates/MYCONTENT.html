@@ -149,15 +149,15 @@
             .side-ad { position: fixed; top: 150px; width: 160px; height: 600px; background: #f4f4f4; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; color: #999; font-weight: bold; z-index: 100; border-radius: 10px; font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box; }
             .ad-left { left: 20px; }
             .ad-right { right: 20px; }
-            .mobile-top-ad { display: none; position: fixed; top: 60px; left: 0; right: 0; height: 55px; background: #f4f4f4; border-bottom: 1px solid #ddd; align-items: center; justify-content: center; color: #999; font-weight: bold; font-size: 0.9rem; z-index: 100; pointer-events: none; }
+            
             @media (max-width: 1200px) { .side-ad { display: none; } }
-            @media (max-width: 900px) { .mobile-top-ad { display: flex; } }
+            @media (max-width: 900px) {  }
 
             /* ── 모바일 반응형 ── */
             @media (max-width: 900px) {
-                .header { flex-direction: column; padding: 10px 16px; gap: 8px; position: sticky; }
-                .header-left { width: 100%; justify-content: space-between; }
-                .header-right { width: 100%; justify-content: flex-end; }
+                .header { flex-direction: row; padding: 10px 16px; gap: 8px; position: sticky; }
+                .header-left { flex: 1;  justify-content: space-between; }
+                .header-right {  justify-content: flex-end; }
                 .header-logo { font-size: 1.3rem; }
                 .login-btn { padding: 8px 10px; font-size: 0.8rem; }
                 .current-location { padding: 6px 8px; font-size: 0.78rem; }
@@ -241,6 +241,28 @@
                 .chat-window { width: 100%; }
             }
 
+        
+        /* ── 모바일 광고: 하단 고정 ── */
+        .mobile-top-ad {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 52px;
+            background: #f4f4f4;
+            border-top: 1px solid #ddd;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-weight: bold;
+            font-size: 0.9rem;
+            z-index: 200;
+        }
+        @media (max-width: 900px) {
+            .mobile-top-ad { display: flex; }
+            body { padding-bottom: 60px; }
+        }
         </style>
     </head>
     <body>
@@ -249,6 +271,7 @@
                 <button class="menu-toggle-btn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav id="mainNavMenu">
+                    <button class="nav-emoji-btn" onclick="location.href='/about'" title="회사소개">ℹ️ 회사소개</button><br />
                     <button class="nav-emoji-btn" onclick="location.href='/main'">🏠 홈</button>
                     <button class="nav-emoji-btn" onclick="location.href='/aichat'">🤖 AI추천</button>
                     <button class="nav-emoji-btn" onclick="location.href='/community'">🧑‍🤝‍🧑 커뮤니티</button>
