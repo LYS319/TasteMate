@@ -17,9 +17,11 @@ from sqlalchemy.orm import sessionmaker, Session, relationship, declarative_base
 from dotenv import load_dotenv
 import os
 import google.generativeai as genai
+import httpx
+import uuid
 logging.basicConfig(level=logging.INFO)
 
-from Database import Like, User, Post, Comment, Friend, ChatMessage, get_db
+from Database import Like, User, Post, Comment, Friend, ChatMessage, FriendRequest, ChatHistory, UserLog, UserProfile, LocationLog, Subscription, PaymentLog, get_db, create_tables
 from config import settings
 from game_ideal_router import router as ideal_router
 
@@ -27,6 +29,11 @@ app = FastAPI(title="Taste Mate Final System")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 templates = Jinja2Templates(directory="templates")
 
+# ── 서버 시작 시 미생성 테이블 자동 생성 ──
+@app.on_event("startup")
+def startup_event():
+    create_tables()
+    logging.info("✅ DB 테이블 생성/확인 완료")
 # --- ngrok 브라우저 경고 스킵 미들웨어 ---
 @app.middleware("http")
 async def add_ngrok_skip_header(request: Request, call_next):
@@ -220,6 +227,9 @@ class ChatRequest(BaseModel):
     situation: str = ""              # 현재 상황 (혼술/회식/데이트/기타)
     location: str = ""               # 현재 위치 (ex: 강남구 역삼동)
     current_hour: int = -1           # 현재 시각 (0~23), 시간대별 추천에 활용
+    user_id: int | None = None       # 로그인 유저 ID (로그 저장용)
+    lat: float | None = None         # GPS 위도 (위치 로그 저장용)
+    lon: float | None = None         # GPS 경도 (위치 로그 저장용)
 
 
 # --- 개선된 /api/chat 엔드포인트 ---
@@ -388,6 +398,61 @@ TASTE_DATA:{{
             except Exception:
                 pass
 
+        # ================================================================
+        # 📊 데이터 저장 (로그인 유저만)
+        # ================================================================
+        if request.user_id:
+            try:
+                save_db = next(get_db())
+
+                # ① 행동 로그 저장 (매 요청마다)
+                user_log = UserLog(
+                    user_id=request.user_id,
+                    action="recommend",
+                    category=request.situation or taste_data.get("detected_situation", "기타"),
+                    keyword=request.message[:200]
+                )
+                save_db.add(user_log)
+
+                # ② 취향 프로필 저장/업데이트 (TASTE_DATA 추출된 경우만)
+                if taste_data:
+                    profile_row = save_db.query(UserProfile).filter_by(user_id=request.user_id).first()
+                    if profile_row:
+                        # 값이 있을 때만 덮어쓰기 (null로 초기화 방지)
+                        if taste_data.get("detected_alcohol"):
+                            profile_row.preferred_alcohol = taste_data["detected_alcohol"]
+                        if taste_data.get("detected_snack"):
+                            profile_row.preferred_snack = taste_data["detected_snack"]
+                        if request.situation:
+                            profile_row.situation = request.situation
+                        if request.location:
+                            profile_row.region = request.location
+                    else:
+                        profile_row = UserProfile(
+                            user_id=request.user_id,
+                            preferred_alcohol=taste_data.get("detected_alcohol"),
+                            preferred_snack=taste_data.get("detected_snack"),
+                            situation=request.situation or None,
+                            region=request.location or None
+                        )
+                        save_db.add(profile_row)
+
+                # ③ 위치 로그 저장 (lat/lon 넘어온 경우만)
+                if request.lat and request.lon:
+                    loc_log = LocationLog(
+                        user_id=request.user_id,
+                        lat=request.lat,
+                        lon=request.lon,
+                        region=request.location or None
+                    )
+                    save_db.add(loc_log)
+
+                save_db.commit()
+
+            except Exception as db_err:
+                logging.error(f"데이터 저장 에러: {db_err}")
+                # DB 저장 실패해도 AI 응답은 정상 반환
+
         return {
             "reply": display_text,
             "taste_data": taste_data  # 프론트에서 취향 프로필 업데이트에 사용
@@ -402,18 +467,37 @@ TASTE_DATA:{{
 # 취향 프로필 온보딩 API (신규 유저 첫 접속 시)
 # ================================================================
 class ProfileRequest(BaseModel):
+    user_id: int | None = None       # 로그인 유저 ID
     preferred_alcohol: str = ""
     preferred_snack: str = ""
     dislikes: str = ""
     situation: str = ""
 
 @app.post("/api/user-profile")
-async def save_user_profile(profile: ProfileRequest):
+async def save_user_profile(profile: ProfileRequest, db: Session = Depends(get_db)):
     """
-    프론트에서 localStorage에 저장하는 방식이므로,
-    이 엔드포인트는 서버 측 검증/응답용으로 활용.
-    실제 저장은 프론트 localStorage에서 처리.
+    온보딩 시 취향 프로필을 DB에 저장.
+    user_id가 없으면 localStorage 저장용으로만 응답.
     """
+    if profile.user_id:
+        try:
+            profile_row = db.query(UserProfile).filter_by(user_id=profile.user_id).first()
+            if profile_row:
+                profile_row.preferred_alcohol = profile.preferred_alcohol or profile_row.preferred_alcohol
+                profile_row.preferred_snack   = profile.preferred_snack   or profile_row.preferred_snack
+                profile_row.situation         = profile.situation         or profile_row.situation
+            else:
+                profile_row = UserProfile(
+                    user_id=profile.user_id,
+                    preferred_alcohol=profile.preferred_alcohol or None,
+                    preferred_snack=profile.preferred_snack or None,
+                    situation=profile.situation or None,
+                )
+                db.add(profile_row)
+            db.commit()
+        except Exception as e:
+            logging.error(f"프로필 저장 에러: {e}")
+
     return {"message": "프로필 저장 완료", "profile": profile.dict()}
 
 ## 중복 선언 제거 (위에서 이미 선언됨)
@@ -554,12 +638,45 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         return JSONResponse(status_code=404, content={"detail": "사용자를 찾을 수 없습니다."})
-    # 관련 게시글/댓글 삭제
-    db.query(Post).filter(Post.user_id == user_id).delete()
-    db.query(Comment).filter(Comment.user_id == user_id).delete()
-    db.delete(user)
-    db.commit()
-    return {"message": "회원 탈퇴가 완료되었습니다."}
+    try:
+        # 1) 채팅 메시지 (sender / receiver 양쪽)
+        db.query(ChatMessage).filter(
+            (ChatMessage.sender_id == user_id) | (ChatMessage.receiver_id == user_id)
+        ).delete(synchronize_session=False)
+
+        # 2) 친구 요청 (보낸 것 / 받은 것 양쪽)
+        db.query(FriendRequest).filter(
+            (FriendRequest.from_user_id == user_id) | (FriendRequest.to_user_id == user_id)
+        ).delete(synchronize_session=False)
+
+        # 3) 친구 관계 (양방향)
+        db.query(Friend).filter(
+            (Friend.user_id == user_id) | (Friend.friend_id == user_id)
+        ).delete(synchronize_session=False)
+
+        # 4) 좋아요
+        db.query(Like).filter(Like.user_id == user_id).delete(synchronize_session=False)
+
+        # 5) 댓글
+        db.query(Comment).filter(Comment.user_id == user_id).delete(synchronize_session=False)
+
+        # 6) 게시글에 달린 댓글/좋아요 → 게시글 삭제
+        user_posts = db.query(Post).filter(Post.user_id == user_id).all()
+        for post in user_posts:
+            db.query(Like).filter(Like.post_id == post.id).delete(synchronize_session=False)
+            db.query(Comment).filter(Comment.post_id == post.id).delete(synchronize_session=False)
+        db.query(Post).filter(Post.user_id == user_id).delete(synchronize_session=False)
+
+        # 7) AI 채팅 히스토리
+        db.query(ChatHistory).filter(ChatHistory.user_id == user_id).delete(synchronize_session=False)
+
+        # 8) 유저 삭제
+        db.delete(user)
+        db.commit()
+        return {"message": "회원 탈퇴가 완료되었습니다."}
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(status_code=500, content={"detail": f"회원 탈퇴 중 오류가 발생했습니다: {str(e)}"})
 
 # 최신순 게시글 리스트
 @app.get("/api/posts/{category}/latest")
@@ -1405,3 +1522,185 @@ async def websocket_endpoint(websocket: WebSocket, user_id: int):
     except Exception as e:
         logging.error(f"[WS] 예외: user_id={user_id}, error={e}")
         manager.disconnect(user_id)
+
+# ── 구독 페이지 ───────────────────────────────────────────────
+@app.get("/subscribe", response_class=HTMLResponse)
+def subscribe_page(request: Request):
+    return templates.TemplateResponse("SUBSCRIBE.html", {"request": request})
+
+
+# ================================================================
+# 💳 결제 API (토스페이먼츠)
+# ================================================================
+from datetime import timedelta
+
+TOSS_SECRET_KEY  = os.getenv("TOSS_SECRET_KEY", "")   # .env에 추가
+TOSS_CLIENT_KEY  = os.getenv("TOSS_CLIENT_KEY", "")   # .env에 추가
+PLAN_PRICE = {"basic": 2900, "premium": 5900}
+
+
+# ── 결제 준비 (주문 ID 생성) ──────────────────────────────────
+class PaymentPrepareRequest(BaseModel):
+    user_id: int
+    plan: str   # "basic" or "premium"
+
+@app.post("/api/payment/prepare")
+async def prepare_payment(req: PaymentPrepareRequest, db: Session = Depends(get_db)):
+    if req.plan not in PLAN_PRICE:
+        raise HTTPException(status_code=400, detail="유효하지 않은 플랜입니다.")
+
+    user = db.query(User).filter(User.id == req.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다.")
+
+    amount   = PLAN_PRICE[req.plan]
+    order_id = f"TM-{req.user_id}-{uuid.uuid4().hex[:10]}"
+
+    # 결제 대기 로그 저장
+    log = PaymentLog(
+        user_id      = req.user_id,
+        order_id     = order_id,
+        amount       = amount,
+        payment_type = "subscription",
+        status       = "pending"
+    )
+    db.add(log)
+    db.commit()
+
+    return {
+        "order_id":   order_id,
+        "amount":     amount,
+        "order_name": f"TasteMate {req.plan.capitalize()} 구독",
+        "client_key": TOSS_CLIENT_KEY
+    }
+
+
+# ── 결제 승인 (토스 SDK 완료 후 호출) ────────────────────────
+class PaymentConfirmRequest(BaseModel):
+    payment_key: str
+    order_id:    str
+    amount:      int
+    user_id:     int
+    plan:        str
+
+@app.post("/api/payment/confirm")
+async def confirm_payment(req: PaymentConfirmRequest, db: Session = Depends(get_db)):
+    # PaymentLog 확인
+    log = db.query(PaymentLog).filter_by(order_id=req.order_id).first()
+    if not log:
+        raise HTTPException(status_code=404, detail="주문 정보를 찾을 수 없습니다.")
+    if log.amount != req.amount:
+        raise HTTPException(status_code=400, detail="결제 금액이 일치하지 않습니다.")
+
+    # 토스 서버에 승인 요청
+    try:
+        async with httpx.AsyncClient() as client:
+            res = await client.post(
+                "https://api.tosspayments.com/v1/payments/confirm",
+                json={
+                    "paymentKey": req.payment_key,
+                    "orderId":    req.order_id,
+                    "amount":     req.amount
+                },
+                auth=(TOSS_SECRET_KEY, ""),
+                timeout=10.0
+            )
+        if res.status_code != 200:
+            log.status = "fail"
+            db.commit()
+            raise HTTPException(status_code=400, detail=f"토스 승인 실패: {res.text}")
+    except httpx.RequestError as e:
+        log.status = "fail"
+        db.commit()
+        raise HTTPException(status_code=500, detail="결제 서버 연결 오류")
+
+    # PaymentLog 성공 처리
+    log.status   = "success"
+    log.toss_key = req.payment_key
+
+    # Subscription 생성 or 갱신
+    sub = db.query(Subscription).filter_by(user_id=req.user_id).first()
+    if sub:
+        sub.plan        = req.plan
+        sub.status      = "active"
+        sub.payment_key = req.payment_key
+        sub.expires_at  = datetime.utcnow() + timedelta(days=30)
+    else:
+        sub = Subscription(
+            user_id     = req.user_id,
+            plan        = req.plan,
+            payment_key = req.payment_key,
+            expires_at  = datetime.utcnow() + timedelta(days=30)
+        )
+        db.add(sub)
+
+    db.commit()
+    logging.info(f"✅ 결제 성공: user_id={req.user_id}, plan={req.plan}, amount={req.amount}")
+    return {"message": "구독 완료", "plan": req.plan, "expires_at": str(sub.expires_at)}
+
+
+# ── 구독 취소 ─────────────────────────────────────────────────
+@app.post("/api/payment/cancel")
+async def cancel_subscription(user_id: int, db: Session = Depends(get_db)):
+    sub = db.query(Subscription).filter_by(user_id=user_id, status="active").first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="활성 구독이 없습니다.")
+
+    # 토스 서버에 결제 취소 요청
+    try:
+        async with httpx.AsyncClient() as client:
+            res = await client.post(
+                f"https://api.tosspayments.com/v1/payments/{sub.payment_key}/cancel",
+                json={"cancelReason": "사용자 구독 취소"},
+                auth=(TOSS_SECRET_KEY, ""),
+                timeout=10.0
+            )
+        if res.status_code == 200:
+            sub.status = "cancelled"
+            db.commit()
+            return {"message": "구독이 취소되었습니다."}
+        else:
+            raise HTTPException(status_code=400, detail="취소 요청 실패")
+    except httpx.RequestError:
+        raise HTTPException(status_code=500, detail="결제 서버 연결 오류")
+
+
+# ── 구독 상태 조회 ────────────────────────────────────────────
+@app.get("/api/subscription/{user_id}")
+def get_subscription(user_id: int, db: Session = Depends(get_db)):
+    sub = db.query(Subscription).filter_by(user_id=user_id).first()
+    if not sub or sub.status != "active" or sub.expires_at < datetime.utcnow():
+        # 만료된 구독 자동 처리
+        if sub and sub.status == "active" and sub.expires_at < datetime.utcnow():
+            sub.status = "expired"
+            db.commit()
+        return {"plan": "free", "active": False}
+    return {
+        "plan":       sub.plan,
+        "active":     True,
+        "expires_at": str(sub.expires_at),
+        "started_at": str(sub.started_at)
+    }
+
+
+# ── 결제 성공 페이지 ──────────────────────────────────────────
+@app.get("/payment/success", response_class=HTMLResponse)
+def payment_success(request: Request):
+    return templates.TemplateResponse("payment_success.html", {"request": request})
+
+# ── 결제 실패 페이지 ──────────────────────────────────────────
+@app.get("/payment/fail", response_class=HTMLResponse)
+def payment_fail(request: Request):
+    return templates.TemplateResponse("payment_fail.html", {"request": request})
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host="192.168.0.239",
+        port=8443,
+        ssl_keyfile="./key.pem",
+        ssl_certfile="./cert.pem",
+        reload=True
+    )

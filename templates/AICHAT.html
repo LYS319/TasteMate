@@ -806,14 +806,8 @@
         .ad-left { left: 16px; }
         .ad-right { right: 16px; }
         @media (max-width: 1450px) { .side-ad { display: none; } }
-        .mobile-top-ad {
-            display: none; position: fixed; top: 56px; left: 0; right: 0;
-            height: 50px; background: #f4f4f4; border-bottom: 1px solid #e0e0e0;
-            align-items: center; justify-content: center; color: #999;
-            font-weight: bold; font-size: 0.9rem; z-index: 100;
-            pointer-events: none;
-        }
-        @media (max-width: 900px) { .mobile-top-ad { display: flex; } }
+        
+        @media (max-width: 900px) {  }
 
         /* ── 친구 패널 & 채팅 공통 ── */
         .panel-fab {
@@ -844,8 +838,10 @@
             border-radius: 24px 0 0 24px; overflow: hidden;
         }
         .panel-panel.active { right: 0; }
-        .panel-header { padding: 28px 22px 16px; border-bottom: 1px solid #f2f2f2; background: linear-gradient(135deg,#fff,#fafafa); }
+        .panel-header { padding: 24px 20px 16px; border-bottom: 1px solid #f2f2f2; display: flex; justify-content: space-between; align-items: flex-start; }
         .panel-header-title { font-size: 1.25rem; font-weight: 900; color: #111; margin-bottom: 2px; }
+            .panel-close-btn { background: #f5f5f5; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer; color: #888; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; flex-shrink: 0; }
+            .panel-close-btn:hover { background: #fee2e2; color: #dc2626; }
         .panel-header-sub { font-size: 0.82rem; color: #aaa; font-weight: 500; }
         .panel-tabs { display: flex; padding: 14px 14px 0; gap: 6px; }
         .tab-btn { flex:1; padding:10px 0; border-radius:12px; font-weight:700; color:#999; border:none; background:#f5f5f5; cursor:pointer; font-size:0.88rem; transition:background .2s,color .2s,transform .15s; font-family:inherit; }
@@ -900,6 +896,30 @@
             #chat-windows-container { right:0; left:0; bottom:0; }
             .chat-window { width:100%; border-radius:18px 18px 0 0; }
         }
+        
+        /* ── 모바일 광고: 하단 고정 ── */
+        .mobile-top-ad {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 52px;
+            background: #f4f4f4;
+            border-top: 1px solid #ddd;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-weight: bold;
+            font-size: 0.9rem;
+            z-index: 200;
+        }
+        @media (max-width: 900px) {
+            .mobile-top-ad { display: flex; }
+            body { padding-bottom: 60px; }
+        }
+        
+        @media (max-width: 1450px) { .side-ad { display: none; } }
         </style>
 </head>
 <body>
@@ -1023,6 +1043,7 @@
                         <div class="pd-sub" id="pd-email">내 계정</div>
                     </div>
                     <button class="pd-item" onclick="location.href='/mypage'">👤 마이페이지</button>
+                    <button class="pd-item" onclick="location.href='/subscribe';closeProfileDropdown()" style="color:#2563EB;font-weight:700;">💎 구독 관리</button>
                     <button class="pd-item" onclick="openOnboarding();closeProfileDropdown()">🎯 취향 수정</button>
                     <button class="pd-item danger" id="pd-logout-btn" onclick="handleLogout()">🚪 로그아웃</button>
                 </div>
@@ -1164,7 +1185,10 @@
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
         내정보
     </div>
-    
+    <div class="nav-item" onclick="location.href='/subscribe'" style="color:#2563EB;">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M5 3l14 9-14 9V3z"/></svg>
+        구독
+    </div>
 </div>
 
 <script>
@@ -1997,6 +2021,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <!-- ✅ 회사소개는 하나만 -->
     <a href="/about">🏢 회사소개</a>
+    <a href="/subscribe" style="color:#2563EB;font-weight:700;background:#EFF6FF;">💎 구독하기</a>
 
 </div>
         </div>
@@ -2260,8 +2285,11 @@ function toggleFavGroup() {
         <!-- 친구 패널 -->
         <div class="panel-panel" id="panelPanel">
             <div class="panel-header">
-                <div class="panel-header-title">🍽️ 나의 메이트</div>
-                <div class="panel-header-sub" id="panel-login-hint"></div>
+                <div>
+                    <div class="panel-header-title">🍽️ 나의 메이트</div>
+                    <div class="panel-header-sub" id="panel-login-hint"></div>
+                </div>
+                <button class="panel-close-btn" onclick="togglePanel()" title="닫기">✕</button>
             </div>
             <div class="panel-tabs">
                 <button class="tab-btn active" onclick="showTab('list')">친구목록</button>
@@ -2305,5 +2333,14 @@ function toggleFavGroup() {
         <div id="chat-windows-container"></div>
         <script src="/static/js/friend-chat.js"></script>
 
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var ov = document.getElementById('panelOverlay');
+                if (ov) ov.addEventListener('click', function() {
+                    if (typeof togglePanel === 'function') togglePanel();
+                });
+            });
+        </script>
 </body>
 </html>

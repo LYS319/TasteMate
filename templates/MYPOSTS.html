@@ -103,13 +103,166 @@
                 .tab-btn { padding: 8px 16px; font-size: 0.95rem; }
             }
 
+        
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+            /* ── 헤더 ── */
+            .header {
+                display: flex; justify-content: space-between; align-items: center;
+                padding: 12px 32px;
+                background: rgba(255,255,255,0.9);
+                box-shadow: 0 4px 20px rgba(220,38,38,0.08);
+                backdrop-filter: blur(15px);
+                position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            }
+            .header-left  { display: flex; align-items: center; gap: 20px; }
+            .header-right { display: flex; align-items: center; gap: 12px; }
+            .header-logo  { font-size: 1.6rem; font-weight: 900; color: #dc2626; text-decoration: none; }
+            .menu-toggle-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; border-radius: 8px; padding: 4px 10px; }
+            #mainNavMenu { min-width: 140px; position: absolute; top: 65px; left: 32px; background: #fff; box-shadow: 0 4px 16px rgba(220,38,38,0.13); border-radius: 12px; padding: 15px; display: none; z-index: 1001; }
+            .nav-emoji-btn { background: none; border: none; font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; cursor: pointer; width: 100%; text-align: left; padding: 10px; }
+            .nickname-avatar { width: 38px; height: 38px; border-radius: 50%; background: #222; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; }
+            .current-location { font-size: 0.85rem; color: #dc2626; background: #fff1f1; border: 1px solid rgba(220,38,38,0.1); border-radius: 10px; padding: 8px 14px; font-weight: 700; cursor: pointer; }
+            .login-btn { padding: 10px 18px; background: #dc2626; color: #fff; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+
+            /* ── 광고 배너 ── */
+            .side-ad { position: fixed; top: 150px; width: 160px; height: 600px; background: #f4f4f4; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; color: #999; font-weight: bold; z-index: 100; border-radius: 10px; font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box; }
+            .ad-left { left: 20px; }
+            .ad-right { right: 20px; }
+            
+            @media (max-width: 1200px) { .side-ad { display: none; } }
+            @media (max-width: 900px) {  }
+
+            /* ── 모바일 반응형 ── */
+            @media (max-width: 900px) {
+                .header { flex-direction: row; padding: 10px 16px; gap: 8px; position: sticky; }
+                .header-left { flex: 1;  justify-content: space-between; }
+                .header-right {  justify-content: flex-end; }
+                .header-logo { font-size: 1.3rem; }
+                .login-btn { padding: 8px 10px; font-size: 0.8rem; }
+                .current-location { padding: 6px 8px; font-size: 0.78rem; }
+                .nickname-avatar { width: 32px; height: 32px; font-size: 0.85rem; }
+            }
+            @media (max-width: 480px) {
+                .header { padding: 8px 10px; }
+                .header-logo { font-size: 1.1rem; }
+            }
+
+            /* ── 햄버거 메뉴 ── */
+            .hamburger-btn { display: none; background: none; border: none; font-size: 1.6rem; cursor: pointer; padding: 4px 8px; border-radius: 8px; color: #dc2626; line-height: 1; }
+            .mobile-nav { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 2000; }
+            .mobile-nav.open { display: block; }
+            .mobile-nav-panel { position: absolute; top: 0; left: 0; width: 260px; height: 100%; background: #fff; box-shadow: 4px 0 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; box-sizing: border-box; }
+            .mobile-nav-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 16px 20px; border-bottom: 1px solid #f1f1f1; flex-shrink: 0; }
+            .mobile-nav-logo { font-size: 1.4rem; font-weight: 900; color: #dc2626; text-decoration: none; }
+            .mobile-nav-close { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: #666; padding: 4px; }
+            .mobile-nav-links { padding: 16px 0; display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
+            .mobile-nav-links a, .mobile-nav-links button { display: block; padding: 14px 24px; font-size: 1rem; font-weight: 600; color: #333; text-decoration: none; background: none; border: none; text-align: left; cursor: pointer; transition: background 0.15s; }
+            .mobile-nav-links a:hover, .mobile-nav-links button:hover { background: #fff1f1; color: #dc2626; }
+            .mobile-nav-divider { height: 1px; background: #f1f1f1; margin: 8px 0; }
+
+            /* ── 💬 FAB & 친구패널 ── */
+            .panel-fab { position: fixed; bottom: 32px; right: 32px; width: 60px; height: 60px; background: linear-gradient(135deg,#dc2626,#ef4444); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; box-shadow: 0 8px 24px rgba(220,38,38,0.45); z-index: 2601; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s; border: none; outline: none; animation: float 3s ease-in-out infinite; }
+            .panel-fab:hover { transform: scale(1.14) rotate(8deg); box-shadow: 0 14px 36px rgba(220,38,38,0.55); animation: none; }
+            @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
+            .panel-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.28); backdrop-filter: blur(6px); z-index: 2600; display: none; opacity: 0; transition: opacity 0.3s ease; }
+            .panel-overlay.active { display: block; opacity: 1; }
+            .panel-panel { position: fixed; top: 12px; right: -390px; width: 355px; height: calc(100% - 24px); background: #fff; box-shadow: -12px 0 60px rgba(0,0,0,0.12); transition: right 0.42s cubic-bezier(0.22,1,0.36,1); z-index: 2602; display: flex; flex-direction: column; border-radius: 24px 0 0 24px; overflow: hidden; }
+            .panel-panel.active { right: 0; }
+            .panel-header { padding: 28px 22px 16px; border-bottom: 1px solid #f2f2f2; background: linear-gradient(135deg,#fff,#fafafa); }
+            .panel-header-title { font-size: 1.25rem; font-weight: 900; color: #111; margin-bottom: 2px; }
+            .panel-header-sub { font-size: 0.82rem; color: #aaa; font-weight: 500; }
+            .panel-tabs { display: flex; padding: 14px 14px 0; gap: 6px; }
+            .tab-btn { flex: 1; padding: 10px 0; border-radius: 12px; font-weight: 700; color: #999; border: none; background: #f5f5f5; cursor: pointer; font-size: 0.88rem; transition: background 0.2s, color 0.2s; font-family: inherit; }
+            .tab-btn.active { color: #fff; background: linear-gradient(135deg,#dc2626,#ef4444); box-shadow: 0 4px 12px rgba(220,38,38,0.3); }
+            .tab-content { display: none; padding: 16px; overflow-y: auto; flex: 1; }
+            .tab-content.active { display: flex; flex-direction: column; gap: 9px; }
+            .friend-item { display: flex; justify-content: space-between; align-items: center; padding: 13px 15px; background: #fff; border: 1px solid #f0f0f0; border-radius: 15px; transition: background 0.2s, transform 0.2s; }
+            .friend-item:hover { background: #fff8f8; transform: translateX(-2px); }
+            .friend-name { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; }
+            .friend-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,#1a1a2e,#374151); color: #fff; font-weight: 800; font-size: 0.78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+            .friend-actions { display: flex; gap: 6px; align-items: center; }
+            .action-btn { padding: 7px 13px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; font-size: 0.83rem; font-family: inherit; }
+            .btn-accept { background: linear-gradient(135deg,#dc2626,#ef4444); color: white; }
+            .btn-reject { background: #f3f3f3; color: #777; }
+            .btn-chat { background: #fff1f1; color: #dc2626; border: 1px solid rgba(220,38,38,0.18); font-size: 1rem; padding: 6px 10px; }
+            .btn-delete { background: #f9f9f9; color: #bbb; border: 1px solid #ececec; font-size: 0.9rem; padding: 6px 9px; }
+            .btn-delete:hover { background: #fee2e2; color: #dc2626; }
+            .add-friend-input { width: 100%; padding: 13px 16px; border: 1.5px solid #ebebeb; border-radius: 13px; font-size: 0.95rem; outline: none; font-family: inherit; background: #fafafa; margin-bottom: 10px; display: block; box-sizing: border-box; }
+            .add-friend-input:focus { border-color: #dc2626; background: #fff; }
+            .add-friend-btn { width: 100%; padding: 14px; border-radius: 14px; background: linear-gradient(135deg,#dc2626,#ef4444); color: #fff; border: none; cursor: pointer; font-weight: 800; font-size: 0.97rem; font-family: inherit; }
+            .empty-state { text-align: center; color: #bbb; padding: 32px 16px; font-size: 0.9rem; line-height: 1.7; }
+            .empty-icon { font-size: 2.4rem; margin-bottom: 10px; }
+            .req-dot { display: inline-block; width: 7px; height: 7px; background: #ef4444; border-radius: 50%; margin-left: 4px; vertical-align: middle; }
+            .confirm-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.42); backdrop-filter: blur(6px); z-index: 9998; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.22s; }
+            .confirm-modal-bg.show { opacity: 1; pointer-events: all; }
+            .confirm-modal { background: #fff; border-radius: 24px; padding: 32px 28px 26px; width: 290px; text-align: center; box-shadow: 0 24px 72px rgba(0,0,0,0.18); transform: scale(0.88); transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1); }
+            .confirm-modal-bg.show .confirm-modal { transform: scale(1); }
+            .confirm-modal-btns { display: flex; gap: 10px; margin-top: 22px; }
+            .confirm-ok { flex: 1; padding: 13px; background: linear-gradient(135deg,#dc2626,#ef4444); color: #fff; border: none; border-radius: 13px; font-weight: 800; cursor: pointer; font-family: inherit; }
+            .confirm-cancel { flex: 1; padding: 13px; background: #f4f4f4; color: #666; border: none; border-radius: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+            .toast { position: fixed; bottom: 105px; left: 50%; transform: translateX(-50%) translateY(16px); background: rgba(20,20,20,0.92); color: #fff; padding: 11px 22px; border-radius: 50px; font-size: 0.88rem; font-weight: 600; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; white-space: nowrap; }
+            .toast.success { background: rgba(22,163,74,0.93); }
+            .toast.error { background: rgba(220,38,38,0.93); }
+            .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+            #chat-windows-container { position: fixed; bottom: 0; right: 110px; display: flex; flex-direction: row-reverse; align-items: flex-end; gap: 12px; z-index: 1999; pointer-events: none; }
+            .chat-window { pointer-events: all; width: 300px; background: #fff; border-radius: 18px 18px 0 0; box-shadow: 0 -4px 32px rgba(0,0,0,0.14); display: flex; flex-direction: column; max-height: 420px; overflow: hidden; }
+            .chat-window.minimized { max-height: 48px; }
+            .chat-header { background: linear-gradient(135deg,#dc2626,#ef4444); color: #fff; padding: 12px 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 18px 18px 0 0; }
+            .chat-target-name { font-weight: 800; font-size: 0.92rem; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .chat-ctrl-btn { background: rgba(255,255,255,0.2); border: none; color: #fff; border-radius: 7px; padding: 4px 8px; cursor: pointer; font-size: 0.85rem; }
+            .chat-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+            .chat-input-area { display: flex; padding: 10px 12px; border-top: 1px solid #f0f0f0; gap: 8px; }
+            .chat-input { flex: 1; border: 1px solid #eee; border-radius: 10px; padding: 8px 12px; font-size: 0.88rem; outline: none; font-family: inherit; }
+            .chat-send-btn { background: #dc2626; color: #fff; border: none; border-radius: 10px; padding: 8px 14px; cursor: pointer; font-weight: 700; }
+            @media (max-width: 900px) {
+                .panel-panel { width: 100%; top: 0; height: 100%; border-radius: 0; right: -100%; }
+                #chat-windows-container { right: 0; left: 0; }
+                .chat-window { width: 100%; }
+            }
+
+        
+        /* ── 모바일 광고: 하단 고정 ── */
+        .mobile-top-ad {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 52px;
+            background: #f4f4f4;
+            border-top: 1px solid #ddd;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-weight: bold;
+            font-size: 0.9rem;
+            z-index: 200;
+        }
+        @media (max-width: 900px) {
+            .mobile-top-ad { display: flex; }
+            body { padding-bottom: 60px; }
+        }
         </style>
     </head>
     <body>
-        <header class="header">
-            <a href="/main" class="header-logo">TasteMate</a>
+                <header class="header">
+            <div class="header-left">
+                <button class="menu-toggle-btn" onclick="openMobileNav()">☰</button>
+                <a href="/main" class="header-logo">TasteMate</a>
+                <nav id="mainNavMenu">
+                    <button class="nav-emoji-btn" onclick="location.href='/about'" title="회사소개">ℹ️ 회사소개</button><br />
+                    <button class="nav-emoji-btn" onclick="location.href='/main'">🏠 홈</button>
+                    <button class="nav-emoji-btn" onclick="location.href='/aichat'">🤖 AI추천</button>
+                    <button class="nav-emoji-btn" onclick="location.href='/community'">🧑‍🤝‍🧑 커뮤니티</button>
+                </nav>
+            </div>
+            <div class="header-right" id="headerRightArea">
+                <button class="login-btn" onclick="location.href='/login'">로그인</button>
+            </div>
         </header>
-        <div class="container">
+
+        <div class="container" style="margin-top:80px;">
             <div class="title">📝 내가 쓴 글</div>
             <div class="list-box" id="posts-list"></div>
             <button class="back-btn" onclick="location.href = '/mypage'">마이페이지로 돌아가기</button>
@@ -152,5 +305,39 @@
             }
             loadMyPosts();
         </script>
-    </body>
+    
+        <!-- 모바일 햄버거 메뉴 -->
+        <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
+            <div class="mobile-nav-panel">
+                <div class="mobile-nav-header">
+                    <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
+                    <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+                </div>
+                <div class="mobile-nav-links">
+                    <a href="/main">🏠 홈</a>
+                    <a href="/aichat">🤖 AI 맛집추천</a>
+                    <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/SOLO">🍚 혼밥</a>
+                    <a href="/DATE">💑 데이트</a>
+                    <a href="/WORK">🍻 회식</a>
+                    <a href="/ETC">🧩 기타</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/game/pinball">🎯 핀볼</a>
+                    <a href="/game/ladder">🪜 사다리타기</a>
+                    <a href="/game/random_amount">🎰 룰렛 게임</a>
+                    <a href="/game/worldcup">🏆 음식 월드컵</a>
+                    <a href="/game/calculator">🧮 계산기</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/about">ℹ️ 회사소개</a>
+                </div>
+            </div>
+        </div>
+        <script>
+            function openMobileNav() { document.getElementById('mobileNav').classList.add('open'); document.body.style.overflow='hidden'; }
+            function closeMobileNav() { document.getElementById('mobileNav').classList.remove('open'); document.body.style.overflow=''; }
+            function closeMobileNavOutside(e) { if(e.target===document.getElementById('mobileNav')) closeMobileNav(); }
+        </script>
+
+</body>
 </html>
