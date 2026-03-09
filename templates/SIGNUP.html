@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="ko">
     <head>
+    <script>
+        // ngrok iframe 탈출 - 경고 페이지 없이 직접 접속
+        if (window.top !== window.self) {
+            window.top.location.href = window.self.location.href;
+        }
+    </script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 회원가입</title>
@@ -18,24 +24,6 @@
             .menu-toggle-btn:hover {
                 background: #ffe5e5;
             }
-            #mainNavMenu {
-                min-width: 140px;
-                animation: fadeInMenu 0.18s;
-                position: absolute;
-                top: 60px;
-                left: 32px;
-                background: #fff;
-                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
-                border-radius: 12px;
-                padding: 18px 24px 14px 24px;
-                z-index: 1000;
-                display: none;
-            }
-            @keyframes fadeInMenu {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
-                }
                 to {
                     opacity: 1;
                     transform: translateY(0);
@@ -186,31 +174,41 @@
                 text-decoration: underline;
                 margin-left: 8px;
             }
+        
+            /* ===== 반응형 (태블릿/모바일) ===== */
+            @media (max-width: 600px) {
+                .container, .login-main, .signup-main, .mypage-container {
+                    margin: 20px auto;
+                    padding: 20px 14px;
+                    border-radius: 10px;
+                }
+                .header { padding: 12px 16px; }
+                .header-logo { font-size: 1.2rem; }
+                input, select, textarea { font-size: 1rem !important; }
+                .back-btn, .login-btn-main, .signup-btn-main { font-size: 1rem; padding: 13px 0; }
+                .tab-btn { padding: 8px 16px; font-size: 0.95rem; }
+            }
+
+        
+            .mobile-nav { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 2000; }
+            .mobile-nav.open { display: block; }
+            .mobile-nav-panel { position: absolute; top: 0; left: 0; width: 260px; height: 100%; background: #fff; box-shadow: 4px 0 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; }
+            .mobile-nav-header { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid #f1f1f1; }
+            .mobile-nav-logo { font-size: 1.4rem; font-weight: 900; color: #dc2626; text-decoration: none; }
+            .mobile-nav-close { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: #666; }
+            .mobile-nav-links { padding: 16px 0; display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
+            .mobile-nav-links a { display: block; padding: 14px 24px; font-size: 1rem; font-weight: 600; color: #333; text-decoration: none; transition: background 0.15s; }
+            .mobile-nav-links a:hover { background: #fff1f1; color: #dc2626; }
+            .mobile-nav-divider { height: 1px; background: #f1f1f1; margin: 8px 0; }
         </style>
         <script>
-            function toggleMenu() {
-                const menu = document.getElementById('mainNavMenu');
-            }
         </script>
     </head>
     <body>
-                menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
-            }
-        </script>
-    </head>
-    <body class="fade-in">
         <header class="header">
             <div class="header-left">
-                <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>
+                <button class="menu-toggle-btn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
-                <nav class="main-nav" id="mainNavMenu">
-                    <button class="nav-emoji-btn" onclick="location.href = '/main'" title="홈">🏠 홈</button><br />
-                    <button class="nav-emoji-btn" onclick="location.href = '/aichat'" title="AI추천">🤖 AI추천</button
-                    ><br />
-                    <button class="nav-emoji-btn" onclick="location.href = '/community'" title="커뮤니티">
-                        🧑‍🤝‍🧑 커뮤니티</button
-                    ><br />
-                </nav>
             </div>
             <div class="header-right">
                 <button class="login-btn" onclick="location.href = '/login'">로그인</button>
@@ -250,14 +248,6 @@
                 try {
                     const res = await fetch('/api/signup', { method: 'POST', body: new FormData(e.target) });
                     const data = await res.json();
-                    if (res.ok) {
-                        alert('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
-                        window.location.href = data.redirect;
-                    } else {
-                        alert(data.detail || '회원가입에 실패했습니다.');
-                    }
-                } catch (err) {
-                    alert("서버 통신 오류가 발생했습니다.");
 
                     if (res.ok) {
                         alert('회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.');
@@ -267,9 +257,40 @@
                     }
                 } catch (err) {
                     alert('서버 통신 오류가 발생했습니다.');
-
                 }
             };
         </script>
-    </body>
+    
+        <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
+            <div class="mobile-nav-panel">
+                <div class="mobile-nav-header">
+                    <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
+                    <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+                </div>
+                <div class="mobile-nav-links">
+                    <a href="/main">🏠 홈</a>
+                    <a href="/aichat">🤖 AI 맛집추천</a>
+                    <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/SOLO">🍚 혼밥</a>
+                    <a href="/DATE">💑 데이트</a>
+                    <a href="/WORK">🍻 회식</a>
+                    <a href="/ETC">🧩 기타</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/game/pinball">🎯 핀볼</a>
+                    <a href="/game/ladder">🪜 사다리타기</a>
+                    <a href="/game/random_amount">🎰 룰렛 게임</a>
+                    <a href="/game/worldcup">🏆 음식 월드컵</a>
+                    <a href="/game/calculator">🧮 계산기</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/about">ℹ️ 회사소개</a>
+                </div>
+            </div>
+        </div>
+        <script>
+            function openMobileNav()  { document.getElementById('mobileNav').classList.add('open'); document.body.style.overflow='hidden'; }
+            function closeMobileNav() { document.getElementById('mobileNav').classList.remove('open'); document.body.style.overflow=''; }
+            function closeMobileNavOutside(e) { if(e.target===document.getElementById('mobileNav')) closeMobileNav(); }
+        </script>
+</body>
 </html>

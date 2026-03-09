@@ -5,455 +5,642 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트</title>
         <style>
-            /* --- 신규 애니메이션 정의 --- */
-            @keyframes fadeInPage {
-                from {
-                    opacity: 0;
-                }
-                to {
-                    opacity: 1;
-                }
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+            @keyframes fadeUp {
+                from { opacity: 0; transform: translateY(24px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideInRight {
+                from { opacity: 0; transform: translateX(30px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+            @keyframes popIn {
+                0% { opacity: 0; transform: scale(0.85); }
+                70% { transform: scale(1.04); }
+                100% { opacity: 1; transform: scale(1); }
+            }
+            @keyframes pulse-dot {
+                0%, 100% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.5); opacity: 0.6; }
+            }
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-6px); }
+            }
+            @keyframes msgIn {
+                from { opacity: 0; transform: translateY(8px) scale(0.96); }
+                to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            @keyframes seasonFlip {
+                0% { opacity: 0; transform: translateY(10px) scale(0.96); }
+                100% { opacity: 1; transform: translateY(0) scale(1); }
             }
 
-            @keyframes slideUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(30px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            .fade-in {
-                animation: fadeInPage 0.7s ease-out;
-            }
-
-            /* 요소별 순차 애니메이션 적용 */
-            .main-title {
-                animation: slideUp 0.6s ease-out forwards;
-            }
-            .main-buttons {
-                animation: slideUp 0.7s ease-out forwards;
-                opacity: 0;
-            }
-            .community-card {
-                animation: slideUp 0.8s ease-out forwards;
-                opacity: 0;
-                transition:
-                    transform 0.3s ease,
-                    box-shadow 0.3s ease,
-                    border-color 0.3s ease;
-            }
-
-            /* 카드별 딜레이 (좌측부터 우측으로 순차 등장) */
-            .community-card:nth-child(1) {
-                animation-delay: 0.1s;
-            }
-            .community-card:nth-child(2) {
-                animation-delay: 0.2s;
-            }
-            .community-card:nth-child(3) {
-                animation-delay: 0.3s;
-            }
-            .community-card:nth-child(4) {
-                animation-delay: 0.4s;
-            }
-
-            /* --- 기존 스타일 유지 및 개선 --- */
-            .game-btn {
-                margin-left: 8px;
-                padding: 6px 18px;
-                background: #fff5f5;
-                color: #dc2626;
-                border: 1.5px solid #dc2626;
-                border-radius: 8px;
-                font-size: 1rem;
-                font-weight: 700;
-                cursor: pointer;
-                transition: background 0.18s;
-            }
-            .game-btn:hover {
-                background: #ffe5e5;
-            }
-            #mainNavMenu {
-                min-width: 140px;
-                animation: fadeInMenu 0.18s;
-                position: absolute;
-                top: 60px;
-                left: 32px;
-                background: #fff;
-                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
-                border-radius: 12px;
-                padding: 18px 24px 14px 24px;
-                z-index: 1000;
-                display: none;
-            }
-            @keyframes fadeInMenu {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
+            *, *::before, *::after { box-sizing: border-box; }
             body {
                 margin: 0;
                 font-family: 'Noto Sans KR', sans-serif;
-                background: #fff;
-                overflow-x: hidden;
+                background: #fafafa;
+                color: #1a1a1a;
+                word-break: keep-all;
+                -webkit-font-smoothing: antialiased;
             }
+
+            /* ── 헤더 ── */
             .header {
                 display: grid;
                 grid-template-columns: 1fr auto 1fr;
                 align-items: center;
-                padding: 16px 32px;
-                background: rgba(255, 255, 255, 0.9);
-                box-shadow: 0 4px 20px rgba(220, 38, 38, 0.08);
-                backdrop-filter: blur(15px);
+                padding: 0 40px;
+                height: 68px;
+                background: rgba(255,255,255,0.82);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+                border-bottom: 1px solid rgba(220,38,38,0.07);
+                box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.03);
                 position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
+                top: 0; left: 0; right: 0;
                 z-index: 1000;
             }
-            .header-left {
-                display: flex;
-                align-items: center;
-                gap: 24px;
-                justify-self: start;
-            }
+            .header-left { display: flex; align-items: center; gap: 28px; grid-column: 1; }
+            .header-center { grid-column: 2; width: 420px; }
+            .header-right { display: flex; align-items: center; gap: 10px; justify-content: flex-end; grid-column: 3; }
 
-            .header-center {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 0 20px;
-                justify-self: center;
-                width: 100%;
+            .header-logo {
+                font-size: 1.55rem; font-weight: 900; color: #dc2626;
+                text-decoration: none; letter-spacing: -0.5px;
+                display: flex; align-items: center; gap: 6px;
+                transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), filter 0.25s;
             }
-            .search-box {
-                position: relative;
-                width: 100%;
-                max-width: 640px;
-                display: flex;
-                align-items: center;
-                transition: transform 0.2s;
+            .header-logo:hover { transform: translateY(-2px) scale(1.03); filter: brightness(1.15); }
+
+            .menu-bar { display: flex; gap: 2px; align-items: center; }
+            .menu-item {
+                font-size: 0.95rem; font-weight: 600; color: #555;
+                text-decoration: none; padding: 8px 13px; border-radius: 10px;
+                transition: background 0.18s, color 0.18s;
             }
-            .search-box:focus-within {
-                transform: scale(1.02);
+            .menu-item:hover { background: #fff1f1; color: #dc2626; }
+
+            .game-dropdown { position: relative; }
+            .dropdown-content {
+                display: none; position: absolute; top: 46px; left: 0;
+                background: #fff; min-width: 155px;
+                box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+                border-radius: 14px; padding: 6px; z-index: 1000;
+                border: 1px solid rgba(0,0,0,0.04);
+                animation: fadeUp 0.18s ease;
             }
+            .game-dropdown:hover .dropdown-content { display: block; }
+            .dropdown-content a {
+                color: #444; padding: 11px 14px; text-decoration: none;
+                display: block; font-weight: 600; border-radius: 9px;
+                font-size: 0.92rem; transition: background 0.15s, color 0.15s;
+            }
+            .dropdown-content a:hover { background: #fff1f1; color: #dc2626; }
+
+            .search-box { position: relative; width: 100%; }
             .search-box input {
-                width: 100%;
-                padding: 8px 65px 8px 40px;
-                border: 2px solid #ffe5e5;
-                border-radius: 20px;
-                font-size: 1.05rem;
-                outline: none;
-                transition:
-                    border-color 0.2s,
-                    box-shadow 0.2s;
+                width: 100%; padding: 11px 48px 11px 20px;
+                border: 1.5px solid #ededed; border-radius: 50px;
+                font-size: 0.93rem; outline: none; font-family: inherit;
+                background: #f7f7f7;
+                transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
             }
             .search-box input:focus {
-                border-color: #dc2626;
-                box-shadow: 0 0 8px rgba(220, 38, 38, 0.1);
+                border-color: #dc2626; background: #fff;
+                box-shadow: 0 0 0 3px rgba(220,38,38,0.09);
             }
             .search-submit-btn {
-                position: absolute;
-                right: 5px;
-                background: #dc2626;
-                color: white;
-                border: none;
-                width: 34px;
-                height: 34px;
-                border-radius: 50%;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: background 0.2s;
+                position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: white; border: none; width: 35px; height: 35px;
+                border-radius: 50%; cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 14px; transition: transform 0.2s, box-shadow 0.2s;
+                box-shadow: 0 3px 10px rgba(220,38,38,0.3);
             }
-            .search-submit-btn:hover {
-                background: #b91c1c;
-            }
+            .search-submit-btn:hover { transform: translateY(-50%) scale(1.1); box-shadow: 0 5px 16px rgba(220,38,38,0.4); }
 
+            .login-btn {
+                padding: 9px 17px; color: #fff; border: none; border-radius: 10px;
+                font-size: 0.88rem; font-weight: 700; cursor: pointer;
+                background: #dc2626; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+                white-space: nowrap; font-family: inherit;
+                box-shadow: 0 2px 8px rgba(220,38,38,0.2);
+            }
+            .login-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(220,38,38,0.3); }
+            .nickname-avatar {
+                display: inline-flex; align-items: center; justify-content: center;
+                width: 36px; height: 36px; border-radius: 50%;
+                background: linear-gradient(135deg, #1a1a2e, #374151);
+                color: #fff; font-weight: 800; font-size: 0.85rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+                cursor: pointer; flex-shrink: 0; transition: transform 0.2s;
+            }
+            .nickname-avatar:hover { transform: scale(1.1); }
+            .current-location {
+                font-size: 0.82rem; color: #dc2626; background: #fff5f5;
+                border: 1px solid rgba(220,38,38,0.12); border-radius: 20px;
+                padding: 7px 13px; font-weight: 700; cursor: pointer; white-space: nowrap;
+                transition: background 0.2s, transform 0.2s;
+            }
+            .current-location:hover { background: #fee2e2; transform: translateY(-1px); }
+
+            /* ── 메인 ── */
+            .main-title {
+                text-align: center; font-size: 3.2rem; font-weight: 900; color: #111;
+                margin-top: 56px; margin-bottom: 14px; letter-spacing: -1.5px; line-height: 1.15;
+                animation: fadeUp 0.6s ease both;
+            }
+            .main-title span {
+                background: linear-gradient(135deg, #dc2626, #ff6b6b);
+                -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            }
+            .main-subtitle {
+                text-align: center; font-size: 1.05rem; color: #888; margin-bottom: 40px;
+                font-weight: 400; animation: fadeUp 0.6s 0.1s ease both;
+            }
             .main-buttons {
-                display: flex;
-                justify-content: center;
-                gap: 24px;
-                margin-bottom: 40px;
+                display: flex; justify-content: center; gap: 14px; margin-bottom: 56px;
+                animation: fadeUp 0.6s 0.15s ease both;
             }
             .main-btn {
-                padding: 32px 72px;
-                font-size: 2.4rem;
-                font-weight: 700;
-                color: #fff;
-                background: #dc2626;
-                border: none;
-                border-radius: 6px;
-                cursor: pointer;
-                transition:
-                    background 0.2s,
-                    transform 0.2s,
-                    box-shadow 0.2s;
-                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+                padding: 16px 40px; font-size: 1.05rem; font-weight: 800; color: #fff;
+                background: linear-gradient(135deg, #dc2626, #b91c1c);
+                border: none; border-radius: 50px; cursor: pointer;
+                transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s;
+                box-shadow: 0 8px 24px rgba(220,38,38,0.25); font-family: inherit;
             }
-            .main-btn:hover {
-                background: #b91c1c;
-                transform: translateY(-5px);
-                box-shadow: 0 8px 20px rgba(220, 38, 38, 0.2);
-            }
-            .community-preview {
-                display: flex;
-                justify-content: center;
-                gap: 32px;
-                margin: 48px 0 0 0;
+            .main-btn:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 16px 36px rgba(220,38,38,0.35); }
+
+            .community-container {
+                display: flex; justify-content: center; gap: 18px;
+                max-width: 1280px; margin: 0 auto; padding: 0 40px;
             }
             .community-card {
-                background: #fff;
-                border: 1.5px solid #ffe5e5;
-                border-radius: 18px;
-                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.07);
-                padding: 28px 32px 22px 32px;
-                min-width: 260px;
-                max-width: 300px;
-                height: 150px;
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-                position: relative;
+                background: #fff; border: 1px solid rgba(0,0,0,0.06);
+                border-radius: 20px; padding: 24px;
+                width: calc(25% - 14px); height: 185px;
+                display: flex; flex-direction: column; justify-content: space-between;
+                transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s, border-color 0.3s;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+                text-decoration: none; color: inherit; position: relative; overflow: hidden;
+                animation: fadeUp 0.5s ease both;
             }
             .community-card:hover {
-                transform: translateY(-8px);
-                border-color: #dc2626;
-                box-shadow: 0 12px 24px rgba(220, 38, 38, 0.12);
+                transform: translateY(-8px) scale(1.01);
+                box-shadow: 0 20px 48px rgba(0,0,0,0.09);
+                border-color: rgba(220,38,38,0.2);
             }
-            .community-card .card-title {
-                font-size: 1.25rem;
-                font-weight: 800;
-                color: #dc2626;
-                margin-bottom: 4px;
-                display: flex;
-                align-items: center;
-                gap: 8px;
+            .community-card:nth-child(1) { animation-delay: 0.05s; }
+            .community-card:nth-child(2) { animation-delay: 0.1s; }
+            .community-card:nth-child(3) { animation-delay: 0.15s; }
+            .community-card:nth-child(4) { animation-delay: 0.2s; }
+            .card-title { font-size: 1.05rem; font-weight: 800; color: #111; line-height: 1.4; }
+            .card-info { display: flex; flex-direction: column; gap: 4px; }
+            .card-count { font-size: 0.87rem; color: #94a3b8; font-weight: 600; }
+            .card-recent { font-size: 0.9rem; color: #475569; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .card-tag {
+                align-self: flex-start; font-size: 0.75rem;
+                background: rgba(220,38,38,0.06); color: #dc2626;
+                border-radius: 20px; padding: 4px 11px; font-weight: 700;
+                border: 1px solid rgba(220,38,38,0.1);
             }
-            .community-card .card-count {
-                font-size: 0.98rem;
-                color: #b91c1c;
-                font-weight: 600;
-            }
-            .community-card .card-recent {
-                font-size: 1.05rem;
-                color: #222;
-                font-weight: 500;
-                margin-bottom: 2px;
-            }
-            .community-card .card-tag {
-                font-size: 0.93rem;
-                background: #fff5f5;
-                color: #dc2626;
-                border-radius: 12px;
-                padding: 2px 14px;
-                font-weight: 700;
-                border: 1px solid #ffe5e5;
-            }
-            .header-logo {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                font-size: 1.6rem;
-                font-weight: 900;
-                color: #dc2626;
-                text-decoration: none;
-                transition: transform 0.2s;
-            }
-            .header-logo:hover {
-                transform: scale(1.05);
-            }
-            .main-title {
-                text-align: center;
-                font-size: 3rem;
-                font-weight: 900;
-                color: #dc2626;
-                margin-top: 40px;
-                margin-bottom: 40px;
-                letter-spacing: 2px;
-                text-shadow:
-                    0 4px 16px rgba(220, 38, 38, 0.18),
-                    0 1px 0 #fff;
-            }
-            .header-right {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                justify-self: end;
-                min-width: 220px;
-            }
-            .login-btn {
-                padding: 8px 16px;
-                color: #fff;
-                border: none;
-                border-radius: 6px;
-                font-size: 0.95rem;
-                font-weight: bold;
+            .badge { font-size: 0.67rem; padding: 2px 8px; border-radius: 20px; font-weight: 800; margin-left: 5px; vertical-align: middle; }
+            .badge-red { background: #fee2e2; color: #dc2626; }
+            .badge-yellow { background: #fef9c3; color: #92400e; }
+            .badge-green { background: #dcfce7; color: #166534; }
+
+            /* ── 제철 음식 카드 특별 스타일 ── */
+            #season-food-card {
                 cursor: pointer;
-                transition: background 0.2s;
-                background: #dc2626;
-            }
-            .nav-emoji-btn {
-                background: none;
-                border: none;
-                font-size: 1.7rem;
-                margin: 0 2px;
-                cursor: pointer;
-                border-radius: 8px;
-                padding: 4px 10px;
-                transition: background 0.18s;
-            }
-            .nav-emoji-btn:hover {
-                background: #ffe5e5;
-            }
-            .current-location {
-                font-size: 0.95rem;
-                color: #dc2626;
-                background: #fff5f5;
-                border: 1px solid #ffe5e5;
-                border-radius: 6px;
-                padding: 8px 14px;
-                font-weight: 700;
-                cursor: pointer;
-                transition: background 0.2s;
-            }
-            .current-location:hover {
-                background: #ffe5e5;
-            }
-            .menu-bar {
-                display: flex;
-                gap: 18px;
-                align-items: center;
-                margin-left: 24px;
-            }
-            .menu-item {
-                font-size: 1.15rem;
-                font-weight: 700;
-                color: #dc2626;
-                text-decoration: none;
-                padding: 8px 18px;
-                border-radius: 8px;
-                background: none;
-                cursor: pointer;
-                transition: background 0.18s;
-            }
-            .menu-item:hover {
-                background: #fff5f5;
-            }
-            .game-dropdown {
                 position: relative;
             }
-            .game-dropdown span {
-                cursor: pointer;
+            #season-food-card .season-food-item {
+                animation: seasonFlip 0.35s ease both;
             }
-            .dropdown-content {
+            #season-food-card .season-food-name {
+                font-size: 1rem;
+                font-weight: 900;
+                color: #111;
+            }
+            #season-food-card .season-food-desc {
+                font-size: 0.82rem;
+                color: #64748b;
+                margin-top: 2px;
+            }
+            #season-food-card .season-refresh-hint {
+                font-size: 0.72rem;
+                color: #cbd5e1;
+                margin-top: 4px;
+            }
+
+            /* ── 사이드 광고 ── */
+            .side-ad {
+                position: fixed; top: 150px; width: 140px; height: 560px;
+                background: linear-gradient(145deg, #f8f8f8, #f0f0f0);
+                border: 1px solid #e8e8e8;
+                display: flex; align-items: center; justify-content: center;
+                color: #ccc; font-size: 0.8rem; font-weight: 700;
+                z-index: 500; border-radius: 14px;
+            }
+            .ad-left { left: 16px; }
+            .ad-right { right: 16px; }
+            @media (max-width: 1450px) { .side-ad { display: none; } }
+            .mobile-top-ad {
+                display: none; position: fixed; top: 70px; left: 0; right: 0;
+                height: 55px; background: #f4f4f4; border-bottom: 1px solid #e0e0e0;
+                align-items: center; justify-content: center; color: #999;
+                font-weight: bold; font-size: 0.9rem; z-index: 100;
+                pointer-events: none;
+            }
+            /* ── 햄버거 & 모바일 헤더 ── */
+            .menu-toggle-btn {
                 display: none;
-                position: absolute;
-                top: 36px;
-                left: 0;
-                background: #fff;
-                min-width: 140px;
-                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
-                border-radius: 12px;
-                padding: 12px 0;
-                z-index: 1000;
-                flex-direction: column;
-                animation: fadeInMenu 0.2s ease-out;
+                background: none; border: none;
+                font-size: 1.8rem; cursor: pointer;
+                border-radius: 8px; padding: 4px 10px; color: #dc2626;
             }
-            .game-dropdown:hover .dropdown-content {
-                display: flex;
+            .nickname-avatar {
+                width: 38px; height: 38px; border-radius: 50%;
+                background: #222; color: #fff;
+                display: inline-flex; align-items: center; justify-content: center;
+                font-weight: 700; cursor: pointer; font-size: 0.9rem;
             }
-            .dropdown-content a {
-                color: #dc2626;
-                padding: 10px 24px;
-                text-decoration: none;
-                font-size: 1.08rem;
-                font-weight: 600;
-                border-radius: 8px;
-                transition: background 0.18s;
+            .current-location {
+                font-size: 0.85rem; color: #dc2626; background: #fff1f1;
+                border: 1px solid rgba(220,38,38,0.1); border-radius: 10px;
+                padding: 8px 14px; font-weight: 700; cursor: pointer;
             }
-            .dropdown-content a:hover {
-                background: #ffe5e5;
+            .mobile-nav {
+                display: none; position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.4); z-index: 9999;
+            }
+            .mobile-nav.open { display: block; }
+            .mobile-nav-panel {
+                position: absolute; top: 0; left: 0;
+                width: 260px; height: 100%;
+                background: #fff; box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+                display: flex; flex-direction: column;
+            }
+            .mobile-nav-header {
+                display: flex; align-items: center; justify-content: space-between;
+                padding: 20px 20px 16px; border-bottom: 1px solid #f1f1f1;
+            }
+            .mobile-nav-logo { font-size: 1.4rem; font-weight: 900; color: #dc2626; text-decoration: none; }
+            .mobile-nav-close { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: #666; }
+            .mobile-nav-links { padding: 16px 0; display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
+            .mobile-nav-links a {
+                display: block; padding: 14px 24px; font-size: 1rem; font-weight: 600;
+                color: #333; text-decoration: none; transition: background 0.15s;
+            }
+            .mobile-nav-links a:hover { background: #fff1f1; color: #dc2626; }
+            .mobile-nav-divider { height: 1px; background: #f1f1f1; margin: 8px 0; }
+
+            @media (max-width: 900px) {
+                .menu-toggle-btn { display: block; }
+                .menu-bar { display: none !important; }
+                .header {
+                    display: flex !important; justify-content: space-between;
+                    align-items: center; padding: 0 16px;
+                    grid-template-columns: none !important;
+                }
+                .header-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+                .header-center { display: none; }
+                .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+                .header-logo { font-size: 1.1rem !important; }
+                .login-btn { padding: 7px 10px; font-size: 0.8rem; }
+                .current-location { padding: 6px 8px; font-size: 0.78rem; display: none; }
+                .nickname-avatar { width: 32px; height: 32px; font-size: 0.82rem; }
+                /* 광고 높이만큼 main 밀어내기 */
+                main { padding-top: 185px !important; }
+                /* 카드 2열 */
+                .community-container {
+                    display: grid !important;
+                    grid-template-columns: 1fr 1fr !important;
+                    gap: 12px !important;
+                    padding: 0 16px !important;
+                }
+                .community-card {
+                    width: 100% !important;
+                    height: auto !important;
+                    min-height: 120px;
+                    padding: 16px !important;
+                }
+                .card-title { font-size: 0.92rem !important; }
+                .card-count { font-size: 0.8rem !important; }
+                .card-recent { font-size: 0.8rem !important; }
+                .main-title { font-size: 2rem !important; }
+                .main-subtitle { font-size: 0.92rem !important; }
+                .main-buttons { flex-direction: column; gap: 10px; }
+                .main-btn { width: 100%; font-size: 1rem !important; padding: 14px 20px !important; }
+            }
+            @media (max-width: 480px) {
+                .community-container {
+                    grid-template-columns: 1fr 1fr !important;
+                    gap: 10px !important;
+                    padding: 0 12px !important;
+                }
+                .community-card { padding: 12px !important; min-height: 110px; }
+                .card-title { font-size: 0.85rem !important; }
+            }
+
+            /* ── FAB ── */
+            .panel-fab {
+                position: fixed; bottom: 32px; right: 32px;
+                width: 60px; height: 60px;
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: #fff; border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 26px; cursor: pointer;
+                box-shadow: 0 8px 24px rgba(220,38,38,0.45);
+                z-index: 2001;
+                transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+                border: none; outline: none;
+                animation: float 3s ease-in-out infinite;
+            }
+            .panel-fab:hover { transform: scale(1.14) rotate(8deg); box-shadow: 0 14px 36px rgba(220,38,38,0.55); animation: none; }
+
+            /* ── 오버레이 ── */
+            .panel-overlay {
+                position: fixed; inset: 0; background: rgba(0,0,0,0.28);
+                backdrop-filter: blur(6px); z-index: 2000;
+                display: none; opacity: 0; transition: opacity 0.3s ease;
+            }
+            .panel-overlay.active { display: block; opacity: 1; }
+
+            /* ── 사이드 패널 ── */
+            .panel-panel {
+                position: fixed; top: 12px; right: -390px; width: 355px;
+                height: calc(100% - 24px); background: #fff;
+                box-shadow: -12px 0 60px rgba(0,0,0,0.12);
+                transition: right 0.42s cubic-bezier(0.22,1,0.36,1);
+                z-index: 2002; display: flex; flex-direction: column;
+                border-radius: 24px 0 0 24px; overflow: hidden;
+            }
+            .panel-panel.active { right: 0; }
+            .panel-header { padding: 28px 22px 16px; border-bottom: 1px solid #f2f2f2; background: linear-gradient(135deg, #fff, #fafafa); }
+            .panel-header-title { font-size: 1.25rem; font-weight: 900; color: #111; margin-bottom: 2px; }
+            .panel-header-sub { font-size: 0.82rem; color: #aaa; font-weight: 500; }
+
+            .panel-tabs { display: flex; padding: 14px 14px 0; gap: 6px; }
+            .tab-btn {
+                flex: 1; padding: 10px 0; border-radius: 12px; font-weight: 700;
+                color: #999; border: none; background: #f5f5f5; cursor: pointer;
+                font-size: 0.88rem; transition: background 0.2s, color 0.2s, transform 0.15s; font-family: inherit;
+            }
+            .tab-btn:hover:not(.active) { background: #ebebeb; color: #666; transform: translateY(-1px); }
+            .tab-btn.active { color: #fff; background: linear-gradient(135deg, #dc2626, #ef4444); box-shadow: 0 4px 12px rgba(220,38,38,0.3); }
+            .tab-content { display: none; padding: 16px; overflow-y: auto; flex: 1; }
+            .tab-content.active { display: flex; flex-direction: column; gap: 9px; animation: fadeIn 0.22s ease; }
+
+            /* ── 친구 아이템 ── */
+            .friend-item {
+                display: flex; justify-content: space-between; align-items: center;
+                padding: 13px 15px; background: #fff; border: 1px solid #f0f0f0;
+                border-radius: 15px;
+                transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+                animation: slideInRight 0.25s ease both;
+            }
+            .friend-item:hover { background: #fff8f8; border-color: rgba(220,38,38,0.12); transform: translateX(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.05); }
+            .friend-name { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; }
+            .friend-avatar {
+                width: 34px; height: 34px; border-radius: 50%;
+                background: linear-gradient(135deg, #1a1a2e, #374151);
+                color: #fff; font-weight: 800; font-size: 0.78rem;
+                display: flex; align-items: center; justify-content: center;
+                flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            }
+            .friend-actions { display: flex; gap: 6px; align-items: center; }
+            .action-btn {
+                padding: 7px 13px; border-radius: 10px; border: none; font-weight: 700;
+                cursor: pointer; font-size: 0.83rem;
+                transition: transform 0.18s, box-shadow 0.18s, background 0.18s; font-family: inherit;
+            }
+            .action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+            .btn-accept { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; box-shadow: 0 2px 8px rgba(220,38,38,0.25); }
+            .btn-accept:hover { background: linear-gradient(135deg, #b91c1c, #dc2626); }
+            .btn-reject { background: #f3f3f3; color: #777; margin-left: 4px; }
+            .btn-reject:hover { background: #e8e8e8; }
+            .btn-chat { background: #fff1f1; color: #dc2626; border: 1px solid rgba(220,38,38,0.18); font-size: 1rem; padding: 6px 10px; }
+            .btn-delete { background: #f9f9f9; color: #bbb; border: 1px solid #ececec; font-size: 0.9rem; padding: 6px 9px; }
+            .btn-delete:hover { background: #fee2e2; color: #dc2626; border-color: rgba(220,38,38,0.25); }
+
+            /* ── 친구 추가 ── */
+            .add-friend-input {
+                width: 100%; padding: 13px 16px; border: 1.5px solid #ebebeb; border-radius: 13px;
+                font-size: 0.95rem; outline: none;
+                transition: border-color 0.2s, box-shadow 0.2s; font-family: inherit;
+                background: #fafafa; margin-bottom: 10px; display: block;
+            }
+            .add-friend-input:focus { border-color: #dc2626; background: #fff; box-shadow: 0 0 0 3px rgba(220,38,38,0.09); }
+            .add-friend-btn {
+                width: 100%; padding: 14px; border-radius: 14px;
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: #fff; border: none; cursor: pointer; font-weight: 800;
+                font-size: 0.97rem; font-family: inherit;
+                transition: transform 0.2s, box-shadow 0.2s;
+                box-shadow: 0 6px 18px rgba(220,38,38,0.28);
+            }
+            .add-friend-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(220,38,38,0.38); }
+
+            /* ── 확인 모달 ── */
+            .confirm-modal-bg {
+                position: fixed; inset: 0; background: rgba(0,0,0,0.42);
+                backdrop-filter: blur(6px); z-index: 9998;
+                display: flex; align-items: center; justify-content: center;
+                opacity: 0; pointer-events: none; transition: opacity 0.22s;
+            }
+            .confirm-modal-bg.show { opacity: 1; pointer-events: all; }
+            .confirm-modal {
+                background: #fff; border-radius: 24px; padding: 32px 28px 26px;
+                width: 290px; text-align: center;
+                box-shadow: 0 24px 72px rgba(0,0,0,0.18);
+                transform: scale(0.88) translateY(12px);
+                transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1);
+            }
+            .confirm-modal-bg.show .confirm-modal { transform: scale(1) translateY(0); }
+            .confirm-modal-icon { font-size: 2.6rem; margin-bottom: 12px; }
+            .confirm-modal-title { font-size: 1.08rem; font-weight: 900; color: #111; margin-bottom: 8px; }
+            .confirm-modal-desc { font-size: 0.87rem; color: #999; line-height: 1.55; margin-bottom: 22px; white-space: pre-line; }
+            .confirm-modal-btns { display: flex; gap: 10px; }
+            .confirm-ok {
+                flex: 1; padding: 13px;
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                color: #fff; border: none; border-radius: 13px; font-weight: 800;
+                font-size: 0.95rem; cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s; font-family: inherit;
+                box-shadow: 0 4px 12px rgba(220,38,38,0.3);
+            }
+            .confirm-ok:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(220,38,38,0.4); }
+            .confirm-cancel {
+                flex: 1; padding: 13px; background: #f4f4f4; color: #666;
+                border: none; border-radius: 13px; font-weight: 700; font-size: 0.95rem;
+                cursor: pointer; transition: background 0.2s; font-family: inherit;
+            }
+            .confirm-cancel:hover { background: #e8e8e8; }
+
+            /* ── Toast ── */
+            .toast {
+                position: fixed; bottom: 105px; left: 50%;
+                transform: translateX(-50%) translateY(16px);
+                background: rgba(20,20,20,0.92); color: #fff;
+                padding: 11px 22px; border-radius: 50px; font-size: 0.88rem; font-weight: 600;
+                z-index: 9999; opacity: 0; pointer-events: none;
+                transition: opacity 0.25s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+                backdrop-filter: blur(8px); white-space: nowrap;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+            }
+            .toast.success { background: rgba(22,163,74,0.93); }
+            .toast.error { background: rgba(220,38,38,0.93); }
+            .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+            /* ── 다중 채팅창 ── */
+            #chat-windows-container {
+                position: fixed; bottom: 0; right: 110px;
+                display: flex; flex-direction: row-reverse;
+                align-items: flex-end; gap: 8px; z-index: 2003; pointer-events: none;
+            }
+            .chat-window {
+                width: 300px; height: 420px; background: #fff;
+                border-radius: 16px 16px 0 0;
+                box-shadow: 0 -4px 32px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.05);
+                display: flex; flex-direction: column; overflow: hidden;
+                pointer-events: all; transform-origin: bottom center;
+                animation: chatSlideUp 0.28s cubic-bezier(0.34,1.56,0.64,1) both;
+                transition: height 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.2s;
+                user-select: none; flex-shrink: 0;
+            }
+            .chat-window.minimized { height: 48px; }
+            .chat-window:hover { box-shadow: 0 -8px 40px rgba(0,0,0,0.18), 0 0 0 1px rgba(220,38,38,0.1); }
+            @keyframes chatSlideUp {
+                from { opacity: 0; transform: translateY(30px) scale(0.94); }
+                to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            .chat-header {
+                flex-shrink: 0; padding: 0 12px; height: 48px;
+                background: linear-gradient(135deg, #dc2626 0%, #c11414 100%);
+                color: white; display: flex; justify-content: space-between; align-items: center;
+                cursor: pointer; box-shadow: 0 2px 12px rgba(220,38,38,0.25);
+                border-radius: 16px 16px 0 0;
+            }
+            .chat-header:hover { filter: brightness(1.06); }
+            .chat-header-info { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+            .chat-target-avatar {
+                width: 28px; height: 28px; border-radius: 50%;
+                background: rgba(255,255,255,0.25);
+                display: flex; align-items: center; justify-content: center;
+                font-weight: 800; font-size: 0.75rem; flex-shrink: 0;
+            }
+            .chat-target-name { font-weight: 800; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .chat-ws-status { font-size: 0.65rem; opacity: 0.7; flex-shrink: 0; }
+            .chat-header-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+            .chat-ctrl-btn {
+                background: rgba(255,255,255,0.2); border: none; color: white;
+                width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+                font-size: 13px; display: flex; align-items: center; justify-content: center;
+                transition: background 0.15s; pointer-events: all;
+            }
+            .chat-ctrl-btn:hover { background: rgba(255,255,255,0.35); }
+            .unread-badge {
+                background: #fff; color: #dc2626; border-radius: 50%;
+                width: 18px; height: 18px; font-size: 0.68rem; font-weight: 900;
+                display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.2); flex-shrink: 0;
+            }
+            .chat-messages {
+                flex: 1; overflow-y: auto; padding: 12px 10px;
+                display: flex; flex-direction: column; gap: 5px;
+                background: #f7f7f8; min-height: 0; scroll-behavior: smooth;
+            }
+            .chat-messages::-webkit-scrollbar { width: 4px; }
+            .chat-messages::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+            .chat-input-area {
+                flex-shrink: 0; padding: 8px 10px; border-top: 1px solid #f0f0f0;
+                background: #fff; display: flex; gap: 7px; align-items: center;
+            }
+            .chat-input {
+                flex: 1; padding: 8px 12px; border: 1.5px solid #ebebeb; border-radius: 18px;
+                outline: none; font-size: 0.85rem; font-family: 'Noto Sans KR', sans-serif;
+                transition: border-color 0.2s, box-shadow 0.2s; background: #f7f7f7; min-width: 0;
+            }
+            .chat-input:focus { border-color: #dc2626; background: #fff; box-shadow: 0 0 0 2px rgba(220,38,38,0.08); }
+            .chat-send-btn {
+                flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+                background: linear-gradient(135deg, #dc2626, #ef4444);
+                border: none; color: white; cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 3px 10px rgba(220,38,38,0.35);
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            .chat-send-btn:hover { transform: scale(1.1); box-shadow: 0 5px 14px rgba(220,38,38,0.45); }
+            .msg {
+                padding: 8px 12px; border-radius: 16px; max-width: 78%;
+                font-size: 0.85rem; line-height: 1.45; animation: msgIn 0.18s ease both; word-break: break-word;
+            }
+            .msg.me {
+                align-self: flex-end;
+                background: linear-gradient(135deg, #dc2626, #ef4444); color: #fff;
+                border-bottom-right-radius: 4px; box-shadow: 0 3px 10px rgba(220,38,38,0.25);
+            }
+            .msg.other {
+                align-self: flex-start; background: #fff; color: #1a1a1a;
+                border-bottom-left-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+                border: 1px solid rgba(0,0,0,0.05);
+            }
+
+            /* ── 빈 상태 ── */
+            .empty-state { text-align: center; padding: 40px 16px; color: #c0c0c0; font-size: 0.88rem; line-height: 1.7; }
+            .empty-state .empty-icon { font-size: 2.4rem; margin-bottom: 10px; display: block; }
+
+            /* ── req dot ── */
+            .req-dot {
+                display: inline-block; width: 7px; height: 7px; background: #dc2626;
+                border-radius: 50%; margin-left: 4px; vertical-align: middle;
+                animation: pulse-dot 1.4s ease-in-out infinite;
+            }
+
+            /* ── 타이핑 인디케이터 ── */
+            .typing-dots span { display: inline-block; font-size: 1rem; color: #9ca3af; animation: typingBounce 1.2s infinite; }
+            .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+            .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+            @keyframes typingBounce {
+                0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+                30% { transform: translateY(-4px); opacity: 1; }
+            }
+            @keyframes ctxFadeIn {
+                from { opacity: 0; transform: scale(0.93) translateY(-4px); }
+                to { opacity: 1; transform: scale(1) translateY(0); }
             }
         </style>
-        <script>
-            function toggleMenu() {
-                const menu = document.getElementById('mainNavMenu');
-            }
-        </script>
     </head>
     <body>
-        <header class="header">
-            <div class="header-left">
-                <a href="/main" class="header-logo">TasteMate</a>
-                <nav class="menu-bar">
-                    <a class="menu-item" href="/about">회사소개</a>
-                    <a class="menu-item" href="/aichat">AI추천</a>
-                    <a class="menu-item" href="/community">커뮤니티</a>
-                    <div class="menu-item game-dropdown">
-                        <span>게임 ▾</span>
-                        <div class="dropdown-content">
-                            <a href="/game/pinball">핀볼</a>
-                            <a href="/game/ladder">사다리타기</a>
-                            <a href="/game/random_amount">룰렛 게임</a>
-                            <a href="/game/worldcup">음식 월드컵</a>
-                            <a href="/game/calculator">계산기</a>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-
-            <div class="header-center">
-                <div class="search-box">
-                    <input
-                        type="text"
-                        id="mainSearchInput"
-                        placeholder="맛집이나 메뉴를 검색해보세요!"
-                        onkeyup="
-                            if (window.event.keyCode == 13) {
-                                handleSearch();
-                            }
-                        "
-                    />
-                    <button class="search-submit-btn" onclick="handleSearch()">
-                        <span style="font-size: 1.2rem">🔍</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="header-right" id="headerRightArea">
-                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
-                <button class="login-btn" style="background:#fff; color:#dc2626; border:1px solid #dc2626;" onclick="location.href = '/signup'">회원가입</button>
-                menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
-            }
-
-            function handleSearch() {
-                const searchInput = document.getElementById('mainSearchInput');
-                const query = searchInput.value.trim();
-                if (query === '') {
-                    alert('검색어를 입력해주세요.');
-                    return;
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const dropdown = document.querySelector('.game-dropdown');
+                const content = dropdown?.querySelector('.dropdown-content');
+                let dropdownTimer = null;
+                if (dropdown && content) {
+                    dropdown.addEventListener('mouseenter', () => { clearTimeout(dropdownTimer); content.style.display = 'block'; });
+                    dropdown.addEventListener('mouseleave', () => { dropdownTimer = setTimeout(() => { content.style.display = 'none'; }, 120); });
+                    content.addEventListener('mouseenter', () => { clearTimeout(dropdownTimer); content.style.display = 'block'; });
+                    content.addEventListener('mouseleave', () => { dropdownTimer = setTimeout(() => { content.style.display = 'none'; }, 120); });
                 }
-                window.location.href = `/search?keyword=${encodeURIComponent(query)}`;
-            }
+            });
         </script>
-    </head>
-    <body class="fade-in">
         <header class="header">
             <div class="header-left">
+                <button class="menu-toggle-btn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
+                    <a class="menu-item" href="/subscribe" style="color:#2563EB;font-weight:700;">💎 구독</a>
                     <a class="menu-item" href="/about">회사소개</a>
                     <a class="menu-item" href="/aichat">AI추천</a>
                     <a class="menu-item" href="/community">커뮤니티</a>
@@ -469,413 +656,623 @@
                     </div>
                 </nav>
             </div>
-
             <div class="header-center">
                 <div class="search-box">
-                    <input
-                        type="text"
-                        id="mainSearchInput"
-                        placeholder="커뮤니티 인기글 제목을 검색해보세요!"
-                        onkeyup="if (window.event.keyCode == 13) handleSearch();"
-                    />
-                    <button class="search-submit-btn" onclick="handleSearch()">
-                        <span style="font-size: 1.2rem">🔍</span>
-                    </button>
+                    <input type="text" id="mainSearchInput" placeholder="지역, 메뉴, 분위기로 맛집 검색"
+                        onkeyup="if(window.event.keyCode==13) handleSearch();" />
+                    <button class="search-submit-btn" onclick="handleSearch()">🔍</button>
                 </div>
             </div>
-
             <div class="header-right" id="headerRightArea">
-                <button class="login-btn" onclick="location.href = '/login'">로그인</button>
-                <button
-                    class="login-btn"
-                    style="background: #fff; color: #dc2626; border: 1px solid #dc2626"
-                    onclick="location.href = '/signup'"
-                >
-                    회원가입
-                </button>
+                <button class="login-btn" onclick="location.href='/login'">로그인</button>
+                <button class="login-btn" style="background:#fff; color:#dc2626; border:1.5px solid #dc2626" onclick="location.href='/signup'">회원가입</button>
             </div>
         </header>
 
-        <main style="padding-top: 80px; padding-bottom: 80px; min-height: 60vh">
-            <div class="main-title">🍽️ 테이스트메이트</div>
+        <!-- 모바일 슬라이드 네비게이션 -->
+        <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
+            <div class="mobile-nav-panel">
+                <div class="mobile-nav-header">
+                    <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
+                    <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+                </div>
+                <div class="mobile-nav-links">
+                    <a href="/main">🏠 홈</a>
+                    <a href="/aichat">🤖 AI 맛집추천</a>
+                    <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/SOLO">🍚 혼밥</a>
+                    <a href="/DATE">💑 데이트</a>
+                    <a href="/WORK">🍻 회식</a>
+                    <a href="/ETC">🧩 기타</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/game/pinball">🎯 핀볼</a>
+                    <a href="/game/ladder">🪜 사다리타기</a>
+                    <a href="/game/random_amount">🎰 룰렛 게임</a>
+                    <a href="/game/worldcup">🏆 음식 월드컵</a>
+                    <a href="/game/calculator">🧮 계산기</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/about">ℹ️ 회사소개</a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/subscribe" style="color:#2563EB;font-weight:700;background:#EFF6FF;">💎 구독하기</a>
+                </div>
+            </div>
+        </div>
+
+        <main style="padding-top:120px; padding-bottom:100px; position:relative">
+            <div class="side-ad ad-left">광고 영역 (좌)</div>
+            <div class="side-ad ad-right">광고 영역 (우)</div>
+            <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
+
+            <div class="main-title">🍽️ <span>테이스트메이트</span></div>
+            <p class="main-subtitle">지금 내 주변 맛집, AI가 바로 찾아드려요</p>
+
             <div class="main-buttons">
-                <button class="main-btn" onclick="location.href = '/aichat'">🤖 AI추천</button>
-                <button class="main-btn" onclick="location.href = '/community'">🧑‍🤝‍🧑 커뮤니티</button>
+                <button class="main-btn" onclick="location.href='/aichat'">🤖 AI 맛집추천</button>
+                <button class="main-btn" onclick="location.href='/community'">🧑‍🤝‍🧑 맛집 커뮤니티</button>
             </div>
-                <div class="community-card">
-                    <div class="card-title" style="white-space: nowrap">
-                        🍽️ 오늘의 추천메뉴
-                        <span
-                            style="
-                                background: #ffe066;
-                                color: #b91c1c;
-                                font-size: 0.95rem;
-                                padding: 2px 10px;
-                                border-radius: 8px;
-                                margin-left: 6px;
-                                font-weight: 700;
-                                vertical-align: middle;
-                            "
-                            >추천</span
-                        >
+
+            <div class="community-container" style="margin-bottom:24px">
+                <!-- 카드 1: 실시간 추천 -->
+                <div class="community-card" id="realtime-recommend-card" style="cursor:pointer" onclick="handleRealtimeRecommendClick()">
+                    <div class="card-title">🕒 <span id="time-title">추천 정보 로딩 중...</span><span class="badge badge-yellow">LIVE</span></div>
+                    <div class="card-info">
+                        <div class="card-count" id="count-recommend" style="color:#dc2626; font-weight:800">데이터 로딩 중...</div>
+                        <div class="card-recent" id="recent-recommend">내 주변 맛집을 찾는 중입니다.</div>
                     </div>
-                    <div class="card-count">글 12개</div>
-                    <div class="card-recent">최근: "오늘 점심 뭐 먹지?"</div>
-                    <div class="card-tag">#추천메뉴</div>
-                </div>
-                <div class="community-card">
-                    <div class="card-title">
-                        🍚 강남 혼밥 맛집 공유
-                        <span
-                            style="
-                                background: #ffe066;
-                                color: #b91c1c;
-                                font-size: 0.95rem;
-                                padding: 2px 10px;
-                                border-radius: 8px;
-                                margin-left: 6px;
-                                font-weight: 700;
-                                vertical-align: middle;
-                            "
-                            >강남 인기</span
-                        >
-                    </div>
-                    <div class="card-count">글 27개</div>
-                    <div class="card-recent">최근: "강남 혼밥 어디가 좋아요?"</div>
-                    <div class="card-tag">#강남혼밥</div>
-                </div>
-                <div class="community-card">
-                    <div class="card-title">
-                        🍜 라멘덕후모임
-                        <span
-                            style="
-                                background: #e0f7fa;
-                                color: #00796b;
-                                font-size: 0.95rem;
-                                padding: 2px 10px;
-                                border-radius: 8px;
-                                margin-left: 6px;
-                                font-weight: 700;
-                                vertical-align: middle;
-                            "
-                            >라멘 인기</span
-                        >
-                    </div>
-                    <div class="card-count">글 18개</div>
-                    <div class="card-recent">최근: "강남 라멘집 추천 부탁해요!"</div>
-                    <div class="card-tag">#라멘덕후</div>
+                    <div class="card-tag" id="tag-recommend">#실시간추천</div>
                 </div>
 
-            <div style="display: flex; justify-content: center; gap: 32px; flex-wrap: nowrap; margin-bottom: 36px">
-                <div class="community-card">
-                    <div class="card-title" style="white-space: nowrap">
-                        🍽️ 오늘의 추천메뉴
-                        <span
-                            style="
-                                background: #ffe066;
-                                color: #b91c1c;
-                                font-size: 0.95rem;
-                                padding: 2px 10px;
-                                border-radius: 8px;
-                                margin-left: 6px;
-                                font-weight: 700;
-                            "
-                            >추천</span
-                        >
+                <!-- 카드 2: 날씨 추천 -->
+                <div class="community-card" id="theme-recommend-card" style="cursor:pointer; animation-delay:0.08s">
+                    <div class="card-title"><span id="theme-title">날씨 분석 중...</span></div>
+                    <div class="card-info">
+                        <div class="card-count" id="theme-subtitle" style="color:#dc2626; font-weight:800">데이터 로딩 중...</div>
+                        <div class="card-recent" id="theme-desc">기온 맞춤형 메뉴 추천</div>
                     </div>
-                    <div class="card-count">글 12개</div>
-                    <div class="card-recent">최근: "오늘 점심 뭐 먹지?"</div>
-                    <div class="card-tag">#추천메뉴</div>
+                    <div class="card-tag" id="theme-tag">#날씨맛집</div>
                 </div>
-                <div class="community-card">
+
+                <!-- ★ 카드 3: 월별 제철 음식 (월드컵 대체) -->
+                <div class="community-card" id="season-food-card" style="animation-delay:0.12s" onclick="shuffleSeasonFood()">
                     <div class="card-title">
-                        🍚 강남 혼밥 맛집
-                        <span
-                            style="
-                                background: #ffe066;
-                                color: #b91c1c;
-                                font-size: 0.95rem;
-                                padding: 2px 10px;
-                                border-radius: 8px;
-                                margin-left: 6px;
-                                font-weight: 700;
-                            "
-                            >강남 인기</span
-                        >
+                        🌿 <span id="season-month-title">이달의 제철 음식</span>
+                        <span class="badge badge-green">SEASON</span>
                     </div>
-                    <div class="card-count">글 27개</div>
-                    <div class="card-recent">최근: "강남 혼밥 어디가 좋아요?"</div>
-                    <div class="card-tag">#강남혼밥</div>
+                    <div class="card-info" id="season-food-info">
+                        <div class="season-food-item">
+                            <div class="season-food-name" id="season-food-name">로딩 중...</div>
+                            <div class="season-food-desc" id="season-food-desc"></div>
+                        </div>
+                        <div class="season-refresh-hint">🔍 클릭하면 네이버에서 맛집 검색돼요</div>
+                    </div>
+                    <div class="card-tag" id="season-food-tag">#제철음식</div>
                 </div>
-                <div class="community-card">
-                    <div class="card-title">
-                        🍜 라멘덕후모임
-                        <span
-                            style="
-                                background: #e0f7fa;
-                                color: #00796b;
-                                font-size: 0.95rem;
-                                padding: 2px 10px;
-                                border-radius: 8px;
-                                margin-left: 6px;
-                                font-weight: 700;
-                            "
-                            >라멘 인기</span
-                        >
+
+                <!-- 카드 4: 예산 맞춤 -->
+                <div class="community-card" id="budget-recommend-card" style="cursor:pointer; animation-delay:0.16s">
+                    <div class="card-title">💰 예산 맞춤 추천 <span class="badge badge-red">PRICE</span></div>
+                    <div class="card-info">
+                        <div class="card-count" id="budget-title" style="color:#475569; font-weight:800">오늘의 예산은?</div>
+                        <div class="card-recent" id="budget-desc">클릭하여 지갑 사정 맞춤 메뉴 보기</div>
                     </div>
-                    <div class="card-count">글 18개</div>
-                    <div class="card-recent">최근: "강남 라멘집 추천!"</div>
-                    <div class="card-tag">#라멘덕후</div>
-                </div>
-                <div class="community-card">
-                    <div class="card-title">
-                        🎲 근처 맛집 룰렛
-                        <span
-                            style="
-                                background: #e0e0e0;
-                                color: #333;
-                                font-size: 0.95rem;
-                                padding: 2px 10px;
-                                border-radius: 8px;
-                                margin-left: 6px;
-                                font-weight: 700;
-                            "
-                            >랜덤 추천</span
-                        >
-                    </div>
-                    <div class="card-count">글 9개</div>
-                    <div class="card-recent">최근: "룰렛 돌려봤어요!"</div>
-                    <div class="card-tag">#근처맛집룰렛</div>
+                    <div class="card-tag">#가성비부터플렉스까지</div>
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: center; gap: 32px; flex-wrap: nowrap; margin-top: 32px">
-                <a href="/category/solo" style="text-decoration: none; color: inherit">
-                    <div class="community-card">
-                        <div class="card-title">🍚 혼밥 인기글</div>
-                        <div class="card-count">글 27개</div>
-                        <div class="card-recent">최근: "오늘 점심 어디가?"</div>
-                        <div class="card-tag">#혼밥</div>
+            <div class="community-container" style="margin-top:18px">
+                <a href="/SOLO" class="community-card" style="animation-delay:0.1s">
+                    <div class="card-title">🍚 혼밥 인기글</div>
+                    <div class="card-info">
+                        <div class="card-count" id="count-solo">로딩 중...</div>
+                        <div class="card-recent" id="recent-solo">로딩 중...</div>
                     </div>
+                    <div class="card-tag">#재방문율90%</div>
                 </a>
-                <a href="/category/date" style="text-decoration: none; color: inherit">
-                    <div class="community-card">
-                        <div class="card-title">💑 커플 인기글</div>
-                        <div class="card-count">글 19개</div>
-                        <div class="card-recent">최근: "커플 맛집 추천!"</div>
-                        <div class="card-tag">#커플</div>
+                <a href="/DATE" class="community-card">
+                    <div class="card-title">💑 데이트 코스</div>
+                    <div class="card-info">
+                        <div class="card-count" id="count-date">로딩 중...</div>
+                        <div class="card-recent" id="recent-date">로딩 중...</div>
                     </div>
+                    <div class="card-tag">#커플추천</div>
                 </a>
-                <a href="/category/work" style="text-decoration: none; color: inherit">
-                    <div class="community-card">
-                        <div class="card-title">🍻 회식 인기글</div>
-                        <div class="card-count">글 15개</div>
-                        <div class="card-recent">최근: "회식 장소 추천!"</div>
-                        <div class="card-tag">#회식</div>
+                <a href="/WORK" class="community-card">
+                    <div class="card-title">🍻 회식 장소</div>
+                    <div class="card-info">
+                        <div class="card-count" id="count-work">로딩 중...</div>
+                        <div class="card-recent" id="recent-work">로딩 중...</div>
                     </div>
+                    <div class="card-tag">#직장인인기</div>
                 </a>
-                <a href="/category/etc" style="text-decoration: none; color: inherit">
-                    <div class="community-card">
-                        <div class="card-title">🧩 기타 인기글</div>
-                        <div class="card-count">글 8개</div>
-                        <div class="card-recent">최근: "이색 맛집 공유!"</div>
-                        <div class="card-tag">#기타</div>
+                <a href="/ETC" class="community-card">
+                    <div class="card-title">🧩 자유 게시판</div>
+                    <div class="card-info">
+                        <div class="card-count" id="count-etc">로딩 중...</div>
+                        <div class="card-recent" id="recent-etc">로딩 중...</div>
                     </div>
+                    <div class="card-tag">#다양한주제</div>
                 </a>
             </div>
-
-            <script>
-                // 기존 스크립트 유지 (날씨/시간 기반 추천, 룰렛 등)
-                // recommend-text ID가 있는 요소가 없어서 에러가 날 수 있으나, 요청대로 삭제하지 않았습니다.
-                // 필요한 경우 본문에 <div id="recommend-text"></div>를 추가하세요.
-                const recommendTextDiv = document.getElementById('recommend-text') || { innerHTML: '' };
-                const menuByWeather = {
-                    rain: ['비 오는 날엔 <b>김치전</b>!', '따뜻한 <b>파전+막걸리</b> 어때요?'],
-                    snow: ['눈 오는 날엔 <b>어묵탕</b>!', '따뜻한 <b>우동</b> 추천!'],
-                    hot: ['더운 날엔 <b>냉면</b>!', '시원한 <b>콩국수</b> 어때요?'],
-                    cold: ['추운 날엔 <b>순두부찌개</b>!', '따끈한 <b>부대찌개</b> 추천!'],
-                    clear: ['맑은 날엔 <b>돈까스</b>!', '든든한 <b>제육볶음</b>!'],
-                    default: ['오늘은 <b>파스타</b>도 좋아요!', '가볍게 <b>샐러드</b> 어떠세요?'],
-                };
-                const menuByTime = {
-                    morning: ['아침엔 <b>토스트</b>!', '든든한 <b>샌드위치</b> 추천!'],
-                    lunch: ['점심엔 <b>비빔밥</b>!', '든든한 <b>김치찌개</b>!'],
-                    dinner: ['저녁엔 <b>삼겹살</b>!', '따뜻한 <b>칼국수</b>!'],
-                };
-                const WEATHER_API_KEY = 'b1b15e88fa797225412429c1c50c122a1';
-                function getWeatherAndRecommend() {
-                    if (!navigator.geolocation) {
-                        showRandomRecommend();
-                        return;
-                    }
-                    navigator.geolocation.getCurrentPosition(async (pos) => {
-                        const lat = pos.coords.latitude;
-                        const lon = pos.coords.longitude;
-                        try {
-                            const res = await fetch(
-                                `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=kr`,
-                            );
-                            const data = await res.json();
-                            const weather = data.weather[0].main.toLowerCase();
-                            const temp = data.main.temp;
-                            let weatherType = 'default';
-                            if (weather.includes('rain')) weatherType = 'rain';
-                            else if (weather.includes('snow')) weatherType = 'snow';
-                            else if (temp >= 28) weatherType = 'hot';
-                            else if (temp <= 5) weatherType = 'cold';
-                            else if (weather.includes('clear')) weatherType = 'clear';
-                            const hour = new Date().getHours();
-                            let timeType = 'lunch';
-                            if (hour < 11) timeType = 'morning';
-                            else if (hour >= 17) timeType = 'dinner';
-                            let candidates = [];
-                            if (menuByWeather[weatherType]) candidates = candidates.concat(menuByWeather[weatherType]);
-                            if (menuByTime[timeType]) candidates = candidates.concat(menuByTime[timeType]);
-                            if (candidates.length === 0) candidates = menuByWeather['default'];
-                            const idx = Math.floor(Math.random() * candidates.length);
-                            recommendTextDiv.innerHTML =
-                                candidates[idx] +
-                                `<div style="margin-top: 8px; font-size: 1rem; color: #888">(${data.name} ${Math.round(temp)}°C, ${data.weather[0].description})</div>`;
-                        } catch (e) {
-                            showRandomRecommend();
-                        }
-                    }, showRandomRecommend);
-                }
-                function showRandomRecommend() {
-                    const menus = [
-                        '비 오는 날엔 <b>김치전</b> 어때요?',
-                        '따뜻한 <b>순두부찌개</b> 추천!',
-                        '오늘은 <b>돈까스</b>가 땡기네요!',
-                        '점심엔 <b>냉면</b> 한 그릇!',
-                        '매운 <b>떡볶이</b>로 스트레스 해소!',
-                        '든든한 <b>제육볶음</b> 추천!',
-                        '가볍게 <b>샐러드</b> 어떠세요?',
-                        '이 동네 직장인 인기 <b>김밥</b>!',
-                        '재방문율 90% <b>칼국수</b>!',
-                        '오늘은 <b>파스타</b>도 좋아요!',
-                    ];
-                    const idx = Math.floor(Math.random() * menus.length);
-                    recommendTextDiv.innerHTML = menus[idx];
-                }
-
-                // 룰렛 관련 (기존 코드 유지)
-                const sampleStores = [
-                    '강남 김치찌개집',
-                    '역삼 돈까스 맛집',
-                    '신논현 파스타',
-                    '강남역 샐러드바',
-                    '역삼동 쌀국수',
-                    '강남역 초밥',
-                    '논현동 라멘',
-                    '강남역 분식',
-                    '역삼동 삼겹살',
-                    '강남역 카페',
-                ];
-                // roulette-display 등의 ID가 실제 HTML에 없으므로 실제 사용시에는 요소를 추가해야 합니다.
-                document.addEventListener('DOMContentLoaded', getWeatherAndRecommend);
-            </script>
         </main>
 
+        <!-- FAB -->
+        <button class="panel-fab" onclick="togglePanel()" id="panelFab">💬</button>
+
+        <!-- 오버레이 -->
+        <div class="panel-overlay" id="panelOverlay"></div>
+
+        <!-- 패널 -->
+        <div class="panel-panel" id="panelPanel">
+            <div class="panel-header">
+                <div class="panel-header-title">🍽️ 나의 메이트</div>
+                <div class="panel-header-sub" id="panel-login-hint"></div>
+            </div>
+            <div class="panel-tabs">
+                <button class="tab-btn active" onclick="showTab('list')">친구목록</button>
+                <button class="tab-btn" onclick="showTab('add')">친구추가</button>
+                <button class="tab-btn" id="req-tab-btn" onclick="showTab('req')">
+                    요청<span id="req-dot" class="req-dot" style="display:none"></span>
+                </button>
+            </div>
+            <div id="tab-list" class="tab-content active">
+                <div id="panel-list-container">
+                    <div class="empty-state"><div class="empty-icon">👥</div>아직 친구가 없어요.<br>친구를 추가해보세요!</div>
+                </div>
+            </div>
+            <div id="tab-add" class="tab-content">
+                <div class="add-friend-section">
+                    <div style="font-size:0.9rem; color:#666; margin-bottom:12px; line-height:1.5">👥 닉네임으로 친구를 찾아보세요</div>
+                    <input type="text" id="panelSearch" class="add-friend-input" placeholder="친구 닉네임을 입력하세요"
+                        onkeyup="if(event.keyCode==13) requestFriend();" />
+                    <button class="add-friend-btn" onclick="requestFriend()">🙋 친구 신청 보내기</button>
+                    <div id="add-friend-result" style="font-size:0.88rem; margin-top:12px; min-height:20px; text-align:center; line-height:1.5"></div>
+                </div>
+            </div>
+            <div id="tab-req" class="tab-content">
+                <div id="panel-req-container">
+                    <div class="empty-state"><div class="empty-icon">📭</div>받은 친구 요청이 없어요.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 친구 삭제 모달 -->
+        <div class="confirm-modal-bg" id="confirmModalBg" style="display:none">
+            <div class="confirm-modal">
+                <div class="confirm-modal-icon">🗑️</div>
+                <div class="confirm-modal-title" id="confirmModalTitle">친구를 삭제할까요?</div>
+                <div class="confirm-modal-desc" id="confirmModalDesc">삭제하면 서로의 친구 목록에서<br>사라집니다.</div>
+                <div class="confirm-modal-btns">
+                    <button class="confirm-cancel" onclick="closeConfirmModal()">취소</button>
+                    <button class="confirm-ok" id="confirmOkBtn">삭제</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 다중 채팅창 컨테이너 -->
+        <div id="chat-windows-container"></div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast"></div>
+
+        <script src="/static/js/friend-chat.js"></script>
         <script>
-                const nickname = localStorage.getItem('nickname');
-                const isAdmin = localStorage.getItem('is_admin');
-                const headerRightArea = document.getElementById('headerRightArea');
+            function openMobileNav() {
+                document.getElementById('mobileNav').classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeMobileNav() {
+                document.getElementById('mobileNav').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            function closeMobileNavOutside(e) {
+                if (e.target === document.getElementById('mobileNav')) closeMobileNav();
+            }
+        </script>
 
-                if (nickname && headerRightArea) {
-                    let adminButton = '';
-                    if (isAdmin === '1') {
-                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자 기능</button>`;
-                    }
+        <script>
+            // =============================================
+            // 전역 변수
+            // =============================================
+            const currentUserId = localStorage.getItem('user_id');
+            const currentNickname = localStorage.getItem('nickname');
+            const isAdmin = localStorage.getItem('is_admin');
 
-            // 날씨 및 위치 관련 스크립트 (기존 유지)
-            document.addEventListener('DOMContentLoaded', () => {
-                const nickname = localStorage.getItem('nickname');
-                const isAdmin = localStorage.getItem('is_admin');
-                const headerRightArea = document.getElementById('headerRightArea');
-
-                if (nickname && headerRightArea) {
-                    let adminButton =
-                        isAdmin === '1'
-                            ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자</button>`
-                            : '';
-                    headerRightArea.innerHTML = `
-                        <span style="font-weight: 700; color: #dc2626; font-size: 1.05rem; margin-right: 5px;">👤 ${nickname}님</span>
-                        ${adminButton}
-                        <button class="login-btn" onclick="location.href='/mypage'" style="background: #f39c12;">회원정보</button>
-                        <button class="login-btn" onclick="logout()" style="background: #666;">로그아웃</button>
-                    
-                    // 페이지 로드 시 자동으로 위치 탐색 시작
-                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 위치 탐색</span>
+            // =============================================
+            // 헤더 렌더링
+            // =============================================
+            function renderHeader() {
+                const area = document.getElementById('headerRightArea');
+                if (!area) return;
+                if (currentNickname) {
+                    const adminBtn = isAdmin === '1'
+                        ? `<button class="login-btn" onclick="location.href='/admin'" style="background:#2c3e50">⚙️ 관리자</button>`
+                        : '';
+                    area.innerHTML = `
+                        <span class="nickname-avatar" onclick="location.href='/mypage'" title="내 정보">${currentNickname.slice(0,2)}</span>
+                        ${adminBtn}
+                        <button class="login-btn" onclick="location.href='/subscribe'" style="background:#2563EB;padding:7px 13px;font-size:12px;">💎 구독</button>
+                        <button class="login-btn" onclick="logout()" style="background:#666">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 위치 로딩...</span>
                     `;
                     getGPSLocation();
-                }
-            });
-
-            function getGPSLocation() {
-                const locSpan = document.getElementById('gps-location');
-                if (!locSpan) return;
-
-                if (navigator.geolocation) {
-                    locSpan.innerText = '📍 위치 찾는 중...';
-                    navigator.geolocation.getCurrentPosition(
-                        async (position) => {
-                            const lat = position.coords.latitude;
-                            const lon = position.coords.longitude;
-                            try {
-                                const res = await fetch(
-                                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
-                                );
-                                const data = await res.json();
-                                let city = data.address.city || data.address.province || data.address.region || '';
-                                let borough = data.address.borough || data.address.suburb || data.address.town || '';
-                                let shortAddr = `${city} ${borough}`.trim();
-                                locSpan.innerText = `📍 ${shortAddr || '위치 확인됨'}`;
-                            } catch (e) {
-                                locSpan.innerText = '📍 위치 확인됨';
-                            }
-                        },
-                        (error) => {
-                            locSpan.innerText = '📍 위치 권한 거부됨';
-                        },
-                    );
                 } else {
-                    locSpan.innerText = '📍 GPS 지원 안됨';
+                    area.innerHTML = `
+                        <button class="login-btn" onclick="location.href='/login'">로그인</button>
+                        <button class="login-btn" style="background:#fff; color:#dc2626; border:1.5px solid #dc2626" onclick="location.href='/signup'">회원가입</button>
+                    `;
                 }
+            }
+
+            function logout() { localStorage.clear(); location.reload(); }
+
+            // =============================================
+            // GPS 위치
+            // =============================================
             function getGPSLocation() {
                 const locSpan = document.getElementById('gps-location');
                 if (!locSpan || !navigator.geolocation) return;
-                locSpan.innerText = '📍 위치 찾는 중...';
-                navigator.geolocation.getCurrentPosition(
-                    async (pos) => {
-                        try {
-                            const res = await fetch(
-                                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
-                            );
-                            const data = await res.json();
-                            let addr =
-                                (data.address.city || data.address.province || '') +
-                                ' ' +
-                                (data.address.borough || data.address.suburb || '');
-                            locSpan.innerText = `📍 ${addr.trim() || '위치 확인됨'}`;
-                        } catch (e) {
-                            locSpan.innerText = '📍 위치 확인됨';
-                        }
-                    },
-                    () => {
-                        locSpan.innerText = '📍 위치 권한 거부됨';
-                    },
-                );
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    try {
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+                        const data = await res.json();
+                        const city = data.address.city || data.address.province || '';
+                        let district = data.address.borough || data.address.county || data.address.city_district || data.address.town || data.address.suburb || '';
+                        locSpan.innerText = `📍 ${city && district ? city + ' ' + district : city || '위치 확인됨'}`;
+                    } catch(e) { locSpan.innerText = '📍 위치 확인됨'; }
+                });
             }
 
-            function logout() {
-                localStorage.clear();
+            // =============================================
+            // 검색
+            // =============================================
+            function handleSearch() {
+                const query = document.getElementById('mainSearchInput').value.trim();
+                if (!query) return;
+                window.location.href = `/search?keyword=${encodeURIComponent(query)}`;
             }
-        </script>
-    </body>
-</html>
-                alert('로그아웃 되었습니다.');
-                window.location.href = '/main';
+            function handleRealtimeRecommendClick() {
+                const menu = document.getElementById('count-recommend').innerText.replace(/'/g,'').replace(/최고의/g,'').trim();
+                if (menu && menu !== '데이터 로딩 중...') window.location.href = `/search?keyword=${encodeURIComponent(menu)}`;
             }
+
+            // =============================================
+            // 실시간 추천
+            // =============================================
+            const menuData = [
+                { display: '인생 파스타 맛집', search: '파스타' },
+                { display: '바삭한 돈카츠 전문점', search: '돈까스' },
+                { display: '깊은 맛 노포 국밥', search: '국밥' },
+                { display: '육즙 가득 수제버거', search: '수제버거' },
+                { display: '신선한 초밥', search: '초밥' },
+                { display: '든든한 제육볶음', search: '제육볶음' },
+                { display: '두툼한 삼겹살', search: '삼겹살' },
+                { display: '얼큰한 짬뽕', search: '짬뽕' },
+                { display: '부드러운 샤브샤브', search: '샤브샤브' },
+                { display: '중독적인 마라탕', search: '마라탕' },
+            ];
+            async function updateRealtimeRecommendation() {
+                const titleEl = document.getElementById('time-title');
+                const menuEl = document.getElementById('count-recommend');
+                const recentEl = document.getElementById('recent-recommend');
+                if (!navigator.geolocation) return;
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    try {
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+                        const data = await res.json();
+                        const neighborhood = data.address.suburb || data.address.neighbourhood || '내 주변';
+                        const selected = menuData[Math.floor(Math.random() * menuData.length)];
+                        titleEl.innerText = `${neighborhood} 추천 메뉴`;
+                        menuEl.innerText = `'${selected.display}'`;
+                        recentEl.innerText = `${neighborhood} 근처 최고의 ${selected.search} 맛집`;
+                        document.getElementById('realtime-recommend-card').onclick = () => {
+                            window.open(`https://map.naver.com/v5/search/${encodeURIComponent(neighborhood + ' ' + selected.search)}`, '_blank');
+                        };
+                    } catch(e) {}
+                });
+            }
+            async function updateThemeRecommendation() {
+                const themeTitle = document.getElementById('theme-title');
+                const themeSubtitle = document.getElementById('theme-subtitle');
+                const themeDesc = document.getElementById('theme-desc');
+                const themeTag = document.getElementById('theme-tag');
+                const themeCard = document.getElementById('theme-recommend-card');
+
+                async function fetchWeather(latitude, longitude) {
+                    try {
+                        const res = await fetch(`/api/weather-recommend?lat=${latitude}&lon=${longitude}`);
+                        if (!res.ok) return;
+                        const data = await res.json();
+                        console.log('[날씨] 응답:', data);
+                        themeTitle.innerText = data.title;
+                        themeSubtitle.innerText = data.menu || data.subtitle || '';
+                        themeDesc.innerText = data.reason || data.desc || '';
+                        themeTag.innerText = data.tag;
+                        // 네이버 맛집 검색으로 이동
+                        themeCard.onclick = () => {
+                            window.open(`https://map.naver.com/p/search/${encodeURIComponent(data.search + ' 맛집')}`, '_blank');
+                        };
+                    } catch (e) {
+                        console.error('[날씨] fetch 오류:', e);
+                    }
+                }
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+                        (err) => {
+                            console.warn('[날씨] GPS 거부, 서울 기본값 사용');
+                            fetchWeather(37.5665, 126.9780);
+                        },
+                        { timeout: 5000 }
+                    );
+                } else {
+                    fetchWeather(37.5665, 126.9780);
+                }
+            }
+
+            // =============================================
+            // ★ 월별 제철 음식
+            // =============================================
+            const seasonFoodData = {
+                1: [
+                    { name: '🍲 꽃게탕', desc: '겨울 꽃게로 끓인 칼칼한 탕', search: '꽃게탕' },
+                    { name: '🍜 복어탕', desc: '쌀쌀한 날 몸 녹이는 겨울 복어탕', search: '복어탕' },
+                    { name: '🍣 방어회', desc: '기름진 겨울 방어, 회로 즐기기', search: '방어회' },
+                    { name: '🥣 굴국밥', desc: '바다 향 가득한 겨울 굴국밥', search: '굴국밥' },
+                    { name: '🍲 대구탕', desc: '시원하고 깊은 국물 대구탕', search: '대구탕' },
+                    { name: '🍱 굴전', desc: '겨울 굴로 구운 고소한 굴전', search: '굴전' },
+                    { name: '🍛 한치물회', desc: '쫄깃한 한치로 만든 겨울 물회', search: '한치물회' },
+                    { name: '🫕 꽃게찜', desc: '쪄서 더 달달한 겨울 꽃게찜', search: '꽃게찜' },
+                    { name: '🍲 오징어볶음', desc: '겨울 오징어로 만든 매콤한 볶음', search: '오징어볶음' },
+                    { name: '🥘 시금치된장국', desc: '달달한 겨울 시금치 된장국', search: '시금치된장국' },
+                ],
+                2: [
+                    { name: '🍲 복어탕', desc: '겨울 마무리 복어탕 한 그릇', search: '복어탕' },
+                    { name: '🍣 방어회', desc: '마지막 겨울 방어회 시즌', search: '방어회' },
+                    { name: '🥣 굴국밥', desc: '겨울 끝자락 제철 굴국밥', search: '굴국밥' },
+                    { name: '🍲 꽃게탕', desc: '겨울 꽃게로 끓인 얼큰한 탕', search: '꽃게탕' },
+                    { name: '🍜 주꾸미볶음', desc: '봄 입맛 깨우는 주꾸미볶음', search: '주꾸미볶음' },
+                    { name: '🥗 냉이된장국', desc: '봄 향기 물씬 냉이된장국', search: '냉이된장국' },
+                    { name: '🍱 굴전', desc: '고소한 굴전으로 겨울 마무리', search: '굴전' },
+                    { name: '🫕 봄동겉절이', desc: '달달한 봄동으로 만든 겉절이', search: '봄동겉절이' },
+                    { name: '🍲 대구탕', desc: '시원한 대구탕으로 몸 녹이기', search: '대구탕' },
+                    { name: '🥘 시금치된장국', desc: '달달한 겨울 시금치 된장국', search: '시금치된장국' },
+                ],
+                3: [
+                    { name: '🍜 주꾸미볶음', desc: '봄 주꾸미 볶음, 지금이 딱!', search: '주꾸미볶음' },
+                    { name: '🥗 냉이된장국', desc: '향긋한 봄 냉이된장국', search: '냉이된장국' },
+                    { name: '🐟 도다리쑥국', desc: '봄 최고의 별미 도다리쑥국', search: '도다리쑥국' },
+                    { name: '🍱 두릅튀김', desc: '쌉쌀한 봄나물 두릅튀김', search: '두릅튀김' },
+                    { name: '🍢 꼴뚜기볶음', desc: '봄 제철 꼴뚜기 매콤 볶음', search: '꼴뚜기볶음' },
+                    { name: '🥘 달래된장찌개', desc: '알싸한 달래 넣은 된장찌개', search: '달래된장찌개' },
+                    { name: '🍲 삼치구이', desc: '봄 삼치구이로 든든한 한 끼', search: '삼치구이' },
+                    { name: '🥣 쑥국', desc: '향긋한 봄 쑥으로 끓인 쑥국', search: '쑥국' },
+                    { name: '🫕 봄나물비빔밥', desc: '봄나물 가득한 비빔밥', search: '봄나물비빔밥' },
+                    { name: '🍜 씀바귀무침', desc: '쌉쌀한 봄나물 씀바귀무침', search: '씀바귀무침' },
+                ],
+                4: [
+                    { name: '🍜 주꾸미볶음', desc: '4월 주꾸미가 가장 통통해요', search: '주꾸미볶음' },
+                    { name: '🍱 두릅튀김', desc: '봄 두릅튀김의 계절', search: '두릅튀김' },
+                    { name: '🐟 도다리쑥국', desc: '봄 도다리쑥국 지금이 제철', search: '도다리쑥국' },
+                    { name: '🥘 죽순볶음', desc: '부드러운 봄 죽순볶음', search: '죽순볶음' },
+                    { name: '🍲 병어조림', desc: '봄 제철 병어 간장조림', search: '병어조림' },
+                    { name: '🫕 봄나물비빔밥', desc: '봄나물 가득 비빔밥 한 그릇', search: '봄나물비빔밥' },
+                    { name: '🥗 참나물무침', desc: '향긋한 봄나물 참나물무침', search: '참나물무침' },
+                    { name: '🥣 쑥된장국', desc: '향긋한 쑥 넣은 된장국', search: '쑥된장국' },
+                    { name: '🍢 봄동겉절이', desc: '달달한 봄동 겉절이', search: '봄동겉절이' },
+                    { name: '🍛 조개탕', desc: '시원한 봄 조개탕 국물', search: '조개탕' },
+                ],
+                5: [
+                    { name: '🍜 주꾸미볶음', desc: '초여름 주꾸미볶음 마지막 기회', search: '주꾸미볶음' },
+                    { name: '🍣 참돔회', desc: '5월 참돔회가 가장 맛있어요', search: '참돔회' },
+                    { name: '🥘 문어숙회', desc: '쫄깃한 봄 문어숙회', search: '문어숙회' },
+                    { name: '🍱 부추전', desc: '향긋한 부추로 만든 부추전', search: '부추전' },
+                    { name: '🐟 전어구이', desc: '봄 전어구이로 입맛 살리기', search: '전어구이' },
+                    { name: '🍲 숭어회', desc: '담백한 봄 숭어회', search: '숭어회' },
+                    { name: '🫕 죽순볶음', desc: '신선한 죽순볶음으로 봄 마무리', search: '죽순볶음' },
+                    { name: '🥣 취나물비빔밥', desc: '향긋한 취나물 비빔밥', search: '취나물비빔밥' },
+                    { name: '🍛 조개칼국수', desc: '시원한 봄 조개 칼국수', search: '조개칼국수' },
+                    { name: '🥘 완두콩밥', desc: '달달한 완두콩 넣은 밥', search: '완두콩밥' },
+                ],
+                6: [
+                    { name: '🍲 민어탕', desc: '여름 보양식의 왕 민어탕', search: '민어탕' },
+                    { name: '🥘 문어숙회', desc: '여름 문어숙회로 시원하게', search: '문어숙회' },
+                    { name: '🍜 오이냉국', desc: '시원한 여름 오이냉국', search: '오이냉국' },
+                    { name: '🍣 광어회', desc: '여름 광어회가 신선해요', search: '광어회' },
+                    { name: '🍱 깻잎장아찌', desc: '향긋한 깻잎장아찌로 밥 한 그릇', search: '깻잎장아찌' },
+                    { name: '🫕 삼계탕', desc: '여름 더위를 이기는 삼계탕', search: '삼계탕' },
+                    { name: '🥣 냉면', desc: '시원한 여름 냉면 한 그릇', search: '냉면' },
+                    { name: '🍛 콩국수', desc: '고소한 여름 콩국수', search: '콩국수' },
+                    { name: '🍢 애호박전', desc: '여름 애호박으로 만든 전', search: '애호박전' },
+                    { name: '🍲 도미탕', desc: '시원한 여름 도미매운탕', search: '도미매운탕' },
+                ],
+                7: [
+                    { name: '🫕 삼계탕', desc: '복날 보양식 삼계탕', search: '삼계탕' },
+                    { name: '🍲 민어탕', desc: '삼복더위 민어탕으로 기력 보충', search: '민어탕' },
+                    { name: '🥣 냉면', desc: '여름 냉면, 지금이 절정', search: '냉면' },
+                    { name: '🍜 콩국수', desc: '고소한 여름 콩국수', search: '콩국수' },
+                    { name: '🍣 장어구이', desc: '여름 보양 장어구이', search: '장어구이' },
+                    { name: '🥘 대하구이', desc: '여름 제철 대하 소금구이', search: '대하구이' },
+                    { name: '🍱 도미회', desc: '여름 도미회로 시원하게', search: '도미회' },
+                    { name: '🍛 오이소박이', desc: '시원한 여름 오이소박이', search: '오이소박이' },
+                    { name: '🥗 열무냉국', desc: '시원한 열무 물냉면', search: '열무냉면' },
+                    { name: '🍲 추어탕', desc: '여름 보양 추어탕 한 그릇', search: '추어탕' },
+                ],
+                8: [
+                    { name: '🫕 삼계탕', desc: '말복 보양식 삼계탕', search: '삼계탕' },
+                    { name: '🍣 장어덮밥', desc: '여름 기력 보충 장어덮밥', search: '장어덮밥' },
+                    { name: '🍲 민어회', desc: '8월 보양식의 왕 민어', search: '민어회' },
+                    { name: '🥘 대하찜', desc: '제철 대하 쪄서 달달하게', search: '대하찜' },
+                    { name: '🥣 냉면', desc: '여름 냉면 마지막 시즌', search: '냉면' },
+                    { name: '🍜 추어탕', desc: '여름 끝 보양 추어탕', search: '추어탕' },
+                    { name: '🍱 애호박전', desc: '여름 애호박전 제철', search: '애호박전' },
+                    { name: '🍛 버섯전골', desc: '여름 버섯전골로 보양', search: '버섯전골' },
+                    { name: '🍢 고추전', desc: '여름 풋고추로 만든 고추전', search: '고추전' },
+                    { name: '🥗 열무비빔밥', desc: '시원한 열무 비빔밥', search: '열무비빔밥' },
+                ],
+                9: [
+                    { name: '🍲 전어구이', desc: '가을 전어 굽는 냄새에 집 나간다', search: '전어구이' },
+                    { name: '🫕 꽃게장', desc: '9월 암꽃게로 담근 간장게장', search: '꽃게장' },
+                    { name: '🍛 송이버섯구이', desc: '가을 최고의 보물 송이버섯구이', search: '송이버섯구이' },
+                    { name: '🥘 낙지볶음', desc: '가을 낙지볶음으로 원기 회복', search: '낙지볶음' },
+                    { name: '🍲 추어탕', desc: '가을 보양 추어탕 한 그릇', search: '추어탕' },
+                    { name: '🍱 밤밥', desc: '알밤 가득한 가을 밤밥', search: '밤밥' },
+                    { name: '🥣 버섯전골', desc: '가을 버섯 가득 전골', search: '버섯전골' },
+                    { name: '🍜 꽃게탕', desc: '가을 꽃게로 끓인 얼큰한 탕', search: '꽃게탕' },
+                    { name: '🍢 은행볶음', desc: '고소한 가을 은행볶음', search: '은행볶음' },
+                    { name: '🥘 문어숙회', desc: '가을 문어숙회로 단백하게', search: '문어숙회' },
+                ],
+                10: [
+                    { name: '🍲 꽃게찜', desc: '가을 암꽃게, 알이 꽉 찬 꽃게찜', search: '꽃게찜' },
+                    { name: '🍛 송이버섯전골', desc: '가을 송이버섯전골의 계절', search: '송이버섯전골' },
+                    { name: '🥘 낙지연포탕', desc: '가을 낙지연포탕 한 그릇', search: '낙지연포탕' },
+                    { name: '🍱 전어구이', desc: '가을 전어구이 마지막 기회', search: '전어구이' },
+                    { name: '🫕 꽃게장', desc: '가을 암꽃게 간장게장', search: '꽃게장' },
+                    { name: '🥣 버섯솥밥', desc: '향긋한 버섯 가득 솥밥', search: '버섯솥밥' },
+                    { name: '🍲 대구탕', desc: '가을 대구탕으로 몸 보양', search: '대구탕' },
+                    { name: '🍜 추어탕', desc: '가을 제철 추어탕', search: '추어탕' },
+                    { name: '🍢 은행볶음', desc: '고소한 가을 은행 안주', search: '은행볶음' },
+                    { name: '🥘 밤밥', desc: '달달한 밤 가득 밤밥', search: '밤밥' },
+                ],
+                11: [
+                    { name: '🥣 굴국밥', desc: '겨울 굴 시즌 시작! 뜨끈한 굴국밥', search: '굴국밥' },
+                    { name: '🍣 방어회', desc: '겨울 방어회 제철 시작', search: '방어회' },
+                    { name: '🍲 복어탕', desc: '겨울 복어탕 시즌 시작', search: '복어탕' },
+                    { name: '🥘 낙지연포탕', desc: '겨울 초입 낙지연포탕', search: '낙지연포탕' },
+                    { name: '🫕 배추겉절이', desc: '김장철 신선한 배추겉절이', search: '배추겉절이' },
+                    { name: '🍜 한치회', desc: '11월 한치회로 가을 마무리', search: '한치회' },
+                    { name: '🍱 굴전', desc: '겨울 굴로 만든 고소한 굴전', search: '굴전' },
+                    { name: '🍲 꽃게탕', desc: '겨울 꽃게탕으로 몸 녹이기', search: '꽃게탕' },
+                    { name: '🥣 김치찌개', desc: '김장 김치로 끓인 김치찌개', search: '김치찌개' },
+                    { name: '🍛 버섯전골', desc: '가을 마지막 버섯전골', search: '버섯전골' },
+                ],
+                12: [
+                    { name: '🥣 굴국밥', desc: '12월 굴이 가장 맛있어요', search: '굴국밥' },
+                    { name: '🍣 방어회', desc: '12월 방어회 절정', search: '방어회' },
+                    { name: '🍲 꽃게탕', desc: '겨울 수꽃게로 끓인 꽃게탕', search: '꽃게탕' },
+                    { name: '🫕 복어탕', desc: '겨울 복어요리의 계절', search: '복어탕' },
+                    { name: '🍱 굴전', desc: '겨울 굴로 만든 고소한 굴전', search: '굴전' },
+                    { name: '🥘 대구탕', desc: '시원한 대구탕으로 겨울 따뜻하게', search: '대구탕' },
+                    { name: '🍜 오징어볶음', desc: '겨울 오징어 매콤 볶음', search: '오징어볶음' },
+                    { name: '🍛 꽃게찜', desc: '겨울 꽃게찜으로 포식하기', search: '꽃게찜' },
+                    { name: '🥣 김치찌개', desc: '겨울에 더 맛있는 묵은지 김치찌개', search: '묵은지김치찌개' },
+                    { name: '🍲 한치물회', desc: '겨울 한치로 만든 시원한 물회', search: '한치물회' },
+                ],
+            };
+
+            let currentSeasonIndex = 0;
+            let currentSeasonList = [];
+
+            function initSeasonFoodCard() {
+                const month = new Date().getMonth() + 1;
+                const monthNames = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+                document.getElementById('season-month-title').textContent = `${monthNames[month-1]} 제철 음식`;
+
+                // 10개 랜덤 셔플
+                currentSeasonList = [...seasonFoodData[month]].sort(() => Math.random() - 0.5);
+                currentSeasonIndex = 0;
+                renderSeasonFood();
+            }
+
+            function renderSeasonFood() {
+                const food = currentSeasonList[currentSeasonIndex];
+                const nameEl = document.getElementById('season-food-name');
+                const descEl = document.getElementById('season-food-desc');
+                const tagEl = document.getElementById('season-food-tag');
+
+                // 애니메이션 재실행
+                nameEl.style.animation = 'none';
+                descEl.style.animation = 'none';
+                requestAnimationFrame(() => {
+                    nameEl.style.animation = 'seasonFlip 0.35s ease both';
+                    descEl.style.animation = 'seasonFlip 0.35s ease both';
+                });
+
+                nameEl.textContent = food.name;
+                descEl.textContent = food.desc;
+                tagEl.textContent = `#${food.search}`;
+            }
+
+            function shuffleSeasonFood() {
+                // 현재 보여지는 음식으로 네이버 검색
+                const current = currentSeasonList[currentSeasonIndex];
+                window.open(`https://map.naver.com/p/search/${encodeURIComponent(current.search + ' 맛집')}`, '_blank');
+
+                // 다음 음식으로 넘기기
+                currentSeasonIndex = (currentSeasonIndex + 1) % currentSeasonList.length;
+                renderSeasonFood();
+            }
+
+            // =============================================
+            // 예산 추천
+            // =============================================
+            function updateBudgetRecommendation() {
+                const budgetCard = document.getElementById('budget-recommend-card');
+                const budgetTitle = document.getElementById('budget-title');
+                const budgetDesc = document.getElementById('budget-desc');
+                const budgetOptions = [
+                    { emoji: '🪙', label: '5천원 초절약', text: '편의점·분식으로 가볍게 해결!' },
+                    { emoji: '💸', label: '1만원 가성비', text: '든든한 국밥이나 제육 어떠세요?' },
+                    { emoji: '💳', label: '3만원 기분전환', text: '파스타·초밥으로 기분 업!' },
+                    { emoji: '🍷', label: '5만원 특별한 날', text: '스테이크나 분위기 맛집 추천!' },
+                    { emoji: '💎', label: '10만원 프리미엄', text: '고급 한우나 코스요리 도전!' },
+                    { emoji: '👑', label: '20만원 럭셔리', text: '미슐랭 감성 레스토랑 가볼까?' },
+                    { emoji: '🏆', label: '30만원 플렉스', text: '오마카세 풀코스로 제대로 즐기자!' },
+                ];
+                let clickCount = 0;
+                budgetCard.onclick = () => {
+                    const option = budgetOptions[clickCount % budgetOptions.length];
+                    budgetCard.style.opacity = '0';
+                    setTimeout(() => {
+                        budgetTitle.innerText = `${option.emoji} ${option.label}`;
+                        budgetDesc.innerText = option.text;
+                        budgetCard.style.opacity = '1';
+                        budgetCard.style.borderColor = option.label.includes('30만원') ? 'gold' : '';
+                        budgetCard.style.boxShadow = option.label.includes('30만원') ? '0 0 20px rgba(255,215,0,0.6)' : '';
+                    }, 150);
+                    clickCount++;
+                };
+            }
+
+            async function updateCounts() {
+                const categories = ['SOLO', 'DATE', 'WORK', 'ETC'];
+                for (const cat of categories) {
+                    try {
+                        const res = await fetch(`/api/posts/${cat}`);
+                        if (res.ok) {
+                            const posts = await res.json();
+                            const lowCat = cat.toLowerCase();
+                            document.getElementById(`count-${lowCat}`).innerText = `글 ${posts.length}개`;
+                            document.getElementById(`recent-${lowCat}`).innerText = posts.length > 0 ? `최신 : ${posts[0].title.substring(0,15)}...` : '최신 글 없음';
+                        }
+                    } catch(e) {}
+                }
+            }
+
+            // =============================================
+            // 초기화
+            // =============================================
+            document.addEventListener('DOMContentLoaded', () => {
+                renderHeader();
+                initFriendChatPanel();
+                initSeasonFoodCard();           // ★ 제철 음식 초기화
+                updateRealtimeRecommendation();
+                updateThemeRecommendation();
+                updateBudgetRecommendation();
+                updateCounts();
+
+                setInterval(updateRealtimeRecommendation, 30000);
+                setInterval(updateThemeRecommendation, 60000);
+                setInterval(updateCounts, 60000);
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const color = localStorage.getItem('avatarColor');
+                if (color) {
+                    document.querySelectorAll('.nickname-avatar').forEach(el => { el.style.background = color; });
+                }
+            });
         </script>
     </body>
 </html>

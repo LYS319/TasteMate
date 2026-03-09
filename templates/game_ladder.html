@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="ko">
     <head>
+    <script>
+        // ngrok iframe 탈출 - 경고 페이지 없이 직접 접속
+        if (window.top !== window.self) {
+            window.top.location.href = window.self.location.href;
+        }
+    </script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 - 사다리타기 Pro</title>
@@ -8,12 +14,12 @@
             href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap"
             rel="stylesheet"
         />
+
         <style>
-            /* --- TasteMate 브랜드 스타일 변수 (예시 코드 규격) --- */
             :root {
                 --primary-color: #dc2626;
                 --primary-hover: #b91c1c;
-                --bg-gradient: linear-gradient(135deg, #fff5f5 0%, #f0f2f5 100%);
+                --bg-gradient: linear-gradient(135deg, #fdfdfd 0%, #f1f1f1 100%);
                 --glass-bg: rgba(255, 255, 255, 0.85);
             }
 
@@ -25,146 +31,199 @@
                 min-height: 100vh;
             }
 
-            /* --- TasteMate 공식 상단바 (예시 코드와 1:1 일치) --- */
+            /* --- 예시 코드와 100% 동일한 Header Style --- */
             .header {
-                display: flex;
-                justify-content: space-between;
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
                 align-items: center;
-                padding: 16px 32px;
-                background: var(--glass-bg);
-                box-shadow: 0 2px 16px rgba(220, 38, 38, 0.1);
-                backdrop-filter: blur(12px);
-                position: sticky;
+                padding: 12px 40px;
+                background: rgba(255, 255, 255, 0.85);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                position: fixed;
                 top: 0;
-                z-index: 2000;
-                box-sizing: border-box;
-                width: 100%;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+                border-bottom: 1px solid rgba(220, 38, 38, 0.05);
             }
+
             .header-left {
                 display: flex;
                 align-items: center;
-                gap: 24px;
+                gap: 30px;
+                grid-column: 1;
             }
+
             .header-logo {
                 display: flex;
                 align-items: center;
-                gap: 10px; /* 예시 코드의 10px 적용 */
-                font-size: 1.5rem;
-                font-weight: 900; /* 두께 900으로 강화 */
-                color: var(--primary-color);
+                gap: 10px;
+                font-size: 1.7rem;
+                font-weight: 900;
+                color: #dc2626;
                 text-decoration: none;
-                transition: transform 0.2s;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
             .header-logo:hover {
-                transform: scale(1.05);
-            }
-            .menu-bar {
-                display: flex;
-                gap: 18px;
-                align-items: center;
-                margin-left: 24px;
-            }
-            .menu-item {
-                font-size: 1.1rem; /* 예시 코드 1.1rem 적용 */
-                font-weight: 700;
-                color: var(--primary-color);
-                text-decoration: none;
-                padding: 8px 18px;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: background 0.18s;
-            }
-            .menu-item:hover {
-                background: #fff5f5;
+                transform: translateY(-1px);
+                filter: brightness(1.2);
             }
 
-            .game-dropdown {
-                position: relative;
-            }
-            .dropdown-content {
-                display: none;
-                position: absolute;
-                top: 36px;
-                left: 0;
-                background: #fff;
-                min-width: 140px;
-                box-shadow: 0 4px 16px rgba(220, 38, 38, 0.13);
-                border-radius: 12px;
-                padding: 12px 0;
-                z-index: 1000;
-                flex-direction: column;
-            }
-            .game-dropdown:hover .dropdown-content {
+            .menu-bar {
                 display: flex;
+                gap: 5px;
+                align-items: center;
             }
-            .dropdown-content a {
-                color: var(--primary-color);
-                padding: 10px 24px;
-                text-decoration: none;
+            .menu-item {
                 font-size: 1.05rem;
                 font-weight: 600;
-                border-radius: 8px;
-                transition: background 0.18s;
+                color: #444;
+                text-decoration: none;
+                padding: 10px 14px;
+                border-radius: 10px;
+                transition: all 0.2s;
             }
-            .dropdown-content a:hover {
-                background: #ffe5e5;
+            .menu-item:hover {
+                background: #fff1f1;
+                color: #dc2626;
+            }
+
+            .header-center {
+                grid-column: 2;
+                width: 450px;
             }
 
             .header-right {
                 display: flex;
                 align-items: center;
                 gap: 10px;
-            }
-            .login-btn {
-                padding: 8px 16px;
-                color: #fff;
-                border: none;
-                border-radius: 6px;
-                font-size: 0.95rem;
-                font-weight: bold;
-                cursor: pointer;
-                background: var(--primary-color);
-                transition: background 0.2s;
+                justify-content: flex-end;
+                grid-column: 3;
             }
 
-            /* --- 사다리타기 게임 영역 스타일 (핀볼 setup 스타일 적용) --- */
-            .game-container {
-                text-align: center;
-                padding: 40px 20px 80px;
+            .login-btn {
+                padding: 10px 18px;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                font-size: 0.9rem;
+                font-weight: 700;
+                cursor: pointer;
+                background: #dc2626;
+                transition: all 0.2s;
+                white-space: nowrap;
             }
-            .setup-box {
+
+            /* --- 로그인 후 아바타 및 위치 스타일 --- */
+            .nickname-avatar {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: #222;
+                color: #fff;
+                font-weight: 700;
+                font-size: 1rem;
+                border: 2px solid #fff;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+
+            .current-location {
+                font-size: 0.85rem;
+                color: #dc2626;
+                background: #fff1f1;
+                border: 1px solid rgba(220, 38, 38, 0.1);
+                border-radius: 10px;
+                padding: 8px 14px;
+                font-weight: 700;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+
+            /* --- Dropdown Style --- */
+            .game-dropdown {
+                position: relative;
+            }
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                top: 45px;
+                left: 0;
+                background: #fff;
+                min-width: 160px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                border-radius: 12px;
+                padding: 8px;
+                z-index: 1000;
+                border: 1px solid rgba(0, 0, 0, 0.05);
+            }
+            .game-dropdown:hover .dropdown-content {
+                display: block;
+            }
+            .dropdown-content a {
+                color: #444;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                font-weight: 600;
+                border-radius: 8px;
+            }
+            .dropdown-content a:hover {
+                background: #fff1f1;
+                color: #dc2626;
+            }
+
+            /* ===== Layout & Containers ===== */
+            .game-main {
+                padding: 160px 10px 40px; /* fixed header 대응 */
+            }
+            .main-layout-container {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            .game-container {
+                flex: 1;
+                max-width: 800px;
+                text-align: center;
                 background: white;
                 padding: 40px;
                 border-radius: 32px;
-                display: inline-block;
-                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.15);
-                max-width: 700px;
                 border: 2px solid var(--primary-color);
-            }
-            .setup-box h2 {
-                font-size: 2.1rem;
-                color: var(--primary-color);
-                margin-bottom: 24px;
-                font-weight: 900;
+                box-shadow: 0 16px 64px rgba(220, 38, 38, 0.15);
             }
 
-            canvas {
-                background: #fff;
-                border-radius: 24px;
-                cursor: pointer;
-                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-                margin: 32px auto;
-                border: 6px solid #333; /* 핀볼 캔버스 테두리 스타일 적용 */
-                display: block;
+            /* ===== Setup Box ===== */
+            .setup-title {
+                font-weight: 900;
+                font-size: 2rem;
+                color: var(--primary-color);
+                margin-top: 0;
+                margin-bottom: 10px;
             }
-            input {
-                padding: 12px;
-                width: 110px;
-                border: 2px solid #ddd;
-                border-radius: 12px;
+            .setup-desc {
+                color: #666;
+                margin-bottom: 25px;
                 font-size: 1rem;
+            }
+
+            input {
+                padding: 10px;
+                border-radius: 10px;
+                border: 1px solid #ddd;
                 margin: 4px;
                 text-align: center;
+                font-family: inherit;
             }
             input:focus {
                 border-color: var(--primary-color);
@@ -175,32 +234,208 @@
                 background: var(--primary-color);
                 color: white;
                 border: none;
-                padding: 14px 32px;
+                padding: 12px 28px;
                 border-radius: 12px;
-                font-size: 1.1rem;
-                font-weight: 800;
+                font-size: 1rem;
+                font-weight: 900;
                 cursor: pointer;
                 transition: 0.2s;
+                margin: 5px;
             }
             .action-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+                transform: scale(1.05);
+                background: var(--primary-hover);
             }
 
-            #resultText {
-                font-size: 1.5rem;
-                font-weight: 900;
-                color: var(--primary-color);
-                margin-top: 20px;
-                min-height: 2rem;
+            /* ===== Game Canvas & Results ===== */
+            canvas {
+                background: #fff;
+                border-radius: 20px;
+                cursor: pointer;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                margin: 20px auto;
+                border: 6px solid #2d2d3a;
+                display: block;
             }
+
+            .winner-banner {
+                background: var(--primary-color);
+                color: white;
+                padding: 8px 20px;
+                border-radius: 12px;
+                font-size: 1.2rem;
+                font-weight: 900;
+                display: inline-block;
+                margin-bottom: 15px;
+            }
+            table.ladder-result-table {
+                margin-top: 25px;
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                border-radius: 15px;
+                overflow: hidden;
+                border: 1px solid #eee;
+                background: #fff;
+            }
+            .ladder-result-table th {
+                background: var(--primary-color);
+                color: white;
+                padding: 15px;
+                font-weight: 800;
+            }
+            .ladder-result-table td {
+                padding: 12px;
+                border-bottom: 1px solid #eee;
+                background: #fff;
+                text-align: center;
+            }
+            .ladder-result-table tr.current-row {
+                background: #fff5f5 !important;
+                font-weight: bold;
+                color: var(--primary-color);
+            }
+        
+            /* ===== 반응형 (태블릿/모바일) ===== */
+            @media (max-width: 700px) {
+                canvas { width: 100% !important; height: auto !important; max-width: 100vw; }
+                .game-container, .game-wrap, #gameArea { 
+                    width: 100% !important; 
+                    padding: 10px; 
+                    box-sizing: border-box;
+                }
+                .game-btn, .btn { width: 100%; margin-bottom: 8px; }
+                h1, h2 { font-size: 1.3rem; }
+            }
+
+        
+            /* ===== 햄버거 메뉴 ===== */
+            .hamburger-btn {
+                display: none;
+                background: none;
+                border: none;
+                font-size: 1.6rem;
+                cursor: pointer;
+                padding: 4px 8px;
+                border-radius: 8px;
+                color: #dc2626;
+                line-height: 1;
+            }
+            .hamburger-btn:hover { background: #fff1f1; }
+            .mobile-nav {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 2000;
+            }
+            .mobile-nav.open { display: block; }
+            .mobile-nav-panel {
+                position: absolute;
+                top: 0; left: 0;
+                width: 260px;
+                height: 100%;
+                max-height: 100vh;
+                background: #fff;
+                box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                box-sizing: border-box;
+            }
+            .mobile-nav-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 20px 20px 16px 20px;
+                border-bottom: 1px solid #f1f1f1;
+                flex-shrink: 0;
+            }
+            .mobile-nav-logo {
+                font-size: 1.4rem;
+                font-weight: 900;
+                color: #dc2626;
+                text-decoration: none;
+            }
+            .mobile-nav-close {
+                background: none;
+                border: none;
+                font-size: 1.6rem;
+                cursor: pointer;
+                color: #666;
+                padding: 4px;
+            }
+            .mobile-nav-links {
+                padding: 16px 0;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                overflow-y: auto;
+            }
+            .mobile-nav-links a, .mobile-nav-links button {
+                display: block;
+                padding: 14px 24px;
+                font-size: 1rem;
+                font-weight: 600;
+                color: #333;
+                text-decoration: none;
+                background: none;
+                border: none;
+                text-align: left;
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+            .mobile-nav-links a:hover, .mobile-nav-links button:hover {
+                background: #fff1f1;
+                color: #dc2626;
+            }
+            .mobile-nav-divider {
+                height: 1px;
+                background: #f1f1f1;
+                margin: 8px 0;
+            }
+            @media (max-width: 900px) {
+                .hamburger-btn { display: block; }
+                .game-main { padding-top: 80px !important; }
+                .menu-bar, nav.menu-bar { display: none !important; }
+                .header {
+                    grid-template-columns: 1fr auto;
+                    padding: 10px 16px;
+                }
+                .header-center { display: none; }
+                .header-right { gap: 6px; }
+                .login-btn { padding: 8px 10px; font-size: 0.8rem; }
+            }
+
+        
+        /* ── 게임 페이지 모바일 광고: 하단 고정 ── */
+        @media (max-width: 900px) {
+            .mobile-top-ad {
+                display: flex !important;
+                position: fixed !important;
+                top: auto !important;
+                bottom: 0 !important;
+                left: 0;
+                right: 0;
+                height: 50px;
+                border-top: 1px solid #ddd;
+                border-bottom: none;
+                z-index: 100;
+            }
+            .game-main {
+                padding-bottom: 70px !important;
+            }
+        }
         </style>
     </head>
+
     <body>
         <header class="header">
             <div class="header-left">
+                <button class="hamburger-btn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
+                    <a class="menu-item" href="/about">회사소개</a>
                     <a class="menu-item" href="/aichat">AI추천</a>
                     <a class="menu-item" href="/community">커뮤니티</a>
                     <div class="menu-item game-dropdown">
@@ -216,11 +451,13 @@
                 </nav>
             </div>
 
+            <div class="header-center"></div>
+
             <div class="header-right" id="headerRightArea">
                 <button class="login-btn" onclick="location.href = '/login'">로그인</button>
                 <button
                     class="login-btn"
-                    style="background: #fff; color: #dc2626; border: 1px solid #dc2626; margin-left: 5px;"
+                    style="background: #fff; color: #dc2626; border: 1.5px solid #dc2626"
                     onclick="location.href = '/signup'"
                 >
                     회원가입
@@ -228,67 +465,124 @@
             </div>
         </header>
 
-        <main class="game-container">
-            <div class="setup-box">
-                <h2>🍻 사다리타기</h2>
-                <p style="color: #666; font-size: 0.95rem; margin-bottom: 15px;">오늘의 미식 운명은? 인원을 설정하고 이름을 클릭하세요.</p>
-                인원수: <input type="number" id="count" value="4" min="2" max="10" />
-                <button class="action-btn" onclick="initInputs()" style="padding: 10px 20px; font-size: 0.9rem">
-                    창 생성
-                </button>
-                <div id="inputs" style="margin-top: 20px"></div>
-                <button id="startBtn" class="action-btn" style="display: none" onclick="createLadder()">
-                    사다리 만들기
-                </button>
-                <button
-                    class="action-btn"
-                    style="background: #666; font-size: 0.9rem; padding: 10px 20px; margin-left: 5px;"
-                    onclick="location.reload()"
-                >
-                    새로고침
-                </button>
-            </div>
+        <main class="game-main">
+    <!-- 광고 배너 -->
+    <style>
+        .side-ad {
+            position: fixed; top: 150px; width: 160px; height: 600px;
+            background: #f4f4f4; border: 1px solid #ddd; display: flex;
+            align-items: center; justify-content: center; color: #999;
+            font-weight: bold; z-index: 100; border-radius: 10px;
+            font-size: 0.85rem; text-align: center; padding: 8px; box-sizing: border-box;
+        }
+        .ad-left  { left: 20px; }
+        .ad-right { right: 20px; }
+        .mobile-top-ad {
+            display: none; position: fixed; top: 100px; left: 0; right: 0;
+            height: 55px; background: #f4f4f4; border-bottom: 1px solid #ddd;
+            align-items: center; justify-content: center; color: #999;
+            font-weight: bold; font-size: 0.9rem; z-index: 100;
+            pointer-events: none;
+        }
+        @media (max-width: 1200px) { .side-ad { display: none; } }
+        @media (max-width: 900px)  { .mobile-top-ad { display: flex; } }
+    </style>
+    <div class="side-ad ad-left">광고 영역 (좌)</div>
+    <div class="side-ad ad-right">광고 영역 (우)</div>
+    <div class="mobile-top-ad">📢 광고 영역 (모바일)</div>
+            <div class="main-layout-container">
+                <div class="game-container">
+                    <div id="setupView">
+                        <h2 class="setup-title">🍻 사다리타기</h2>
+                        <p class="setup-desc">인원수를 설정하고 미식 운명을 확인하세요!</p>
 
-            <div id="game-area" style="display: none">
-                <div id="resultText">이름을 클릭해서 결과를 확인하세요!</div>
-                <canvas id="canvas"></canvas>
+                        <div style="margin-bottom: 20px">
+                            인원수: <input type="number" id="count" value="4" min="2" max="10" style="width: 60px" />
+                            <button class="action-btn" onclick="initInputs()">창 생성</button>
+                        </div>
+
+                        <div id="inputs" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px"></div>
+
+                        <button id="startBtn" class="action-btn" style="display: none" onclick="createLadder()">
+                            🏁 사다리 만들기
+                        </button>
+                    </div>
+
+                    <div id="gameView" style="display: none">
+                        <div class="winner-banner" id="resultText">🕹️ 이름을 클릭하여 시작하세요!</div>
+                        <canvas id="canvas"></canvas>
+                        <br />
+                        <button
+                            class="action-btn"
+                            style="background: #666; font-size: 0.9rem"
+                            onclick="location.reload()"
+                        >
+                            처음부터 다시
+                        </button>
+                        <div id="resultHistoryContainer" style="max-width: 600px; margin: 30px auto 0">
+                            <h3 style="color: var(--primary-color); margin-bottom: 10px">실행 결과 기록</h3>
+                            <table class="ladder-result-table">
+                                <thead>
+                                    <tr>
+                                        <th>순번</th>
+                                        <th>이름</th>
+                                        <th>결과</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultHistory"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
 
         <script>
-            /* --- 로직 및 기능구현 코드 (기존 유지) --- */
-            document.addEventListener('DOMContentLoaded', () => {
-                const nickname = localStorage.getItem('nickname');
-                const isAdmin = localStorage.getItem('is_admin');
-                const headerRightArea = document.getElementById('headerRightArea');
-
-                if (nickname && headerRightArea) {
-                    let adminButton = '';
-                    if (isAdmin === '1') {
-                        adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50;">⚙️ 관리자</button>`;
-                    }
-                    headerRightArea.innerHTML = `
-                        <span style="font-weight: 700; color: #dc2626; font-size: 1.05rem; margin-right: 8px;">👤 ${nickname}님</span>
-                        ${adminButton}
-                        <button class="login-btn" onclick="location.href='/mypage'" style="background: #f39c12; margin-left:4px;">정보</button>
-                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:4px;">로그아웃</button>
-                    `;
-                }
-            });
-
+            // --- 공통 기능: 로그아웃 및 위치 정보 ---
             function logout() {
                 localStorage.clear();
-                alert('로그아웃 되었습니다.');
+                alert('안전하게 로그아웃 되었습니다.');
                 window.location.href = '/main';
             }
 
+            function getGPSLocation() {
+                const locSpan = document.getElementById('gps-location');
+                if (!locSpan) return;
+                if (navigator.geolocation) {
+                    locSpan.innerText = '📍 위치 찾는 중...';
+                    navigator.geolocation.getCurrentPosition(
+                        async (pos) => {
+                            try {
+                                const res = await fetch(
+                                    `/api/reverse-geocode?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
+                                );
+                                const data = await res.json();
+                                const addr = data.address.city || data.address.province || '위치 확인됨';
+                                locSpan.innerText = `📍 ${addr}`;
+                            } catch (e) {
+                                locSpan.innerText = '📍 위치 확인됨';
+                            }
+                        },
+                        () => {
+                            locSpan.innerText = '📍 위치 거부됨';
+                        },
+                    );
+                }
+            }
+
+            // --- 사다리타기 게임 로직 ---
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
             const resultTextDiv = document.getElementById('resultText');
-            let members = [], results = [], bridges = [];
-            const colWidth = 140, rowHeight = 400, padding = 80;
+            let members = [],
+                results = [],
+                bridges = [];
+            const colWidth = 140,
+                rowHeight = 400,
+                padding = 80;
             let isDrawing = false;
             const pathColors = ['#dc2626', '#2563eb', '#059669', '#d97706', '#7c3aed', '#db2777'];
+            let resultHistoryArr = [];
 
             function initInputs() {
                 const n = document.getElementById('count').value;
@@ -296,9 +590,9 @@
                 container.innerHTML = '';
                 for (let i = 0; i < n; i++) {
                     container.innerHTML += `
-                        <div style="margin-bottom:5px;">
-                            <input type="text" class="name-in" placeholder="이름 ${i + 1}" value="사람${i + 1}">
-                            <input type="text" class="val-in" placeholder="벌칙 ${i + 1}" value="${i === 0 ? '당첨' : '통과'}">
+                        <div style="display: flex; justify-content: center; gap: 5px; margin-bottom: 5px;">
+                            <input type="text" class="name-in" placeholder="이름 ${i + 1}" value="사람${i + 1}" style="width: 100px;">
+                            <input type="text" class="val-in" placeholder="벌칙 ${i + 1}" value="${i === 0 ? '당첨' : '통과'}" style="width: 100px;">
                         </div>`;
                 }
                 document.getElementById('startBtn').style.display = 'inline-block';
@@ -307,10 +601,13 @@
             function createLadder() {
                 members = Array.from(document.querySelectorAll('.name-in')).map((i) => i.value || '미정');
                 results = Array.from(document.querySelectorAll('.val-in')).map((i) => i.value || '꽝');
+
                 canvas.width = (members.length - 1) * colWidth + padding * 2;
                 canvas.height = rowHeight + 150;
-                document.getElementById('game-area').style.display = 'block';
-                document.querySelector('.setup-box').style.display = 'none';
+
+                document.getElementById('setupView').style.display = 'none';
+                document.getElementById('gameView').style.display = 'block';
+
                 bridges = [];
                 for (let i = 0; i < members.length - 1; i++) {
                     let lastY = 0;
@@ -331,19 +628,23 @@
                 ctx.strokeStyle = '#ddd';
                 ctx.lineWidth = 4;
                 ctx.lineCap = 'round';
+
                 members.forEach((name, i) => {
                     const x = padding + i * colWidth;
                     ctx.beginPath();
                     ctx.moveTo(x, 70);
                     ctx.lineTo(x, rowHeight + 70);
                     ctx.stroke();
+
                     ctx.fillStyle = '#333';
                     ctx.font = 'bold 16px Noto Sans KR';
                     ctx.textAlign = 'center';
                     ctx.fillText(name, x, 50);
+
                     ctx.fillStyle = '#666';
-                    ctx.fillText(results[i], x, rowHeight + 100);
+                    ctx.fillText(results[i], x, rowHeight + 110);
                 });
+
                 bridges.forEach((b) => {
                     const x = padding + b.col * colWidth;
                     ctx.beginPath();
@@ -361,8 +662,7 @@
                 for (let i = 0; i < members.length; i++) {
                     const lineX = padding + i * colWidth;
                     if (Math.abs(x - lineX) < 40) {
-                        const randomColor = pathColors[i % pathColors.length];
-                        startAnimation(i, randomColor);
+                        startAnimation(i, pathColors[i % pathColors.length]);
                         break;
                     }
                 }
@@ -370,12 +670,11 @@
 
             async function startAnimation(startCol, color) {
                 isDrawing = true;
-                resultTextDiv.innerText = `${members[startCol]}님 이동 중...`;
+                resultTextDiv.innerText = `🏃 ${members[startCol]}님 이동 중...`;
                 let currentCol = startCol;
                 let currentY = 70;
                 ctx.strokeStyle = color;
                 ctx.lineWidth = 6;
-                ctx.lineJoin = 'round';
                 while (currentY < rowHeight + 70) {
                     let nextY = rowHeight + 70;
                     let targetBridge = null;
@@ -386,23 +685,48 @@
                             break;
                         }
                     }
-                    await animateLine(padding + currentCol * colWidth, currentY, padding + currentCol * colWidth, nextY);
+                    await animateLine(
+                        padding + currentCol * colWidth,
+                        currentY,
+                        padding + currentCol * colWidth,
+                        nextY,
+                    );
                     currentY = nextY;
                     if (targetBridge) {
                         let nextCol = targetBridge.col === currentCol ? currentCol + 1 : currentCol - 1;
-                        let nextX = padding + nextCol * colWidth;
-                        await animateLine(padding + currentCol * colWidth, currentY, nextX, currentY);
+                        await animateLine(
+                            padding + currentCol * colWidth,
+                            currentY,
+                            padding + nextCol * colWidth,
+                            currentY,
+                        );
                         currentCol = nextCol;
                     }
                 }
-                resultTextDiv.innerHTML = `결과: <strong>${members[startCol]}</strong>님 → <span style="color:${color}">[ ${results[currentCol]} ]</span>`;
+                resultHistoryArr.push({
+                    name: members[startCol],
+                    result: results[currentCol],
+                });
+                updateResultHistory();
+                resultTextDiv.innerHTML = `📢 결과: ${members[startCol]} → [ ${results[currentCol]} ]`;
                 isDrawing = false;
+            }
+
+            function updateResultHistory() {
+                const tbody = document.getElementById('resultHistory');
+                tbody.innerHTML = '';
+                resultHistoryArr.forEach((item, idx) => {
+                    const tr = document.createElement('tr');
+                    if (idx === resultHistoryArr.length - 1) tr.className = 'current-row';
+                    tr.innerHTML = `<td>${idx + 1}</td><td>${item.name}</td><td>${item.result}</td>`;
+                    tbody.appendChild(tr);
+                });
             }
 
             function animateLine(x1, y1, x2, y2) {
                 return new Promise((resolve) => {
                     let start = null;
-                    const duration = 120;
+                    const duration = 150;
                     function step(now) {
                         if (!start) start = now;
                         const t = Math.min((now - start) / duration, 1);
@@ -416,6 +740,73 @@
                     requestAnimationFrame(step);
                 });
             }
+
+            // --- 로그인 상태 연동 로직 ---
+            document.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                const headerRightArea = document.getElementById('headerRightArea');
+                if (nickname && headerRightArea) {
+                    let avatarText = nickname.slice(0, 2);
+                    let adminButton =
+                        isAdmin == '1'
+                            ? `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`
+                            : '';
+                    headerRightArea.innerHTML = `
+                        <span class="nickname-avatar" id="nicknameAvatar" onclick="location.href='/mypage'">${avatarText}</span>
+                        ${adminButton}
+                        <button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button>
+                        <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 내 위치</span>
+                    `;
+                    getGPSLocation && getGPSLocation();
+                } else if (headerRightArea) {
+                    headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href = '/login'">로그인</button>
+                        <button class="login-btn" style="background: #fff; color: #dc2626; border: 1px solid #dc2626" onclick="location.href = '/signup'">회원가입</button>
+                    `;
+                }
+            });
         </script>
-    </body>
+    
+    <div class="mobile-nav" id="mobileNav" onclick="closeMobileNavOutside(event)">
+        <div class="mobile-nav-panel">
+            <div class="mobile-nav-header">
+                <a href="/main" class="mobile-nav-logo">🍽️ TasteMate</a>
+                <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="/main">🏠 홈</a>
+                <a href="/aichat">🤖 AI 맛집추천</a>
+                <a href="/community">🧑‍🤝‍🧑 커뮤니티</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/SOLO">🍚 혼밥</a>
+                <a href="/DATE">💑 데이트</a>
+                <a href="/WORK">🍻 회식</a>
+                <a href="/ETC">🧩 기타</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/game/pinball">🎯 핀볼</a>
+                <a href="/game/ladder">🪜 사다리타기</a>
+                <a href="/game/random_amount">🎰 룰렛 게임</a>
+                <a href="/game/worldcup">🏆 음식 월드컵</a>
+                <a href="/game/calculator">🧮 계산기</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="/about">ℹ️ 회사소개</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openMobileNav() {
+            document.getElementById('mobileNav').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeMobileNav() {
+            document.getElementById('mobileNav').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function closeMobileNavOutside(e) {
+            if (e.target === document.getElementById('mobileNav')) closeMobileNav();
+        }
+    </script>
+
+</body>
 </html>
