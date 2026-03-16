@@ -1,12 +1,6 @@
 <!doctype html>
 <html lang="ko">
     <head>
-    <script>
-        // ngrok iframe 탈출 - 경고 페이지 없이 직접 접속
-        if (window.top !== window.self) {
-            window.top.location.href = window.self.location.href;
-        }
-    </script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>내가 쓴 글/댓글</title>
@@ -360,6 +354,24 @@
                     .join('');
             }
             loadMyContent();
+            // 헤더 구독 버튼 렌더링
+            (function() {
+                const area = document.getElementById('headerRightArea');
+                const nickname = localStorage.getItem('nickname');
+                const isAdmin = localStorage.getItem('is_admin');
+                if (nickname && area) {
+                    const adminBtn = isAdmin === '1' ? `<button class="login-btn" onclick="location.href='/admin'" style="background:#2c3e50">⚙️ 관리자</button>` : '';
+                    const subscribeBtn = isAdmin !== '1' ? `<button class="login-btn" onclick="location.href='/subscribe'" style="background:linear-gradient(135deg,#2563EB,#7c3aed);padding:8px 16px;font-size:0.85rem;font-weight:800;letter-spacing:-0.2px;border-radius:20px;box-shadow:0 3px 12px rgba(37,99,235,0.35);">💎 구독</button>` : '';
+                    area.innerHTML = `
+                        <span class="nickname-avatar" onclick="location.href='/mypage'" title="내 정보">${nickname.slice(0,2)}</span>
+                        ${adminBtn}
+                        ${subscribeBtn}
+                        <button class="login-btn" onclick="localStorage.clear();location.href='/main';" style="background:#666">로그아웃</button>
+                    `;
+                } else if (area) {
+                    area.innerHTML = `<button class="login-btn" onclick="location.href='/subscribe'" style="background:linear-gradient(135deg,#2563EB,#7c3aed);padding:8px 16px;font-size:0.85rem;font-weight:800;letter-spacing:-0.2px;border-radius:20px;box-shadow:0 3px 12px rgba(37,99,235,0.35);">💎 구독</button><button class="login-btn" onclick="location.href='/login'">로그인</button>`;
+                }
+            })();
         </script>
     
         <!-- 모바일 햄버거 메뉴 -->

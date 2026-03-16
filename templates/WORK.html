@@ -1,12 +1,6 @@
 <!doctype html>
 <html lang="ko">
     <head>
-    <script>
-        // ngrok iframe 탈출 - 경고 페이지 없이 직접 접속
-        if (window.top !== window.self) {
-            window.top.location.href = window.self.location.href;
-        }
-    </script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>회식 커뮤니티 | TasteMate</title>
@@ -736,9 +730,11 @@
                         isAdmin === '1'
                             ? `<button class=\"login-btn\" onclick=\"location.href='/admin'\" style=\"background: #222; margin-left:8px;\">관리자 기능</button>`
                             : '';
+                    const subscribeBtn = isAdmin !== '1' ? `<button class="login-btn" onclick="location.href='/subscribe'" style="background:linear-gradient(135deg,#2563EB,#7c3aed);padding:8px 16px;font-size:0.85rem;font-weight:800;letter-spacing:-0.2px;border-radius:20px;box-shadow:0 3px 12px rgba(37,99,235,0.35);">💎 구독</button>` : '';
                     headerRightArea.innerHTML = `
                         <span class=\"nickname-avatar\" onclick=\"location.href='/mypage'\">${avatarText}</span>
                         ${adminBtn}
+                        ${subscribeBtn}
                         <button class=\"login-btn\" onclick=\"logout()\" style=\"background: #666; margin-left: 8px;\">로그아웃</button>
                         <span class=\"current-location\" id=\"gps-location\" onclick=\"getGPSLocation()\">📍 위치 찾는 중</span>
                     `;

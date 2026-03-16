@@ -240,26 +240,7 @@
                 color: #cbd5e1;
                 margin-top: 4px;
             }
-
-            /* ── 사이드 광고 ── */
-            .side-ad {
-                position: fixed; top: 150px; width: 140px; height: 560px;
-                background: linear-gradient(145deg, #f8f8f8, #f0f0f0);
-                border: 1px solid #e8e8e8;
-                display: flex; align-items: center; justify-content: center;
-                color: #ccc; font-size: 0.8rem; font-weight: 700;
-                z-index: 500; border-radius: 14px;
-            }
-            .ad-left { left: 16px; }
-            .ad-right { right: 16px; }
-            @media (max-width: 1450px) { .side-ad { display: none; } }
-            .mobile-top-ad {
-                display: none; position: fixed; top: 70px; left: 0; right: 0;
-                height: 55px; background: #f4f4f4; border-bottom: 1px solid #e0e0e0;
-                align-items: center; justify-content: center; color: #999;
-                font-weight: bold; font-size: 0.9rem; z-index: 100;
-                pointer-events: none;
-            }
+@media (max-width: 1450px) { }
             /* ── 햄버거 & 모바일 헤더 ── */
             .menu-toggle-btn {
                 display: none;
@@ -319,8 +300,7 @@
                 .login-btn { padding: 7px 10px; font-size: 0.8rem; }
                 .current-location { padding: 6px 8px; font-size: 0.78rem; display: none; }
                 .nickname-avatar { width: 32px; height: 32px; font-size: 0.82rem; }
-                /* 광고 높이만큼 main 밀어내기 */
-                main { padding-top: 185px !important; }
+main { padding-top: 185px !important; }
                 /* 카드 2열 */
                 .community-container {
                     display: grid !important;
@@ -619,7 +599,63 @@
                 from { opacity: 0; transform: scale(0.93) translateY(-4px); }
                 to { opacity: 1; transform: scale(1) translateY(0); }
             }
+        
+        /* ── 광고 배너 ── */
+        .side-ad {
+            position: fixed;
+            top: 80px;
+            width: 160px;
+            height: 600px;
+            background: linear-gradient(145deg, #f8f8f8, #f0f0f0);
+            border: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            font-weight: bold;
+            z-index: 200;
+            border-radius: 14px;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .ad-left  { left: 16px; }
+        .ad-right { right: 16px; }
+        .mobile-top-ad {
+            display: none;
+            position: fixed;
+            top: 68px;
+            left: 0;
+            right: 0;
+            height: 55px;
+            background: #f4f4f4;
+            border-bottom: 1px solid #e0e0e0;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-weight: bold;
+            font-size: 0.9rem;
+            z-index: 100;
+            pointer-events: none;
+        }
         </style>
+        <script>
+            /* 광고 배너 표시 제어 - Cloudflare CSS minify 우회용 JS 방식 */
+            function updateAdVisibility() {
+                var w = window.innerWidth || document.documentElement.clientWidth;
+                var sideAds = document.querySelectorAll('.side-ad');
+                var mobileAd = document.querySelector('.mobile-top-ad');
+                sideAds.forEach(function(el) {
+                    el.style.setProperty('display', w >= 1401 ? 'flex' : 'none', 'important');
+                });
+                if (mobileAd) {
+                    mobileAd.style.setProperty('display', w <= 900 ? 'flex' : 'none', 'important');
+                }
+            }
+            window.addEventListener('DOMContentLoaded', updateAdVisibility);
+            window.addEventListener('resize', updateAdVisibility);
+        </script>
     </head>
     <body>
         <script>
@@ -640,7 +676,6 @@
                 <button class="menu-toggle-btn" onclick="openMobileNav()">☰</button>
                 <a href="/main" class="header-logo">TasteMate</a>
                 <nav class="menu-bar">
-                    <a class="menu-item" href="/subscribe" style="color:#2563EB;font-weight:700;">💎 구독</a>
                     <a class="menu-item" href="/about">회사소개</a>
                     <a class="menu-item" href="/aichat">AI추천</a>
                     <a class="menu-item" href="/community">커뮤니티</a>
@@ -664,6 +699,7 @@
                 </div>
             </div>
             <div class="header-right" id="headerRightArea">
+                <button class="login-btn" onclick="location.href='/subscribe'" style="background:linear-gradient(135deg,#2563EB,#7c3aed);padding:8px 16px;font-size:0.85rem;font-weight:800;letter-spacing:-0.2px;border-radius:20px;box-shadow:0 3px 12px rgba(37,99,235,0.35);">💎 구독</button>
                 <button class="login-btn" onclick="location.href='/login'">로그인</button>
                 <button class="login-btn" style="background:#fff; color:#dc2626; border:1.5px solid #dc2626" onclick="location.href='/signup'">회원가입</button>
             </div>
@@ -888,16 +924,20 @@
                     const adminBtn = isAdmin === '1'
                         ? `<button class="login-btn" onclick="location.href='/admin'" style="background:#2c3e50">⚙️ 관리자</button>`
                         : '';
+                    const subscribeBtn = isAdmin !== '1'
+                        ? `<button class="login-btn" onclick="location.href='/subscribe'" style="background:linear-gradient(135deg,#2563EB,#7c3aed);padding:8px 16px;font-size:0.85rem;font-weight:800;letter-spacing:-0.2px;border-radius:20px;box-shadow:0 3px 12px rgba(37,99,235,0.35);display:flex;align-items:center;gap:5px;">💎 구독</button>`
+                        : '';
                     area.innerHTML = `
                         <span class="nickname-avatar" onclick="location.href='/mypage'" title="내 정보">${currentNickname.slice(0,2)}</span>
                         ${adminBtn}
-                        <button class="login-btn" onclick="location.href='/subscribe'" style="background:#2563EB;padding:7px 13px;font-size:12px;">💎 구독</button>
+                        ${subscribeBtn}
                         <button class="login-btn" onclick="logout()" style="background:#666">로그아웃</button>
                         <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 위치 로딩...</span>
                     `;
                     getGPSLocation();
                 } else {
                     area.innerHTML = `
+                        <button class="login-btn" onclick="location.href='/subscribe'" style="background:linear-gradient(135deg,#2563EB,#7c3aed);padding:8px 16px;font-size:0.85rem;font-weight:800;letter-spacing:-0.2px;border-radius:20px;box-shadow:0 3px 12px rgba(37,99,235,0.35);">💎 구독</button>
                         <button class="login-btn" onclick="location.href='/login'">로그인</button>
                         <button class="login-btn" style="background:#fff; color:#dc2626; border:1.5px solid #dc2626" onclick="location.href='/signup'">회원가입</button>
                     `;

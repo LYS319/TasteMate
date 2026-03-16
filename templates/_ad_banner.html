@@ -1,58 +1,69 @@
 <!-- {# =============================================
    광고 배너 공통 템플릿
    사용법: {% include '_ad_banner.html' %}
-   - 데스크탑(≥1200px): 좌/우 세로 배너 (160x600)
-   - 모바일(<900px): 헤더 아래 가로 배너 (55px)
+   - 데스크탑(≥1401px): 좌/우 세로 배너 (160x600)
+   - 모바일(≤900px): 헤더 아래 가로 배너 (55px)
+   ※ JS로 제어 (Cloudflare CSS minify 우회)
 ============================================= #} -->
 
 <style>
     .side-ad {
         position: fixed;
-        top: 150px;
+        top: 80px;
         width: 160px;
         height: 600px;
-        background: #f4f4f4;
-        border: 1px solid #ddd;
-        display: flex;
+        background: linear-gradient(145deg, #f8f8f8, #f0f0f0);
+        border: 1px solid #e8e8e8;
+        display: none; /* JS가 제어 */
         align-items: center;
         justify-content: center;
-        color: #999;
+        color: #ccc;
         font-weight: bold;
-        z-index: 500;
-        border-radius: 10px;
-        font-size: 0.85rem;
+        z-index: 200;
+        border-radius: 14px;
+        font-size: 0.8rem;
         text-align: center;
         padding: 8px;
         box-sizing: border-box;
     }
-    .ad-left  { left: 20px; }
-    .ad-right { right: 20px; }
-
+    .ad-left  { left: 16px; }
+    .ad-right { right: 16px; }
     .mobile-top-ad {
-        display: none;
+        display: none; /* JS가 제어 */
         position: fixed;
-        top: 100px;
+        top: 68px;
         left: 0;
         right: 0;
         height: 55px;
         background: #f4f4f4;
-        border-bottom: 1px solid #ddd;
+        border-bottom: 1px solid #e0e0e0;
         align-items: center;
         justify-content: center;
         color: #999;
         font-weight: bold;
         font-size: 0.9rem;
-        z-index: 499;
-    }
-
-    @media (max-width: 1200px) {
-        .side-ad { display: none; }
-    }
-    @media (max-width: 900px) {
-        .mobile-top-ad { display: flex; }
+        z-index: 100;
+        pointer-events: none;
     }
 </style>
 
 <div class="side-ad ad-left">광고 영역 (좌)</div>
 <div class="side-ad ad-right">광고 영역 (우)</div>
 <div class="mobile-top-ad" id="mobileTopAd">📢 광고 영역 (모바일)</div>
+
+<script>
+    /* 광고 배너 표시 제어 - Cloudflare CSS minify 우회용 JS 방식 */
+    function updateAdVisibility() {
+        var w = window.innerWidth || document.documentElement.clientWidth;
+        var sideAds = document.querySelectorAll('.side-ad');
+        var mobileAd = document.querySelector('.mobile-top-ad');
+        sideAds.forEach(function(el) {
+            el.style.setProperty('display', w >= 1401 ? 'flex' : 'none', 'important');
+        });
+        if (mobileAd) {
+            mobileAd.style.setProperty('display', w <= 900 ? 'flex' : 'none', 'important');
+        }
+    }
+    window.addEventListener('DOMContentLoaded', updateAdVisibility);
+    window.addEventListener('resize', updateAdVisibility);
+</script>
