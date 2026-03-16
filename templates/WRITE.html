@@ -2,16 +2,60 @@
 <html lang="ko">
     <head>
         <script>
-            // ngrok iframe 탈출 - 경고 페이지 없이 직접 접속
-            if (window.top !== window.self) {
-                window.top.location.href = window.self.location.href;
+            // 카카오맵 SDK onload 콜백 — SDK 파싱 완료 후 maps.load() 실행
+            function onKakaoSDKLoad() {
+                kakao.maps.load(function() {
+                    if (typeof initWriteMap === 'function') initWriteMap();
+                });
             }
         </script>
-        <script src="https://dapi.kakao.com/v2/maps/sdk.js?autoload=true&appkey=404ef7ad32359a5bae46369ef85f2012&libraries=services"></script>
+        <script src="https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=404ef7ad32359a5bae46369ef85f2012&libraries=services" onload="onKakaoSDKLoad()"></script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>테이스트메이트 글쓰기</title>
-        <link rel="stylesheet" href="/static/css/header.css" />
+        <style>
+            /* ── header.css 인라인 대체 ── */
+            .header {
+                display: flex; justify-content: space-between; align-items: center;
+                padding: 12px 32px;
+                background: rgba(255,255,255,0.95);
+                box-shadow: 0 4px 20px rgba(220,38,38,0.08);
+                backdrop-filter: blur(15px);
+                position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            }
+            .header-left  { display: flex; align-items: center; gap: 20px; }
+            .header-center { flex: 1; display: flex; justify-content: center; padding: 0 20px; }
+            .header-right { display: flex; align-items: center; gap: 12px; }
+            .header-logo  { font-size: 1.6rem; font-weight: 900; color: #dc2626; text-decoration: none; }
+            .menu-bar { display: flex; align-items: center; gap: 4px; }
+            .menu-item { text-decoration: none; color: #333; font-weight: 600; font-size: 0.95rem; padding: 8px 14px; border-radius: 8px; transition: background 0.2s, color 0.2s; }
+            .menu-item:hover { background: #fff1f1; color: #dc2626; }
+            .menu-toggle-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; border-radius: 8px; padding: 4px 10px; display: none; }
+            .search-box { display: flex; align-items: center; background: #f9f9f9; border: 1.5px solid #f0f0f0; border-radius: 12px; overflow: hidden; width: 100%; max-width: 360px; }
+            .search-box input { flex: 1; border: none; background: transparent; padding: 10px 14px; font-size: 0.9rem; outline: none; }
+            .search-submit-btn { background: none; border: none; padding: 0 14px; font-size: 1.1rem; cursor: pointer; }
+            .login-btn { padding: 10px 18px; background: #dc2626; color: #fff; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+            .login-btn:hover { opacity: 0.88; }
+            .nickname-avatar { width: 38px; height: 38px; border-radius: 50%; background: #222; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; font-size: 1rem; }
+            .current-location { font-size: 0.85rem; color: #dc2626; background: #fff1f1; border: 1px solid rgba(220,38,38,0.1); border-radius: 10px; padding: 8px 14px; font-weight: 700; cursor: pointer; }
+            @media (max-width: 900px) {
+                .header { flex-direction: column; padding: 10px 16px; gap: 8px; position: sticky; }
+                .header-left { width: 100%; justify-content: space-between; }
+                .header-center { width: 100%; padding: 0; }
+                .search-box { max-width: 100%; }
+                .header-right { width: 100%; justify-content: flex-end; }
+                .menu-bar { display: none; }
+                .menu-toggle-btn { display: block; }
+                .header-logo { font-size: 1.3rem; }
+                .login-btn { padding: 8px 10px; font-size: 0.8rem; }
+                .current-location { padding: 6px 8px; font-size: 0.78rem; }
+                .nickname-avatar { width: 32px; height: 32px; font-size: 0.85rem; }
+            }
+            @media (max-width: 480px) {
+                .header { padding: 8px 10px; }
+                .header-logo { font-size: 1.1rem; }
+            }
+        </style>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
             body {
@@ -203,7 +247,7 @@
             /* ===== 반응형 (태블릿/모바일) ===== */
             @media (max-width: 900px) {
                 .header {
-                    flex-direction: row;
+                    flex-direction: column;
                     padding: 10px 16px;
                     gap: 8px;
                     position: sticky;
@@ -584,23 +628,7 @@
 
         <script>
             // 지도에서 위치 선택 + 장소 검색 기능 (TasteMate 스타일)
-            document.addEventListener('DOMContentLoaded', () => {
-                function tryInitMap() {
-                    if (window.kakao && window.kakao.maps && typeof window.kakao.maps.LatLng === 'function') {
-                        initWriteMap();
-                    } else {
-                        setTimeout(tryInitMap, 100);
-                    }
-                }
-                if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
-                    tryInitMap();
-                } else {
-                    const script = document.createElement('script');
-                    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?autoload=true&appkey=${window.KAKAO_MAP_APP_KEY}&libraries=services`;
-                    script.onload = tryInitMap;
-                    document.head.appendChild(script);
-                }
-            });
+            // kakao.maps.load()로 SDK 완전 로드 후 초기화 보장
             function initWriteMap() {
                 const container = document.getElementById('write-map-area');
                 if (!container) return;
@@ -699,14 +727,19 @@
                     }
                 });
             }
-            // 환경설정에서 카카오맵 API키를 window에 노출 (템플릿 하단에 추가)
-            window.KAKAO_MAP_APP_KEY =
-                "{{ settings.KAKAO_JAVAS_API_KEY if settings and settings.KAKAO_JAVAS_API_KEY else '' }}";
-            // [기존 JS 로직 그대로 유지]
+            // 카카오맵 초기화는 head의 onKakaoSDKLoad()에서 처리됨
             document.addEventListener('DOMContentLoaded', () => {
                 const nickname = localStorage.getItem('nickname');
                 const isAdmin = localStorage.getItem('is_admin');
                 const headerRightArea = document.getElementById('headerRightArea');
+
+                // 로그인 가드 - user_id 없으면 로그인 페이지로
+                if (!localStorage.getItem('user_id')) {
+                    alert('로그인이 필요합니다.');
+                    sessionStorage.setItem('redirect_after_login', '/write');
+                    window.location.href = '/login';
+                    return;
+                }
 
                 if (nickname && headerRightArea) {
                     let avatarText = nickname.slice(0, 2);
@@ -714,9 +747,11 @@
                         isAdmin === '1'
                             ? `<button class="login-btn" onclick="location.href='/admin'" style="background:#2c3e50">⚙️ 관리자</button>`
                             : '';
+                    const subscribeBtn = isAdmin !== '1' ? `<button class="login-btn" onclick="location.href='/subscribe'" style="background:linear-gradient(135deg,#2563EB,#7c3aed);padding:8px 16px;font-size:0.85rem;font-weight:800;letter-spacing:-0.2px;border-radius:20px;box-shadow:0 3px 12px rgba(37,99,235,0.35);">💎 구독</button>` : '';
                     headerRightArea.innerHTML = `
                         <span class="nickname-avatar" onclick="location.href='/mypage'" title="내 정보">${avatarText}</span>
                         ${adminButton}
+                        ${subscribeBtn}
                         <button class="login-btn" onclick="logout()" style="background:#666">로그아웃</button>
                         <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 위치 로딩...</span>
                     `;
@@ -725,6 +760,7 @@
                     if (typeof getGPSLocation === 'function') getGPSLocation();
                 } else if (headerRightArea) {
                     headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href='/subscribe'" style="background:linear-gradient(135deg,#2563EB,#7c3aed);padding:8px 16px;font-size:0.85rem;font-weight:800;letter-spacing:-0.2px;border-radius:20px;box-shadow:0 3px 12px rgba(37,99,235,0.35);">💎 구독</button>
                         <button class="login-btn" onclick="location.href='/login'">로그인</button>
                         <button class="login-btn" style="background:#fff; color:#dc2626; border:1.5px solid #dc2626" onclick="location.href='/signup'">회원가입</button>
                     `;
@@ -732,7 +768,10 @@
             });
 
             function logout() {
-                localStorage.clear();
+                localStorage.removeItem('user_id');
+                localStorage.removeItem('nickname');
+                localStorage.removeItem('is_admin');
+                localStorage.removeItem('avatarColor');
                 alert('로그아웃 되었습니다.');
                 window.location.href = '/main';
             }
@@ -745,7 +784,8 @@
                 // user_id는 localStorage에서 가져옴
                 const userId = localStorage.getItem('user_id');
                 if (!userId) {
-                    alert('로그인이 필요합니다.');
+                    alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+                    sessionStorage.setItem('redirect_after_login', '/write');
                     window.location.href = '/login';
                     return;
                 }
@@ -809,6 +849,32 @@
                 if (e.target === document.getElementById('mobileNav')) closeMobileNav();
             }
         </script>
-        <script src="/static/js/avatar-sync.js"></script>
+        <script>
+            // avatar-sync.js 인라인 대체
+            // localStorage의 avatarColor를 읽어 .nickname-avatar 배경색 동기화
+            (function syncAvatarColor() {
+                const color = localStorage.getItem('avatarColor');
+                if (!color) return;
+                function applyColor() {
+                    document.querySelectorAll('.nickname-avatar').forEach(el => {
+                        el.style.background = color;
+                    });
+                }
+                // DOM 준비되면 적용, 이미 준비됐으면 바로 적용
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', applyColor);
+                } else {
+                    applyColor();
+                }
+                // 헤더가 JS로 동적 렌더링되는 경우를 위해 MutationObserver로도 감지
+                const observer = new MutationObserver(function() {
+                    applyColor();
+                });
+                document.addEventListener('DOMContentLoaded', function() {
+                    const headerRight = document.getElementById('headerRightArea');
+                    if (headerRight) observer.observe(headerRight, { childList: true, subtree: true });
+                });
+            })();
+        </script>
     </body>
 </html>

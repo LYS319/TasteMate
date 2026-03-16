@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="ko">
     <head>
@@ -422,15 +421,18 @@
                     if (isAdmin === '1') {
                         adminButton = `<button class="login-btn" onclick="location.href='/admin'" style="background: #2c3e50; margin-left:8px;">⚙️ 관리자</button>`;
                     }
+                    const subscribeBtn = isAdmin !== '1' ? `<button class="login-btn" onclick="location.href='/subscribe'" style="background:linear-gradient(135deg,#2563EB,#7c3aed);padding:8px 16px;font-size:0.85rem;font-weight:800;letter-spacing:-0.2px;border-radius:20px;box-shadow:0 3px 12px rgba(37,99,235,0.35);">💎 구독</button>` : '';
                     headerRightArea.innerHTML = `
                         <span class="nickname-avatar" onclick="location.href='/mypage'">${nickname.slice(0, 2)}</span>
                         ${adminButton}
+                        ${subscribeBtn}
                         <button class="login-btn" onclick="logout()" style="background: #666; margin-left:8px;">로그아웃</button>
                         <span class="current-location" id="gps-location" onclick="getGPSLocation()">📍 위치 로딩...</span>
                     `;
                     getGPSLocation();
                 } else if (headerRightArea) {
                     headerRightArea.innerHTML = `
+                        <button class="login-btn" onclick="location.href='/subscribe'" style="background:linear-gradient(135deg,#2563EB,#7c3aed);padding:8px 16px;font-size:0.85rem;font-weight:800;letter-spacing:-0.2px;border-radius:20px;box-shadow:0 3px 12px rgba(37,99,235,0.35);">💎 구독</button>
                         <button class="login-btn" onclick="location.href = '/login'">로그인</button>
                         <button class="login-btn" style="background: #fff; color: #dc2626; border: 1.5px solid #dc2626" onclick="location.href = '/signup'">회원가입</button>
                     `;

@@ -1952,6 +1952,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const logoutBtn = document.getElementById('pd-logout-btn');
         if (logoutBtn) logoutBtn.style.display = 'none';
     }
+    // 관리자 시 구독 버튼 숨기기
+    if (localStorage.getItem('is_admin') === '1') {
+        const subBtn = document.querySelector('.pd-item[onclick*="subscribe"]');
+        if (subBtn) subBtn.style.display = 'none';
+    }
 
     // 위치 초기화
     getGPSLocation();
