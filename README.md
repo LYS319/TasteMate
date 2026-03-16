@@ -1,232 +1,341 @@
 # 🍶 TasteMate
 
-> AI 기반 맞춤형 주류·안주 추천 플랫폼  
-> 사용자의 취향·상황·위치를 분석해 최적의 조합을 제안하고, 실제 방문까지 연결하는 통합 서비스
+> **사용자 입력·위치 기반 AI 주류/안주 추천 플랫폼**  
+> SMU 2조 | 이윤성 · 박준영 · 채하율 · 황승민
 
 ---
 
 ## 📌 프로젝트 개요
 
-| 항목 | 내용 |
+TasteMate는 사용자의 자연어 질문, 현재 위치, 날씨 정보를 종합 분석하여  
+AI가 주류와 안주 조합을 추천해주는 웹 플랫폼입니다.
+
+- **슬로건:** 누구나 간편하게 유용한 정보를 얻을 수 있는 맞춤형 추천 시스템
+- **핵심 차별점:** AI 추천 + 위치 연동 + 커뮤니티 RAG를 하나의 플랫폼에서 제공
+
+---
+
+## 🛠️ 기술 스택
+
+| 분류 | 기술 |
 |------|------|
-| 서비스명 | TasteMate (테이스트메이트) |
-| 팀원 | 이윤성(팀장), 박준영, 채하율, 황승민 |
-| 스택 | Python · FastAPI · SQLite · Gemini AI · KMA API · Kakao Map API · WebSocket |
-| 배포 | uvicorn + ngrok (로컬 개발) |
-| 서버 | `uvicorn main:app --host 192.168.0.239 --port 8000` |
+| **프론트엔드** | HTML / CSS / JavaScript (모바일 반응형) |
+| **백엔드** | Python FastAPI (RESTful API + WebSocket) |
+| **AI 추천** | Google Gemini 2.5 Flash (자연어 분석, RAG 반영) |
+| **데이터베이스** | TiDB Cloud (MySQL 호환, 12개 테이블) |
+| **지도 API** | 카카오맵 REST API + JavaScript SDK |
+| **날씨 API** | 기상청 단기예보 API |
+| **배포** | Cloudflare Tunnel (공인 HTTPS, GPS 지원) |
+| **결제** | 토스페이먼츠 (빌링키 정기결제) |
+| **실시간 통신** | WebSocket (FastAPI 내장, 1:1 채팅) |
+| **버전 관리** | Git + GitHub (기능별 브랜치 전략) |
 
 ---
 
-## 🚀 주요 기능
-
-### 1. AI 소믈리에 챗봇 (RAG 기반 취향 학습)
-- 자연어로 질문하면 Gemini AI가 주류·안주 TOP3 추천
-- 커뮤니티 게시글을 실시간 검색해 참고하는 **RAG(검색 증강 생성)** 방식 적용
-- 상황(혼술 / 회식 / 데이트 / 기타), 현재 위치, 이전 대화 히스토리 반영
-- 대화 중 파악된 취향(선호 주류·안주·기피 항목)을 프로필에 자동 누적
-- 첫 접속 시 **취향 온보딩 모달**로 초기 프로필 설정
-
-### 2. 날씨 기반 AI 메뉴 추천
-- **기상청 초단기실황 API** 연동 (기온·날씨·습도·강수량 실시간 수집)
-- 위경도 → 격자 좌표 변환 (`dfs_xy_conv`) 직접 구현
-- Gemini가 날씨·시간대에 맞는 한국 음식 메뉴를 매번 다르게 추천 (temperature=1.8)
-- 메인 화면 날씨 카드 클릭 → 네이버 지도 맛집 검색 연결
-- API 실패 시 기온 기반 폴백 메뉴 자동 반환
-
-### 3. 위치 기반 장소 추천
-- Kakao Map API로 주변 음식점·주류 판매처 검색
-- 하버사인(Haversine) 공식으로 반경 내 게시글 필터링
-- 거리 + 평점 복합 점수 정렬 알고리즘 적용
-- 카테고리별 조회 (SOLO / DATE / WORK / ETC)
-
-### 4. 커뮤니티
-- 카테고리별 게시글 작성·조회·수정·삭제
-- 좋아요 / 댓글 / 대댓글 기능
-- 근처 게시글 필터 (현재 위치 기준)
-- 신고 기능 (`/report`)
-- 게시글 검색 (`/search`)
-
-### 5. 친구 맺기 & 실시간 채팅
-- 닉네임 검색으로 친구 추가 / 요청 수락·거절·삭제
-- **WebSocket 기반 실시간 채팅** (최대 5개 창 동시 운영)
-- 모든 페이지 우측 하단 💬 FAB 버튼으로 어디서든 접근
-- 대화 내역 DB 저장 → 재접속 시 히스토리 유지 (`/api/chat/history`)
-
-### 6. 광고 배너 (수익 모델)
-- PC 우측 사이드 배너 + 모바일 상단 배너 구현 (`_ad_banner.html`)
-- 실제 광고 연동 시 즉시 수익화 가능한 구조
-
-### 7. 관리자 페이지
-- 회원 목록 조회 및 관리
-- 게시글 통계 대시보드
-- 신고 내역 처리 (`/admin`)
-
----
-
-## 🗂️ 파일 구조
+## 📁 프로젝트 구조
 
 ```
 TasteMate/
-├── main.py                  # FastAPI 서버 (전체 API 엔드포인트)
-├── Database.py              # SQLAlchemy 모델 (User, Post, Comment, Friend, ChatMessage 등)
-├── config.py                # 환경변수 설정 (API 키)
-├── migrate_add_store_columns.py  # DB 마이그레이션 스크립트
+├── main.py                  # FastAPI 앱 진입점 + 전체 API 라우터
+├── Database.py              # SQLAlchemy 모델 정의 (12개 테이블)
+├── config.py                # 환경변수 관리 (pydantic-settings)
+├── requirements.txt         # 의존성 패키지
+├── .env                     # 환경변수 (Git 제외)
+├── create_tables.py         # DB 테이블 초기화 스크립트
+├── friend-chat.js           # 친구 패널 & 실시간 채팅 공통 JS
+├── _ad_banner.html          # 광고 배너 공통 템플릿 (Jinja2)
 │
-├── MAIN.html                # 메인 페이지 (날씨 카드, 네비게이션)
-├── AICHAT.html              # AI 소믈리에 챗봇 (취향 온보딩, 히스토리 패널)
-├── COMMUNITY.html           # 커뮤니티 피드
-├── WRITE.html               # 게시글 작성
-├── post_detail.html         # 게시글 상세
-├── MYPAGE.html              # 마이페이지
-├── MYPOSTS.html             # 내 게시글
+├── 테이스트메이트.html        # 메인 페이지 (/)
+├── AICHAT.html              # AI 챗봇 추천 페이지 (/aichat)
+├── COMMUNITY.html           # 커뮤니티 게시판 (/community)
+├── WRITE.html               # 글쓰기 페이지 (/write)
+├── post_detail.html         # 게시글 상세 페이지 (/post_detail/{id})
+├── LOGIN.html               # 로그인 (/login)
+├── SIGNUP.html              # 회원가입 (/signup)
+├── MYPAGE.html              # 마이페이지 (/mypage)
+├── MYPOSTS.html             # 내 게시글 목록
 ├── MYCONTENT.html           # 내 활동 내역
-├── SIGNUP.html / LOGIN.html # 회원가입·로그인
-├── about.html               # 서비스 소개
-├── search.html              # 검색
-├── admin.html               # 관리자 페이지
+├── SOLO.html                # 카테고리 - 혼밥 (/SOLO)
+├── DATE.html                # 카테고리 - 데이트 (/DATE)
+├── WORK.html                # 카테고리 - 회식 (/WORK)
+├── ETC.html                 # 카테고리 - 기타 (/ETC)
+├── about.html               # 회사소개 (/about)
+├── admin.html               # 관리자 페이지 (/admin)
+├── search.html              # 검색 결과 (/search)
 │
-├── SOLO.html                # 카테고리 - 혼술
-├── DATE.html                # 카테고리 - 데이트
-├── WORK.html                # 카테고리 - 회식
-├── ETC.html                 # 카테고리 - 기타
-│
-├── game_calculator.html     # 술자리 계산기 미니게임
-├── game_ladder.html         # 사다리 게임
-├── game_pinball.html        # 핀볼 게임
-├── game_worldcup.html       # 월드컵 게임
-├── game_random_amount.html  # 랜덤 금액 게임
-│
-├── _ad_banner.html          # 광고 배너 컴포넌트
-├── friend-chat.js           # 친구 채팅 클라이언트 (WebSocket)
-│
-├── cert.pem / key.pem       # SSL 인증서 (ngrok HTTPS)
-└── 테이스트메이트.html       # 랜딩 페이지
+├── game_pinball.html        # 게임 - 핀볼 (/game/pinball)
+├── game_ladder.html         # 게임 - 사다리타기 (/game/ladder)
+├── game_random_amount.html  # 게임 - 룰렛/랜덤금액 (/game/random_amount)
+├── game_worldcup.html       # 게임 - 음식 월드컵 (/game/worldcup)
+└── game_calculator.html     # 게임 - 계산기 (/game/calculator)
 ```
 
 ---
 
-## ⚙️ 설치 및 실행
+## 🗄️ DB 설계 (TiDB Cloud)
 
-### 1. 의존성 설치
+| 테이블 | 설명 |
+|--------|------|
+| `users` | 사용자 기본 정보 (id, email, nickname, is_admin, status) |
+| `posts` | 커뮤니티 게시글 (카테고리, 제목, 내용, 위치 정보, 공지 여부) |
+| `comments` | 게시글 댓글 |
+| `likes` | 게시글 좋아요 |
+| `chat_history` | AI 챗봇 대화 기록 |
+| `chat_messages` | 1:1 실시간 채팅 메시지 (WebSocket) |
+| `friends` | 친구 관계 (user_id ↔ friend_id) |
+| `friend_requests` | 친구 신청 (pending / accepted / rejected) |
+| `user_logs` ★ | 사용자 행동 로그 (검색·추천·클릭) — MAU 분석용 |
+| `user_profiles` ★ | AI 챗봇 추출 TASTE_DATA 취향 누적 — 개인화·B2B 판매용 |
+| `location_logs` ★ | GPS 역지오코딩 결과 저장 — 상권 분석 리포트용 |
 
-```bash
-pip install fastapi uvicorn sqlalchemy python-jose passlib python-multipart aiofiles google-generativeai httpx
+> ★ 수익화 전용 테이블 (B2B 데이터 판매·MAU 분석 활용)
+
+---
+
+## 🔌 API 설계
+
+### 페이지 라우터
+
+| Method | URL | 설명 |
+|--------|-----|------|
+| GET | `/` | 루트 → 메인 리다이렉트 |
+| GET | `/main` | 메인 페이지 |
+| GET | `/aichat` | AI 챗봇 페이지 |
+| GET | `/community` | 커뮤니티 게시판 |
+| GET | `/write` | 글쓰기 페이지 |
+| GET | `/post_detail/{post_id}` | 게시글 상세 |
+| GET | `/SOLO` `/DATE` `/WORK` `/ETC` | 카테고리별 페이지 |
+| GET | `/login` `/signup` `/mypage` | 인증·마이페이지 |
+| GET | `/admin` | 관리자 페이지 |
+| GET | `/about` | 회사소개 |
+| GET | `/search` | 검색 결과 |
+| GET | `/game/{type}` | 게임 페이지 5종 |
+
+### AI / 추천 API
+
+| Method | URL | 설명 |
+|--------|-----|------|
+| POST | `/api/chat` | AI 챗봇 메시지 처리 (Gemini + RAG) |
+| POST | `/api/top-places` | 카카오맵 카테고리별 인기 장소 조회 |
+| GET | `/api/weather` | 기상청 현재 날씨 조회 |
+| GET | `/api/weather-recommend` | 날씨 기반 메뉴 추천 |
+| GET | `/api/reverse-geocode` | GPS 좌표 → 주소 변환 |
+| POST | `/api/user-profile` | 사용자 취향 프로필 저장 |
+
+### 게시글 / 댓글 API
+
+| Method | URL | 설명 |
+|--------|-----|------|
+| GET | `/api/posts/{category}` | 카테고리별 게시글 목록 |
+| GET | `/api/posts/detail/{post_id}` | 게시글 상세 + 댓글 |
+| GET | `/api/posts/{category}/latest` | 최신순 게시글 |
+| GET | `/api/posts/{category}/popular` | 인기순 게시글 |
+| GET | `/api/posts/{category}/nearby` | 위치 기반 주변 게시글 |
+| POST | `/api/posts` | 게시글 작성 |
+| POST | `/api/posts/{post_id}/edit` | 게시글 수정 |
+| POST | `/api/posts/{post_id}/delete` | 게시글 삭제 |
+| POST | `/api/posts/{post_id}/like` | 좋아요 토글 |
+| GET | `/api/posts/{post_id}/is_liked` | 좋아요 여부 확인 |
+| POST | `/api/comments` | 댓글 등록 |
+
+### 사용자 API
+
+| Method | URL | 설명 |
+|--------|-----|------|
+| POST | `/api/login` | 로그인 |
+| POST | `/api/signup` | 회원가입 |
+| GET | `/api/users/{user_id}/me` | 내 정보 조회 |
+| PATCH | `/api/users/{user_id}/nickname` | 닉네임 변경 |
+| PATCH | `/api/users/{user_id}/password` | 비밀번호 변경 |
+| PATCH | `/api/users/{user_id}/email` | 이메일 변경 |
+| DELETE | `/api/users/{user_id}` | 회원 탈퇴 |
+| POST | `/api/upload-image` | 이미지 업로드 |
+
+### 친구 / 채팅 API
+
+| Method | URL | 설명 |
+|--------|-----|------|
+| POST | `/api/friends/request` | 친구 신청 |
+| GET | `/api/friends/status/{user_id}` | 친구 목록 + 수신 요청 조회 |
+| POST | `/api/friends/action` | 친구 수락 / 거절 |
+| POST | `/api/friends/delete` | 친구 삭제 |
+| GET | `/api/chat/history` | 1:1 채팅 기록 조회 |
+| WS | `/ws/chat/{user_id}` | WebSocket 실시간 채팅 |
+
+### 관리자 API
+
+| Method | URL | 설명 |
+|--------|-----|------|
+| GET | `/api/admin/stats` | 전체 통계 (사용자·게시글·댓글 수) |
+| GET | `/api/admin/users` | 회원 목록 (검색·필터) |
+| GET | `/api/admin/posts` | 게시글 목록 (카테고리·검색) |
+| DELETE | `/api/admin/users/{user_id}` | 회원 강제 탈퇴 |
+| PATCH | `/api/admin/users/{user_id}/role` | 관리자 권한 변경 |
+| PATCH | `/api/admin/users/{user_id}/status` | 회원 상태 변경 |
+| DELETE | `/api/admin/posts/{post_id}` | 게시글 강제 삭제 |
+
+---
+
+## ⚙️ 시스템 아키텍처
+
+```
+사용자 (브라우저)
+    ↕  HTTP / WebSocket
+FastAPI 백엔드 (Python)
+    ├─ Google Gemini 2.5 Flash API  →  AI 챗봇·RAG 추천
+    ├─ 카카오맵 REST API            →  위치 기반 음식점 검색
+    ├─ 기상청 단기예보 API          →  날씨 기반 추천
+    └─ TiDB Cloud (MySQL)          →  사용자·커뮤니티·로그 DB
+    ↕  Cloudflare Tunnel (공인 HTTPS)
+외부 인터넷 (GPS·HTTPS 필수 기능 지원)
 ```
 
-### 2. 환경변수 설정 (`config.py`)
+### AI 챗봇 RAG 흐름
 
-```python
-GEMINI_API_KEY = "your_gemini_api_key"
-KAKAO_REST_API_KEY = "your_kakao_rest_api_key"
-KMA_API_KEY = "your_kma_api_key"
-SECRET_KEY = "your_jwt_secret"
+```
+사용자 질문 입력
+    → 키워드 추출 (공백 분리)
+    → TiDB posts 테이블 OR 검색 (title + content)
+    → 관련 게시글 최대 3건 추출
+    → system_prompt에 커뮤니티 컨텍스트 삽입
+    → Gemini 2.5 Flash 응답 생성
+    → TASTE_DATA JSON 파싱 → user_profiles 누적
+    → 응답 반환
 ```
 
-### 3. DB 초기화 및 마이그레이션
+### WebSocket 실시간 채팅 흐름
+
+```
+연결: /ws/chat/{user_id}
+    → 온라인: 즉시 전달
+    → 오프라인: chat_messages DB 임시 저장
+    → 재접속 시 /api/chat/history로 동기화
+재연결: 지수 백오프 (3s → 6s → 12s → 24s → 30s 최대)
+하트비트: 25초마다 ping 전송
+```
+
+---
+
+## 🚀 로컬 실행 방법
+
+### 1. 환경 설정
 
 ```bash
-python Database.py          # 초기 테이블 생성
-python migrate_add_store_columns.py  # 장소 컬럼 추가
+git clone https://github.com/your-repo/tastemate.git
+cd tastemate
+pip install -r requirements.txt
+```
+
+### 2. `.env` 파일 작성
+
+```env
+KAKAO_JAVAS_API_KEY=your_kakao_js_key
+KAKAO_REST_API_KEY=your_kakao_rest_key
+GEMINI_API_KEY=your_gemini_api_key
+SECRET_KEY=your_secret_key
+ALGORITHM=HS256
+TIDB_USER=your_tidb_user
+TIDB_PASSWORD=your_tidb_password
+TIDB_HOST=your_tidb_host
+TIDB_PORT=4000
+TIDB_DB_NAME=test
+DATABASE_URL=mysql+pymysql://user:password@host:4000/test
+```
+
+### 3. DB 테이블 생성
+
+```bash
+python create_tables.py
 ```
 
 ### 4. 서버 실행
 
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn main:app --host 192.x.x.x --port 8000 --reload
 ```
 
-### 5. ngrok 터널 (외부 접속용)
+### 5. Cloudflare Tunnel (HTTPS + GPS 필요 시)
 
 ```bash
-ngrok http 8000
+cloudflared tunnel --url http://192.x.x.x:8000
 ```
 
-> ⚠️ ngrok 주소가 바뀔 때마다 `config.py`의 Kakao CORS 허용 도메인을 업데이트해야 합니다.
+> 💡 GPS 기능은 HTTPS 환경에서만 동작합니다.  
+> ngrok 무료 플랜은 경고 페이지 삽입 + 주소 변경 문제가 있어 Cloudflare Tunnel을 사용합니다.
 
 ---
 
-## 🔌 주요 API 엔드포인트
+## 💰 비즈니스 모델
 
-| 메서드 | 경로 | 설명 |
-|--------|------|------|
-| POST | `/api/chat` | AI 챗봇 (RAG + 취향 학습) |
-| GET | `/api/weather` | 현재 날씨 조회 |
-| GET | `/api/weather-recommend` | 날씨 기반 메뉴 추천 |
-| GET | `/api/reverse-geocode` | 위경도 → 주소 변환 |
-| GET | `/api/top-places` | 카테고리별 주변 장소 |
-| GET | `/api/posts/{category}/nearby` | 근처 게시글 |
-| POST | `/api/friends/request` | 친구 요청 |
-| GET | `/api/friends/status` | 친구 상태 조회 |
-| POST | `/api/friends/action` | 친구 요청 수락/거절 |
-| DELETE | `/api/friends/delete` | 친구 삭제 |
-| GET | `/api/chat/history` | 채팅 내역 조회 |
-| WS | `/ws/chat/{user_id}` | 실시간 WebSocket 채팅 |
-| POST | `/api/user-profile` | 취향 프로필 업데이트 |
+| 수익 모델 | 내용 | 수금 방식 |
+|-----------|------|-----------|
+| ① 광고 수익 | 주류 브랜드·음식점 배너 노출 | 세금계산서 월정액 |
+| ② 음식점 입점 등록비 | 가게 정보 등록 월정액 (수수료 없음) | 토스페이먼츠 카드·계좌이체 |
+| ③ 프리미엄 구독 | 광고 제거 + AI 고급 추천 + 취향 리포트 | 토스페이먼츠 빌링키 정기결제 |
+| ④ 데이터 판매 (B2B) | 익명화 소비 패턴·상권 분석 리포트 | API 과금 또는 단건 세금계산서 |
 
 ---
 
-## 🐛 트러블슈팅 기록
+## 🎮 부가 기능
 
-### 1. Gemini API 응답 지연 & Rate Limit
-- **문제**: 동시 접속 시 날씨 추천 카드 로딩 5초+ 지연
-- **해결**: 기온 기반 폴백 메뉴 하드코딩, API 실패 시 자동 전환
-- **예정**: 동일 조건 응답 30분 캐싱
+### 술자리 게임 5종
+- 🎰 룰렛 게임 (`/game/random_amount`)
+- 🪜 사다리타기 (`/game/ladder`)
+- 🎯 핀볼 게임 (`/game/pinball`)
+- 🏆 음식 월드컵 (`/game/worldcup`)
+- 🧮 랜덤 금액 계산기 (`/game/calculator`)
 
-### 2. AI 챗봇 TASTE_DATA 파싱 오류
-- **문제**: Gemini 응답에 마크다운 코드블록(` ```json `)이 섞여 JSON 파싱 실패
-- **해결**: `re.search`로 JSON 블록만 추출, 실패 시 빈 딕셔너리로 대체
-- **예정**: 프롬프트 강화 + 응답 검증 로직 보강
-
-### 3. Git 충돌 (main.py Merge Conflict)
-- **문제**: 팀원 기능 병합 시 `<<<<<<< HEAD` 마커 잔존 → FastAPI SyntaxError
-- **해결**: ConnectionManager(기존)와 RAG 챗봇(팀원) 코드 수동 병합
-- **예정**: 기능별 브랜치 분리 + PR 리뷰 규칙 도입
-
-### 4. WebSocket 오프라인 메시지 유실
-- **문제**: 수신자 오프라인 시 실시간 전송 불가 → 메시지 미도달
-- **해결**: 모든 메시지 DB 저장 후 `GET /api/chat/history`로 재조회
-- **예정**: 미확인 메시지 뱃지 표시
-
-### 5. ngrok 브라우저 경고 & 주소 만료
-- **문제**: 재시작마다 URL 변경 → Kakao CORS 재등록, 경고 페이지 반복
-- **해결**: FastAPI 미들웨어에 `ngrok-skip-browser-warning` 헤더 자동 추가
-- **예정**: 고정 도메인 운영 (ngrok 유료 또는 클라우드 배포)
-
-### 6. 기상청 API 좌표 변환 오류
-- **문제**: GPS 좌표 직접 사용 시 "기상 데이터 없음" 오류
-- **해결**: 람베르트 정각원추 투영법 기반 `dfs_xy_conv()` 함수 직접 구현
-- **비고**: API 실패 시에도 기온 기반 폴백 메뉴 반환
-
-### 7. 모바일 z-index 충돌 (버튼 가림)
-- **문제**: AICHAT 히스토리 패널(z-index 2500)이 💬 FAB(z-index 2001) 덮음
-- **해결**: FAB → 2600, 패널 → 2602로 재정렬 / COMMUNITY 글쓰기 버튼 `right:110px` 이동
+### 실시간 기능
+- WebSocket 1:1 채팅 + 친구 맺기
+- GPS 위치 기반 주변 음식점 실시간 검색
+- 날씨 연동 메뉴 추천
 
 ---
 
-## 🗓️ 개발 일정
+## 🔧 트러블슈팅 기록
+
+| # | 문제 | 원인 | 해결책 |
+|---|------|------|--------|
+| 1 | Gemini API 응답 지연 | 응답 시간 불규칙 | 타임아웃 설정 + 안내 메시지 UX |
+| 2 | TASTE_DATA 파싱 오류 | JSON 아닌 형식 반환 | 정규식 방어 코드 추가 |
+| 3 | Git Merge Conflict | 동일 파일 동시 수정 | 기능별 브랜치 분리 + PR 리뷰 후 머지 |
+| 4 | WebSocket 오프라인 메시지 유실 | 수신자 오프라인 | DB 임시 저장 → 재접속 시 동기화 |
+| 5 | HTTPS 터널링 (ngrok → Cloudflare) | 경고 페이지 삽입·주소 매번 변경 | `cloudflared tunnel --url http://localhost:8000` |
+| 6 | 기상청 API 좌표 변환 오류 | GPS→격자 변환 오차 | 공식 문서 기준 변환 함수 재작성 |
+| 7 | 모바일 UI z-index 충돌 | position:fixed 요소 충돌 | 계층 명시 정의 + 광고 배너 하단 이동 |
+| 8 | 카카오맵 Cloudflare 환경 미작동 | 도메인 미등록 | 카카오 개발자 콘솔에 Cloudflare 도메인 추가 |
+| 9 | `kakao is not defined` 오류 | autoload=false 타이밍 문제 | `<script onload="onKakaoSDKLoad()">` 방식으로 전환 |
+| 10 | Gemini API 호출 실패 (`google-generativeai` 누락) | requirements.txt 미등록 | `google-generativeai` 패키지 추가 |
+
+---
+
+## 📅 개발 일정
 
 | 주차 | 내용 |
 |------|------|
-| 1주차 | 기획, DB 설계, 기본 인증(로그인·회원가입) |
-| 2주차 | UI 구성, 커뮤니티, 카테고리 페이지 |
-| 3주차 | AI 챗봇(RAG), 날씨 추천, 친구·채팅, 관리자 |
-| 4주차 | 모바일 반응형, 버그 수정, 테스트, 최종 정리 |
+| 1주차 | 기획·요구사항 정의, 서비스 컨셉 확정, 역할 분담, 기술 스택 선정 |
+| 2주차 | UI 설계·인터페이스 구성, 메인·커뮤니티·챗봇 화면, 프론트엔드 기반 구축 |
+| 3주차 | AI 챗봇·위치·날씨·커뮤니티·게임 기능 구현, 백엔드 API 연동 |
+| 4주차 | 통합 테스트, 모바일 UI 최적화, 발표 준비 |
 
 ---
 
-## 👥 팀원 역할
+## 👥 팀원 소개
 
-| 이름 | 역할 |
-|------|------|
-| 이윤성 | 팀장 · 전체 기획 · 백엔드 통합 · AI 챗봇 · 날씨 추천 |
-| 박준영 | 기능 기획 · 개발 협업 · 브레인스토밍 |
-| 채하율 | 기능 기획 · RAG 챗봇 · UI 개발 |
-| 황승민 | 기능 기획 · 개발 협업 · 테스트 |
+| 이름 | 전공 | 담당 역할 |
+|------|------|-----------|
+| **이윤성** (팀장) | 컴퓨터 전자공학 | 프로젝트 기획 총괄, Git 브랜치 전략, Cloudflare Tunnel 배포, .env 환경 설정 |
+| **채하율** | IT소프트웨어융합 | AI 챗봇 기획·개발, Gemini API 연동, TASTE_DATA 파싱, 커뮤니티 RAG 구현, 대화 기록 저장·관리 |
+| **박준영** | 컴퓨터 전자공학 | 커뮤니티 게시판 CRUD, WebSocket 실시간 채팅, 오프라인 메시지 DB 동기화 |
+| **황승민** | 전기전자 | FastAPI 백엔드 + TiDB DB 설계 (12개 테이블), 카카오맵·기상청 API 연동, 메인 홈 UI/UX, 모바일 반응형 CSS |
 
 ---
 
-## 📎 참고 API
+## 🔮 향후 개선 계획
 
-- [Google Gemini API](https://ai.google.dev/)
-- [Kakao Map API](https://developers.kakao.com/)
-- [기상청 초단기실황 API](https://www.data.go.kr/)
+- **모바일 앱 전환:** 반응형 웹 → React Native WebView 하이브리드 앱
+- **이미지 추천 고도화:** Gemini Vision으로 음식 사진 → 주류·안주 조합 추천
+- **취향 리포트:** 월간 소비 패턴 시각화 리포트 제공
+- **예약 연계:** 제휴 매장 예약 기능 확장
+- **서버 확장:** Docker → AWS EC2 / Cloud Run + Auto Scaling
+- **시즌 콘텐츠:** 지역별·계절별 주류·안주 추천 큐레이션
